@@ -1,3 +1,4 @@
+DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS movie_actor_character_r;
 DROP TABLE muff_likes_actor;
 DROP TABLE muff_likes_character;
@@ -127,3 +128,22 @@ CREATE TABLE muff_likes_character (
   FOREIGN KEY (character_id) REFERENCES character (id)
   ON DELETE CASCADE
 );
+
+CREATE TABLE review (
+  id        SERIAL,
+  muff_id   INT           NOT NULL,
+  movie_id  INT           NOT NULL,
+  rating    NUMERIC(4, 2) NOT NULL, -- Ex: 07.42 / 10.00
+  timestamp TIMESTAMP     NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
+  ON DELETE CASCADE
+  /*
+    This unique condition of (muff_id, movie_id) is deliberately not used
+    This is to give freedom to user to give multiple reviews based on his mood
+    The avg of those reviews give a better measure of likeness of movie
+  */
+);
+
