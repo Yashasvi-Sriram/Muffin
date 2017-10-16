@@ -96,11 +96,7 @@ CREATE TABLE movie_owner_password (
   ON DELETE CASCADE
 );
 
--- note that below tables does not contain information about movie owner
--- it is done to keep the data pure and simple
--- strictly speaking it doesn't make MUCH sense to have movie_owner name in movie table
--- as for us movie owner is just a user who has access to this table
--- notice: so the privileges can be checked in the above layer
+-- todo : add movie owner dependency
 
 -- name update can be allowed
 CREATE TABLE movie (
@@ -167,7 +163,7 @@ CREATE TABLE cinema_building_owner_password (
 
 CREATE TABLE cinema_building (
   id          SERIAL,
-  owner_id    INT,
+  owner_id    INT         NOT NULL,
   name        VARCHAR(50) NOT NULL,
   --   address fields, format closest to google maps api
   street_name VARCHAR(50) NOT NULL,
@@ -175,7 +171,7 @@ CREATE TABLE cinema_building (
   state       VARCHAR(50) NOT NULL,
   zip         VARCHAR(50) NOT NULL,
   country     VARCHAR(50) NOT NULL,
-  PRIMARY KEY (id, owner_id),
+  PRIMARY KEY (id),
   --   though even if these fields are unique they may point to same cinema building
   --   this is the least we can do in db space
   UNIQUE (name, street_name, city, state, zip, country),
@@ -184,12 +180,13 @@ CREATE TABLE cinema_building (
 );
 
 CREATE TABLE theatre (
-  cinema_building_id INT,
-  owner_id           INT,
-  screen_no          INT,
+  id                 SERIAL,
+  cinema_building_id INT NOT NULL,
+  screen_no          INT NOT NULL,
   capacity           INT NOT NULL,
-  PRIMARY KEY (cinema_building_id, owner_id, screen_no),
-  FOREIGN KEY (cinema_building_id, owner_id) REFERENCES cinema_building (id, owner_id)
+  PRIMARY KEY (id),
+  UNIQUE (cinema_building_id, screen_no),
+  FOREIGN KEY (cinema_building_id) REFERENCES cinema_building (id)
   ON DELETE CASCADE
 );
 
