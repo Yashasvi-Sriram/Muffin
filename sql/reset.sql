@@ -120,14 +120,14 @@ CREATE TABLE character (
   id       SERIAL,
   name     VARCHAR(50) NOT NULL,
   movie_id INT         NOT NULL,
-  actor_id INT,
+  actor_id INT         NOT NULL,
   PRIMARY KEY (id),
   --   name is unique per movie basis
   UNIQUE (movie_id, name),
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE,
   FOREIGN KEY (actor_id) REFERENCES actor (id)
-  ON DELETE SET NULL
+  ON DELETE CASCADE
 );
 
 /*                               */
@@ -204,11 +204,12 @@ CREATE TABLE muff_likes_character (
 
 CREATE TABLE review (
   id        SERIAL,
-  muff_id   INT,
-  movie_id  INT,
+  muff_id   INT           NOT NULL,
+  movie_id  INT           NOT NULL,
   rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
   timestamp TIMESTAMP     NOT NULL,
-  PRIMARY KEY (id, muff_id, movie_id),
+  PRIMARY KEY (id),
+  UNIQUE (muff_id, movie_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)
