@@ -1,4 +1,6 @@
 DROP TABLE IF EXISTS movie_actor_character_r;
+DROP TABLE muff_likes_actor;
+DROP TABLE muff_likes_character;
 DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS movie;
@@ -31,6 +33,7 @@ DROP TABLE IF EXISTS muff;
   field which could be a primary key, one could create a (synthetic if you may) primary key field
   which can be unique and constant through out the life time of the tuple
 */
+-- handle update can be provided
 CREATE TABLE muff (
   id     SERIAL,
   handle VARCHAR(50) NOT NULL,
@@ -39,7 +42,7 @@ CREATE TABLE muff (
   PRIMARY KEY (id)
 );
 
--- password can be changed
+-- password update can be provided
 CREATE TABLE password (
   id       INT,
   password VARCHAR(50) NOT NULL,
@@ -48,7 +51,7 @@ CREATE TABLE password (
   ON DELETE CASCADE
 );
 
--- follow and un-follow operations should be supported
+-- follow and un-follow operations can be supported
 CREATE TABLE follows (
   id1 INT,
   id2 INT,
@@ -62,27 +65,34 @@ CREATE TABLE follows (
 /*             */
 /* Movie stuff */
 /*             */
--- name should be allowed to change
+-- name update can be allowed
 CREATE TABLE movie (
   id   SERIAL,
   name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (name)
 );
 
--- name should be allowed to change
+-- name update can be allowed
 CREATE TABLE actor (
   id   SERIAL,
   name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (name)
 );
 
--- name should be allowed to change
+-- name update can be allowed
 CREATE TABLE character (
   id   SERIAL,
   name VARCHAR(50) NOT NULL,
-  PRIMARY KEY (id)
+  PRIMARY KEY (id),
+  UNIQUE (name)
 );
 
+-- updates can be allowed
+-- here an actor can play two characters in a movie
+-- for ex.
+-- prabhas in bahubali as shivudu (mahendra bahubali) and amarendra bahubali
 CREATE TABLE movie_actor_character_r (
   id           SERIAL,
   movie_id     INT NOT NULL,
@@ -98,22 +108,22 @@ CREATE TABLE movie_actor_character_r (
   UNIQUE (movie_id, actor_id, character_id)
 );
 
-INSERT INTO movie (name) VALUES ('The Croods');
-INSERT INTO movie (name) VALUES ('Rear Window');
-INSERT INTO movie (name) VALUES ('Indiana Jones');
-INSERT INTO movie (name) VALUES ('Imitation Game');
-INSERT INTO movie (name) VALUES ('Birdman');
+CREATE TABLE muff_likes_actor (
+  muff_id  INT,
+  actor_id INT,
+  PRIMARY KEY (muff_id, actor_id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (actor_id) REFERENCES actor (id)
+  ON DELETE CASCADE
+);
 
-INSERT INTO actor (name) VALUES ('Emma Stone');
-INSERT INTO actor (name) VALUES ('Ryan Reynolds');
-INSERT INTO actor (name) VALUES ('Bennedict Cumberbatch');
-INSERT INTO actor (name) VALUES ('Micheal Keaton');
-
-INSERT INTO character (name) VALUES ('Jeff');
-INSERT INTO character (name) VALUES ('Dr. Jones');
-INSERT INTO character (name) VALUES ('Alan Turing');
-INSERT INTO character (name) VALUES ('The guy');
-INSERT INTO character (name) VALUES ('Belt');
-
-INSERT INTO movie_actor_character_r (movie_id, actor_id, character_id)
-VALUES (1, 2, 4);
+CREATE TABLE muff_likes_character (
+  muff_id      INT,
+  character_id INT,
+  PRIMARY KEY (muff_id, character_id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (character_id) REFERENCES character (id)
+  ON DELETE CASCADE
+);
