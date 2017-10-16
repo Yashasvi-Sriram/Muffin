@@ -1,9 +1,8 @@
 DROP TABLE IF EXISTS review;
-DROP TABLE IF EXISTS movie_actor_character_r;
 DROP TABLE IF EXISTS muff_likes_actor;
 DROP TABLE IF EXISTS muff_likes_character;
-DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS character;
+DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS movie_owner_password;
@@ -96,17 +95,19 @@ CREATE TABLE movie_owner_password (
   ON DELETE CASCADE
 );
 
--- todo : add movie owner dependency
-
 -- name update can be allowed
 CREATE TABLE movie (
-  id   SERIAL,
-  name VARCHAR(50) NOT NULL,
+  id             SERIAL,
+  name           VARCHAR(50) NOT NULL,
+  movie_owner_id INT         NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (name)
+  UNIQUE (name),
+  FOREIGN KEY (movie_owner_id) REFERENCES movie_owner (id)
+  ON DELETE CASCADE
 );
 
 -- name update can be allowed
+-- as of now actors don't have an account
 CREATE TABLE actor (
   id   SERIAL,
   name VARCHAR(50) NOT NULL,
@@ -116,28 +117,17 @@ CREATE TABLE actor (
 
 -- name update can be allowed
 CREATE TABLE character (
-  id   SERIAL,
-  name VARCHAR(50) NOT NULL,
+  id       SERIAL,
+  name     VARCHAR(50) NOT NULL,
+  movie_id INT         NOT NULL,
+  actor_id INT,
   PRIMARY KEY (id),
-  UNIQUE (name)
-);
-
--- updates can be allowed
--- here an actor can play two characters in a movie
--- for ex.
--- prabhas in bahubali as shivudu (mahendra bahubali) and amarendra bahubali
-CREATE TABLE movie_actor_character_r (
-  id           SERIAL,
-  movie_id     INT,
-  actor_id     INT,
-  character_id INT,
-  PRIMARY KEY (id, movie_id, actor_id, character_id),
+  --   name is unique per movie basis
+  UNIQUE (movie_id, name),
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE,
   FOREIGN KEY (actor_id) REFERENCES actor (id)
-  ON DELETE CASCADE,
-  FOREIGN KEY (character_id) REFERENCES character (id)
-  ON DELETE CASCADE
+  ON DELETE SET NULL
 );
 
 /*                               */

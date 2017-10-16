@@ -8,17 +8,28 @@ INSERT INTO muff_password (id, password) VALUES (2, '.');
 INSERT INTO muff_password (id, password) VALUES (3, '.');
 INSERT INTO muff_password (id, password) VALUES (4, '.');
 
+INSERT INTO movie_owner (handle, name) VALUES ('marvel', 'marvel');
+INSERT INTO movie_owner (handle, name) VALUES ('dc', 'dc');
+INSERT INTO movie_owner (handle, name) VALUES ('universal', 'universal');
+INSERT INTO movie_owner (handle, name) VALUES ('annapurna', 'universal');
+
+INSERT INTO movie_owner_password (id, password) VALUES (1, '.');
+INSERT INTO movie_owner_password (id, password) VALUES (2, '.');
+INSERT INTO movie_owner_password (id, password) VALUES (3, '.');
+INSERT INTO movie_owner_password (id, password) VALUES (4, '.');
+
+
 INSERT INTO follows (id1, id2) VALUES (1, 2);
 INSERT INTO follows (id1, id2) VALUES (2, 3);
 INSERT INTO follows (id1, id2) VALUES (3, 1);
 INSERT INTO follows (id1, id2) VALUES (4, 1);
 INSERT INTO follows (id1, id2) VALUES (4, 4);
 
-INSERT INTO movie (name) VALUES ('The Croods');
-INSERT INTO movie (name) VALUES ('Rear Window');
-INSERT INTO movie (name) VALUES ('Indiana Jones');
-INSERT INTO movie (name) VALUES ('Imitation Game');
-INSERT INTO movie (name) VALUES ('Birdman');
+INSERT INTO movie (movie_owner_id, name) VALUES (1, 'The Croods');
+INSERT INTO movie (movie_owner_id, name) VALUES (2, 'Rear Window');
+INSERT INTO movie (movie_owner_id, name) VALUES (3, 'Indiana Jones');
+INSERT INTO movie (movie_owner_id, name) VALUES (4, 'Imitation Game');
+INSERT INTO movie (movie_owner_id, name) VALUES (1, 'Birdman');
 
 INSERT INTO actor (name) VALUES ('Emma Stone');
 INSERT INTO actor (name) VALUES ('Ryan Reynolds');
@@ -26,15 +37,11 @@ INSERT INTO actor (name) VALUES ('Bennedict Cumberbatch');
 INSERT INTO actor (name) VALUES ('Micheal Keaton');
 INSERT INTO actor (name) VALUES ('Stewart');
 
-INSERT INTO character (name) VALUES ('Jeff');
-INSERT INTO character (name) VALUES ('Dr. Jones');
-INSERT INTO character (name) VALUES ('Alan Turing');
-INSERT INTO character (name) VALUES ('The guy');
-INSERT INTO character (name) VALUES ('Belt');
-
-INSERT INTO movie_actor_character_r (movie_id, actor_id, character_id) VALUES (1, 2, 4);
-INSERT INTO movie_actor_character_r (movie_id, actor_id, character_id) VALUES (2, 5, 1);
-INSERT INTO movie_actor_character_r (movie_id, actor_id, character_id) VALUES (3, 3, 3);
+INSERT INTO character (name, movie_id) VALUES ('Jeff', 2);
+INSERT INTO character (name, movie_id) VALUES ('Dr. Jones', 3);
+INSERT INTO character (name, movie_id) VALUES ('Alan Turing', 4);
+INSERT INTO character (name, movie_id) VALUES ('The guy', 1);
+INSERT INTO character (name, movie_id) VALUES ('Belt', 1);
 
 INSERT INTO muff_likes_actor (muff_id, actor_id) VALUES (1, 1);
 INSERT INTO muff_likes_actor (muff_id, actor_id) VALUES (1, 2);
