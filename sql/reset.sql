@@ -133,7 +133,7 @@ CREATE TABLE review (
   id        SERIAL,
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
-  rating    NUMERIC(4, 2) NOT NULL, -- Ex: 07.42 / 10.00
+  rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
