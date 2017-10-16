@@ -1,11 +1,15 @@
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS movie_actor_character_r;
-DROP TABLE muff_likes_actor;
-DROP TABLE muff_likes_character;
+DROP TABLE IF EXISTS muff_likes_actor;
+DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
+DROP TABLE IF EXISTS movie_owner_password;
+DROP TABLE IF EXISTS movie_owner;
+DROP TABLE IF EXISTS cinema_building_owner_password;
+DROP TABLE IF EXISTS cinema_building_owner;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 

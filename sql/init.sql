@@ -3,10 +3,10 @@ INSERT INTO muff (handle, name) VALUES ('theone', 'sam');
 INSERT INTO muff (handle, name) VALUES ('hucklecliff', 'robin');
 INSERT INTO muff (handle, name) VALUES ('@Iamben', 'ben');
 
-INSERT INTO password (id, password) VALUES (1, '.');
-INSERT INTO password (id, password) VALUES (2, '.');
-INSERT INTO password (id, password) VALUES (3, '.');
-INSERT INTO password (id, password) VALUES (4, '.');
+INSERT INTO muff_password (id, password) VALUES (1, '.');
+INSERT INTO muff_password (id, password) VALUES (2, '.');
+INSERT INTO muff_password (id, password) VALUES (3, '.');
+INSERT INTO muff_password (id, password) VALUES (4, '.');
 
 INSERT INTO follows (id1, id2) VALUES (1, 2);
 INSERT INTO follows (id1, id2) VALUES (2, 3);
