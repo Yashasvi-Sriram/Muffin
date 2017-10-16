@@ -6,7 +6,7 @@ DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
-DROP TABLE IF EXISTS password;
+DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 
 /*
@@ -44,7 +44,7 @@ CREATE TABLE muff (
 );
 
 -- password update can be provided
-CREATE TABLE password (
+CREATE TABLE muff_password (
   id       INT,
   password VARCHAR(50) NOT NULL,
   PRIMARY KEY (id),
@@ -66,6 +66,30 @@ CREATE TABLE follows (
 /*             */
 /* Movie stuff */
 /*             */
+-- handle update can be provided
+CREATE TABLE movie_owner (
+  id     SERIAL,
+  handle VARCHAR(50) NOT NULL,
+  name   VARCHAR(50) NOT NULL,
+  UNIQUE (handle),
+  PRIMARY KEY (id)
+);
+
+-- password update can be provided
+CREATE TABLE movie_owner_password (
+  id       INT,
+  password VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id) REFERENCES movie_owner (id)
+  ON DELETE CASCADE
+);
+
+-- note that below tables does not contain information about movie owner
+-- it is done to keep the data pure and simple
+-- strictly speaking it doesn't make MUCH sense to have movie_owner name in movie table
+-- as for us movie owner is just a user who has access to this table
+-- notice: so the privileges can be checked in the above layer
+
 -- name update can be allowed
 CREATE TABLE movie (
   id   SERIAL,
@@ -147,3 +171,23 @@ CREATE TABLE review (
   */
 );
 
+/*               */
+/* Booking Stuff */
+/*               */
+-- handle update can be provided
+CREATE TABLE cinema_building_owner (
+  id     SERIAL,
+  handle VARCHAR(50) NOT NULL,
+  name   VARCHAR(50) NOT NULL,
+  UNIQUE (handle),
+  PRIMARY KEY (id)
+);
+
+-- password update can be provided
+CREATE TABLE cinema_building_owner_password (
+  id       INT,
+  password VARCHAR(50) NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (id) REFERENCES cinema_building_owner (id)
+  ON DELETE CASCADE
+);
