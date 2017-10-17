@@ -4,7 +4,7 @@ DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
-DROP TABLE IF EXISTS movie_booking;
+DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS show;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
@@ -201,7 +201,7 @@ CREATE TABLE show (
   ON DELETE CASCADE
 );
 
-CREATE TABLE movie_booking (
+CREATE TABLE booking (
   id                 SERIAL,
   show_id         INT NOT NULL,
   muff_id           INT NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE review (
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
   rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
-  comment   text          NOT NULL,
+  text   text          NOT NULL,
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
