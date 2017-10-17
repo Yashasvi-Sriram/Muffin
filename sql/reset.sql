@@ -185,7 +185,7 @@ CREATE TABLE theatre (
 );
 
 
-/* Show stuff again */
+/* TO DO - constraint checking */
 CREATE TABLE show (
   id                 SERIAL,
   theatre_id         INT NOT NULL,
@@ -243,7 +243,7 @@ CREATE TABLE review (
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
   rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
-  text   text          NOT NULL,
+  te   text          NOT NULL,
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
