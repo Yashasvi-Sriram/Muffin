@@ -1,11 +1,12 @@
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS muff_likes_actor;
+-- DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
-DROP TABLE IF EXISTS movie;
-DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS show;
+DROP TABLE IF EXISTS movie;
+DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
 DROP TABLE IF EXISTS theatre;
@@ -51,7 +52,7 @@ CREATE TABLE muff (
   id     SERIAL,
   handle VARCHAR(50) NOT NULL,
   name   VARCHAR(50) NOT NULL,
-  level  INT NOT NULL,
+  level  INT         NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -174,48 +175,30 @@ CREATE TABLE cinema_building (
 
 CREATE TABLE theatre (
   id                 SERIAL,
-  cinema_building_id INT NOT NULL,
-  screen_no          INT NOT NULL,
-  capacity           INT NOT NULL,
-  seating           text NOT NULL,
+  cinema_building_id INT  NOT NULL,
+  screen_no          INT  NOT NULL,
+  seating            TEXT NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (cinema_building_id, screen_no),
   FOREIGN KEY (cinema_building_id) REFERENCES cinema_building (id)
   ON DELETE CASCADE
 );
 
-
-/* TO DO - constraint checking */
 CREATE TABLE show (
-  id                 SERIAL,
-  theatre_id         INT NOT NULL,
-  movie_id           INT NOT NULL,
-  start_datetime    VARCHAR(50) NOT NULL,
-  end_datetime      VARCHAR(50) NOT NULL,
-  seating           text NOT NULL,
+  id             SERIAL,
+  theatre_id     INT         NOT NULL,
+  movie_id       INT         NOT NULL,
+  start_datetime VARCHAR(50) NOT NULL,
+  end_datetime   VARCHAR(50) NOT NULL,
+  seating        TEXT        NOT NULL,
   PRIMARY KEY (id),
-  -- UNIQUE (theatre_id,movie_id,start_date_time),
+  -- todo improve below constraint to prevent overlap of shows
+  UNIQUE (theatre_id, movie_id, start_datetime, end_datetime),
   FOREIGN KEY (theatre_id) REFERENCES cinema_building (id)
   ON DELETE CASCADE,
-  FOREIGN KEY (movie_id) REFERENCES  movie(id)
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );
-
-CREATE TABLE booking (
-  id                 SERIAL,
-  show_id         INT NOT NULL,
-  muff_id           INT NOT NULL,
-  seats_booked      text NOT NULL,
-  PRIMARY KEY (id),
-  FOREIGN KEY (show_id) REFERENCES show (id)
-  ON DELETE CASCADE,
-  FOREIGN KEY (muff_id) REFERENCES  muff(id)
-  ON DELETE CASCADE
-);
-
-
-
-
 
 /* Muff stuff again */
 CREATE TABLE muff_likes_actor (
@@ -243,7 +226,7 @@ CREATE TABLE review (
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
   rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
-  te   text          NOT NULL,
+  text      TEXT          NOT NULL,
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
@@ -256,6 +239,18 @@ CREATE TABLE review (
     This is to give freedom to user to give multiple reviews based on his mood
     The avg of those reviews give a better measure of likeness of movie
   */
+);
+
+CREATE TABLE booking (
+  id           SERIAL,
+  show_id      INT  NOT NULL,
+  muff_id      INT  NOT NULL,
+  seats_booked TEXT NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (show_id) REFERENCES show (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE
 );
 
 
