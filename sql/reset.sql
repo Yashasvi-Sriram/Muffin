@@ -179,7 +179,7 @@ CREATE TABLE theatre (
   cinema_building_id INT NOT NULL,
   screen_no          INT NOT NULL,
   capacity           INT NOT NULL,
-  seats_present_text text NOT NULL,
+  seating           text NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (cinema_building_id, screen_no),
   FOREIGN KEY (cinema_building_id) REFERENCES cinema_building (id)
@@ -192,11 +192,11 @@ CREATE TABLE show (
   id                 SERIAL,
   theatre_id         INT NOT NULL,
   movie_id           INT NOT NULL,
-  start_date_time    VARCHAR(50) NOT NULL,
-  end_date_time      VARCHAR(50) NOT NULL,
-  seats_available_text text NOT NULL,
+  start_datetime    VARCHAR(50) NOT NULL,
+  end_datetime      VARCHAR(50) NOT NULL,
+  seating           text NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (theatre_id,movie_id,start_date_time),
+  -- UNIQUE (theatre_id,movie_id,start_date_time),
   FOREIGN KEY (theatre_id) REFERENCES cinema_building (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES  movie(id)
@@ -207,7 +207,7 @@ CREATE TABLE movie_booking (
   id                 SERIAL,
   show_id         INT NOT NULL,
   muff_id           INT NOT NULL,
-  seats_booked_text    text NOT NULL,
+  seats_booked      text NOT NULL,
   PRIMARY KEY (id),
   FOREIGN KEY (show_id) REFERENCES show (id)
   ON DELETE CASCADE,
@@ -230,21 +230,22 @@ CREATE TABLE muff_likes_actor (
   ON DELETE CASCADE
 );
 
-CREATE TABLE muff_likes_character (
-  muff_id      INT,
-  character_id INT,
-  PRIMARY KEY (muff_id, character_id),
-  FOREIGN KEY (muff_id) REFERENCES muff (id)
-  ON DELETE CASCADE,
-  FOREIGN KEY (character_id) REFERENCES character (id)
-  ON DELETE CASCADE
-);
+-- CREATE TABLE muff_likes_character (
+--   muff_id      INT,
+--   character_id INT,
+--   PRIMARY KEY (muff_id, character_id),
+--   FOREIGN KEY (muff_id) REFERENCES muff (id)
+--   ON DELETE CASCADE,
+--   FOREIGN KEY (character_id) REFERENCES character (id)
+--   ON DELETE CASCADE
+-- );
 
 CREATE TABLE review (
   id        SERIAL,
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
   rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
+  comment   text          NOT NULL,
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
@@ -260,21 +261,3 @@ CREATE TABLE review (
 );
 
 
-CREATE TABLE text_review (
-  id        SERIAL,
-  muff_id   INT           NOT NULL,
-  movie_id  INT           NOT NULL,
-  text_data text          NOT NULL,
-  timestamp TIMESTAMP     NOT NULL,
-  PRIMARY KEY (id),
-  UNIQUE (muff_id, movie_id),
-  FOREIGN KEY (muff_id) REFERENCES muff (id)
-  ON DELETE CASCADE,
-  FOREIGN KEY (movie_id) REFERENCES movie (id)
-  ON DELETE CASCADE
-  /*
-    This unique condition of (muff_id, movie_id) is deliberately not used
-    This is to give freedom to user to give multiple reviews based on his mood
-    The avg of those reviews give a better measure of likeness of movie
-  */
-);
