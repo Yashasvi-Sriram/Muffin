@@ -1,7 +1,5 @@
-DROP TABLE IF EXISTS text_review;
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS muff_likes_actor;
-DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS movie;
