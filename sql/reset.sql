@@ -194,7 +194,7 @@ CREATE TABLE show (
   PRIMARY KEY (id),
   -- todo improve below constraint to prevent overlap of shows
   UNIQUE (theatre_id, movie_id, start_datetime, end_datetime),
-  FOREIGN KEY (theatre_id) REFERENCES cinema_building (id)
+  FOREIGN KEY (theatre_id) REFERENCES theatre (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
