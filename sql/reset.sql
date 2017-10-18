@@ -3,12 +3,14 @@ DROP TABLE IF EXISTS muff_likes_actor;
 -- DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
+DROP TABLE IF EXISTS booked_show_seats;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS show;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
+DROP TABLE IF EXISTS seat;
 DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
@@ -175,29 +177,41 @@ CREATE TABLE cinema_building (
 
 CREATE TABLE theatre (
   id                 SERIAL,
-  cinema_building_id INT  NOT NULL,
-  screen_no          INT  NOT NULL,
-  seating            TEXT NOT NULL,
+  cinema_building_id INT NOT NULL,
+  screen_no          INT NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (cinema_building_id, screen_no),
   FOREIGN KEY (cinema_building_id) REFERENCES cinema_building (id)
   ON DELETE CASCADE
 );
 
-CREATE TABLE show (
-  id             SERIAL,
-  theatre_id     INT         NOT NULL,
-  movie_id       INT         NOT NULL,
-  start_datetime VARCHAR(50) NOT NULL,
-  end_datetime   VARCHAR(50) NOT NULL,
-  seating        TEXT        NOT NULL,
+CREATE TABLE seat (
+  id         SERIAL,
+  theatre_id INT NOT NULL,
+  -- x = column, y = row
+  x          INT NOT NULL,
+  y          INT NOT NULL,
   PRIMARY KEY (id),
-  -- todo improve below constraint to prevent overlap of shows
-  UNIQUE (theatre_id, movie_id, start_datetime, end_datetime),
-  FOREIGN KEY (theatre_id) REFERENCES cinema_building (id)
+  UNIQUE (theatre_id, x, y),
+  UNIQUE (id, theatre_id),
+  FOREIGN KEY (theatre_id) REFERENCES theatre (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE show (
+  id         SERIAL,
+  theatre_id INT NOT NULL,
+  movie_id   INT NOT NULL,
+  -- if the format of datetime is made YYYY MM DD HH MinMin SS
+  -- then comparision can be done directly as strings
+  during     TSRANGE,
+  PRIMARY KEY (id),
+  UNIQUE (id, theatre_id),
+  FOREIGN KEY (theatre_id) REFERENCES theatre (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)
-  ON DELETE CASCADE
+  ON DELETE CASCADE,
+  EXCLUDE USING GIST (theatre_id WITH =, during WITH &&)
 );
 
 /* Muff stuff again */
@@ -225,7 +239,7 @@ CREATE TABLE review (
   id        SERIAL,
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
-  rating    NUMERIC(4, 2) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
+  rating    NUMERIC(3, 1) NOT NULL CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
   text      TEXT          NOT NULL,
   timestamp TIMESTAMP     NOT NULL,
   PRIMARY KEY (id),
@@ -242,15 +256,29 @@ CREATE TABLE review (
 );
 
 CREATE TABLE booking (
-  id           SERIAL,
-  show_id      INT  NOT NULL,
-  muff_id      INT  NOT NULL,
-  seats_booked TEXT NOT NULL,
+  id      SERIAL,
+  show_id INT NOT NULL,
+  muff_id INT NOT NULL,
   PRIMARY KEY (id),
+  UNIQUE (id, show_id),
   FOREIGN KEY (show_id) REFERENCES show (id)
   ON DELETE CASCADE,
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE
 );
 
-
+CREATE TABLE booked_show_seats (
+  id         SERIAL,
+  theatre_id INT NOT NULL,
+  seat_id    INT NOT NULL,
+  show_id    INT NOT NULL,
+  booking_id INT NOT NULL,
+  PRIMARY KEY (id),
+  UNIQUE (booking_id, show_id, seat_id),
+  FOREIGN KEY (seat_id, theatre_id) REFERENCES seat (id, theatre_id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (show_id, theatre_id) REFERENCES show (id, theatre_id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (booking_id, show_id) REFERENCES booking (id, show_id)
+  ON DELETE CASCADE
+);
