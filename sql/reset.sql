@@ -6,6 +6,7 @@ DROP TABLE IF EXISTS actor;
 DROP TABLE IF EXISTS booked_show_seats;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS show;
+DROP EXTENSION IF EXISTS btree_gist;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
 DROP TABLE IF EXISTS movie_owner_password;
@@ -197,6 +198,8 @@ CREATE TABLE seat (
   FOREIGN KEY (theatre_id) REFERENCES theatre (id)
   ON DELETE CASCADE
 );
+
+CREATE EXTENSION btree_gist;
 
 CREATE TABLE show (
   id         SERIAL,
