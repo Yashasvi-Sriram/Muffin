@@ -5,7 +5,7 @@ import lombok.*;
 @ToString
 @EqualsAndHashCode(of = {"id"})
 @Getter
-@RequiredArgsConstructor
+@AllArgsConstructor
 public class MovieOwner {
     private int id;
     @NonNull
