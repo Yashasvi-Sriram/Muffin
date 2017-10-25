@@ -8,17 +8,14 @@ import org.muffin.muffin.responsetypes.ArrayResponse;
 import org.muffin.muffin.responsetypes.ObjectResponse;
 import org.muffin.muffin.responsetypes.StringResponse;
 
-import java.util.ArrayList;
-
 public class Scratch {
     public static void main(String[] args) {
         Gson gson = new GsonBuilder().create();
         String a = gson.toJson(ObjectResponse.get(new JsonObject()));
         String b = gson.toJson(ArrayResponse.get(new JsonArray()));
-        String c = gson.toJson(StringResponse.get("String response"));
+        String c = gson.toJson(StringResponse.error("String response"));
         System.out.println(a);
         System.out.println(b);
         System.out.println(c);
-        System.out.println(gson.toJson(new ArrayList<>()));
     }
 }
