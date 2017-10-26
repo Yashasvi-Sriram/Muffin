@@ -1,13 +1,14 @@
 package org.muffin.muffin.db;
 
 import com.google.gson.*;
+import lombok.NonNull;
 
 import java.sql.*;
 
 import javax.servlet.http.HttpServletRequest;
 
-public class Utils {
-    private static JsonArray resultSetToJsonArray(ResultSet rs) throws SQLException {
+public class DBUtils {
+    private static JsonArray resultSetToJsonArray(@NonNull final ResultSet rs) throws SQLException {
         JsonArray json = new JsonArray();
         ResultSetMetaData rsMetaData = rs.getMetaData();
         while (rs.next()) {

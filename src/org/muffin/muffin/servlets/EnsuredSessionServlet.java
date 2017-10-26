@@ -37,10 +37,8 @@ public class EnsuredSessionServlet extends HttpServlet {
     }
 
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
     }
 
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-
     }
 }

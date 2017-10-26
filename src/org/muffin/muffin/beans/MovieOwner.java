@@ -3,7 +3,7 @@ package org.muffin.muffin.beans;
 import lombok.*;
 
 @ToString
-@EqualsAndHashCode(of = {"id"})
+@EqualsAndHashCode
 @Getter
 @AllArgsConstructor
 public class MovieOwner {

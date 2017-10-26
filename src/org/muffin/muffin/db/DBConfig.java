@@ -1,6 +1,6 @@
 package org.muffin.muffin.db;
 
-public class Config {
+public class DBConfig {
     private static String URL = "jdbc:postgresql://localhost:5080/postgres";
     private static String USERNAME = "pandu";
     private static String PASSWORD = "";
