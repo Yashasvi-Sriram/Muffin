@@ -13,15 +13,17 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet("/MovieOwnerHome")
-public class MovieOwnerHome extends EnsuredSessionServlet {
+@WebServlet("/movieownerhome")
+public class Home extends EnsuredSessionServlet {
     MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
 
     @Override
-    protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        request.getRequestDispatcher("WEB-INF/jsps/movieowner/home.jsp").include(request, response);
     }
 
     @Override
-    protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        doGetWithSession(request, response, session);
     }
 }

@@ -12,14 +12,14 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 
-@WebServlet("/MovieOwnerLogin")
-public class MovieOwnerLogin extends HttpServlet {
+@WebServlet("/movieownerlogin")
+public class Login extends HttpServlet {
     MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("action", "/MovieOwnerLogin");
-        request.getRequestDispatcher("WEB-INF/jsps/movieownerlogin.jsp").include(request, response);
+        request.setAttribute("action", "/movieownerlogin");
+        request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);
     }
 
     @Override
@@ -34,13 +34,13 @@ public class MovieOwnerLogin extends HttpServlet {
             }
             HttpSession newSession = request.getSession(true);
             newSession.setAttribute(SessionKeys.MOVIE_OWNER_HANDLE, handle);
-            response.sendRedirect("/MovieOwnerHome");
+            response.sendRedirect("/movieownerhome");
         } else {
             request.setAttribute("message", "Invalid Credentials");
-            request.setAttribute("action", "/MovieOwnerLogin");
+            request.setAttribute("action", "/movieownerlogin");
             request.setAttribute("handle", handle);
             request.setAttribute("password", password);
-            request.getRequestDispatcher("WEB-INF/jsps/movieownerlogin.jsp").include(request, response);
+            request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);
         }
     }
 }
