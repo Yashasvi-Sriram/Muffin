@@ -1,6 +1,7 @@
 package org.muffin.muffin.servlets.movieowner;
 
 import org.muffin.muffin.beans.Movie;
+import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daoimplementations.MovieDAOImpl;
 import org.muffin.muffin.daoimplementations.MovieOwnerDAOImpl;
 import org.muffin.muffin.daos.MovieDAO;
@@ -20,12 +21,9 @@ import java.util.List;
 @WebServlet("/movieownerhome")
 public class Home extends EnsuredSessionServlet {
     MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
-    MovieDAO movieDAO = new MovieDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        List<Movie> movies = movieDAO.getByOwner((Integer) session.getAttribute(SessionKeys.MOVIE_OWNER_ID));
-        System.out.println(movies);
         request.getRequestDispatcher("WEB-INF/jsps/movieowner/home.jsp").include(request, response);
     }
 

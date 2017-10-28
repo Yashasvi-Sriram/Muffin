@@ -1,7 +1,7 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" session="false" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">Movie Owner Title</jsp:attribute>
+    <jsp:attribute name="title">Movie Owner Login</jsp:attribute>
     <jsp:body>
         <m:userlogin>
             <jsp:attribute name="message">${requestScope.get("message")}</jsp:attribute>
