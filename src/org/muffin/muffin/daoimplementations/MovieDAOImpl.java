@@ -14,11 +14,11 @@ import java.util.List;
 
 public class MovieDAOImpl implements MovieDAO {
     @Override
-    public List<Movie> getByOwner(String ownerHandle) {
-        List<Movie> movieList = new ArrayList<Movie>();
+    public List<Movie> getByOwner(int ownerId) {
+        List<Movie> movieList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("select movie.* from movie,movie_owner where movie_owner.handle = ? and movie.movie_owner_id = movie.id")) {
-            preparedStmt.setString(1, ownerHandle);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.movie_owner_id = ?")) {
+            preparedStmt.setInt(1, ownerId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
                 Movie movie = new Movie(result.getInt(1), result.getInt(3), result.getString(2), result.getInt(4));
@@ -30,4 +30,10 @@ public class MovieDAOImpl implements MovieDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public boolean create(String name, int durationInMinutes, int ownerId) {
+        return false;
+    }
+
 }

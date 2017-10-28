@@ -24,13 +24,13 @@ INSERT INTO movie_owner_password (id, password) VALUES (4, '.');
 -- INSERT INTO follows (id1, id2) VALUES (3, 1);
 -- INSERT INTO follows (id1, id2) VALUES (4, 1);
 -- INSERT INTO follows (id1, id2) VALUES (4, 4);
---
--- INSERT INTO movie (movie_owner_id, name) VALUES (1, 'The Croods');
--- INSERT INTO movie (movie_owner_id, name) VALUES (2, 'Rear Window');
--- INSERT INTO movie (movie_owner_id, name) VALUES (3, 'Indiana Jones');
--- INSERT INTO movie (movie_owner_id, name) VALUES (4, 'Imitation Game');
--- INSERT INTO movie (movie_owner_id, name) VALUES (1, 'Birdman');
---
+
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('The Croods', 1, 90);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Rear Window', 2, 100);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Indiana Jones', 3, 123);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Imitation Game', 4, 122);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Birdman', 1, 140);
+
 -- INSERT INTO actor (name) VALUES ('Emma Stone');
 -- INSERT INTO actor (name) VALUES ('Ryan Reynolds');
 -- INSERT INTO actor (name) VALUES ('Bennedict Cumberbatch');

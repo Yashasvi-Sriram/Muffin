@@ -7,5 +7,5 @@ import java.util.Optional;
 public interface MovieOwnerDAO {
     public boolean exists(final String handle, final String password);
 
-    public Optional<MovieOwner> get(String handle);
+    public Optional<MovieOwner> get(final String handle);
 }

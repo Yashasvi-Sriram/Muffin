@@ -1,5 +1,6 @@
 package org.muffin.muffin.servlets.movieowner;
 
+import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.servlets.SessionKeys;
 import org.muffin.muffin.daoimplementations.MovieOwnerDAOImpl;
 import org.muffin.muffin.daos.MovieOwnerDAO;
@@ -11,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
+import java.util.Optional;
 
 @WebServlet("/movieownerlogin")
 public class Login extends HttpServlet {
@@ -33,7 +35,8 @@ public class Login extends HttpServlet {
                 session.invalidate();
             }
             HttpSession newSession = request.getSession(true);
-            newSession.setAttribute(SessionKeys.MOVIE_OWNER_HANDLE, handle);
+            Optional<MovieOwner> movieOwnerOpt = movieOwnerDAO.get(handle);
+            movieOwnerOpt.ifPresent(movieOwner -> newSession.setAttribute(SessionKeys.MOVIE_OWNER_ID, movieOwner.getId()));
             response.sendRedirect("/movieownerhome");
         } else {
             request.setAttribute("message", "Invalid Credentials");
