@@ -23,7 +23,7 @@
                         <form action="<jsp:invoke fragment="action"/>" method="post">
                             <div class="input-field">
                                 <i class="material-icons prefix">account_circle</i>
-                                <input id="icon_prefix" name="id"
+                                <input id="icon_prefix" name="handle"
                                        value="<jsp:invoke fragment="handleValue"/>"
                                        type="text" maxlength="20">
                                 <label for="icon_prefix">Handle</label>

@@ -5,6 +5,8 @@
       Index
     </jsp:attribute>
     <jsp:body>
-        Welcome to m \^^^/
+        <h1>
+            Welcome to muffin \^^^/
+        </h1>
     </jsp:body>
 </m:base>

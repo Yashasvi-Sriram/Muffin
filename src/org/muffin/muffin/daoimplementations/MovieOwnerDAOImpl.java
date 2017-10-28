@@ -4,8 +4,8 @@ import lombok.NonNull;
 import org.muffin.muffin.daos.MovieOwnerDAO;
 
 public class MovieOwnerDAOImpl implements MovieOwnerDAO {
-
     @Override
-    public void create(@NonNull final String handle, @NonNull final String name, @NonNull final String password) {
+    public boolean exists(String handle, String password) {
+        return false;
     }
 }
