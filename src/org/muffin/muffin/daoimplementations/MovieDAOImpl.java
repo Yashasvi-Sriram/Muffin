@@ -33,7 +33,47 @@ public class MovieDAOImpl implements MovieDAO {
 
     @Override
     public boolean create(String name, int durationInMinutes, int ownerId) {
-        return false;
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT into movie(name,movie_owner_id,duration) VALUES (?,?,?);")) {
+            preparedStmt.setString(1, name);
+            preparedStmt.setInt(2, ownerId);
+            preparedStmt.setInt(3, durationInMinutes);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateName(int movieID, int ownerID, String name) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=? where id = ? and movie_owner_id = ?;")) {
+            preparedStmt.setString(1, name);
+            preparedStmt.setInt(2, movieID);
+            preparedStmt.setInt(3, ownerID);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean updateDuration(int movieID, int ownerID, int duration) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET duration = ? where id = ? and movie_owner_id = ?;")) {
+            preparedStmt.setInt(1, duration);
+            preparedStmt.setInt(2, movieID);
+            preparedStmt.setInt(3, ownerID);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (Exception e) {
+            e.printStackTrace();
+            return false;
+        }
     }
 
 }

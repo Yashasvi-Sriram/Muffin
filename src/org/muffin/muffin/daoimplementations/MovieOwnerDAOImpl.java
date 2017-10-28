@@ -46,4 +46,21 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
             return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<MovieOwner> get(int id){
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name,joined_on FROM movie_owner WHERE id = ?")) {
+            preparedStmt.setInt(1, id);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                MovieOwner movieOwner = new MovieOwner(result.getInt(1), result.getString(2), result.getString(3), result.getTimestamp(4).toLocalDateTime());
+                return Optional.of(movieOwner);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
 }
