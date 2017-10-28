@@ -15,7 +15,7 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
     @Override
     public boolean exists(String handle, String password) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("select count(*) from movie_owner,movie_owner_password where movie_owner.id = movie_owner_password.id and handle=? and password=?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT count(*) FROM movie_owner,movie_owner_password WHERE movie_owner.id = movie_owner_password.id AND handle=? AND password=?;")) {
             preparedStmt.setString(1, handle);
             preparedStmt.setString(2, password);
             ResultSet result = preparedStmt.executeQuery();
@@ -33,10 +33,10 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
     @Override
     public Optional<MovieOwner> get(String handle) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name from movie_owner where handle = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name FROM movie_owner WHERE handle = ?")) {
             preparedStmt.setString(1, handle);
             ResultSet result = preparedStmt.executeQuery();
-            if(result.next()) {
+            if (result.next()) {
                 MovieOwner movieOwner = new MovieOwner(result.getInt(1), result.getString(2), result.getString(3));
                 return Optional.of(movieOwner);
             }
