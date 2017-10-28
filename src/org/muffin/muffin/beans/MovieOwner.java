@@ -12,6 +12,4 @@ public class MovieOwner {
     private String handle;
     @NonNull
     private String name;
-    @NonNull
-    private String password;
 }

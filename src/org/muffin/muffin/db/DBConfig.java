@@ -1,9 +1,9 @@
 package org.muffin.muffin.db;
 
 public class DBConfig {
-    private static String URL = "jdbc:postgresql://localhost:5080/postgres";
-    private static String USERNAME = "pandu";
-    private static String PASSWORD = "";
+    public static String URL = "jdbc:postgresql://localhost:5700/postgres";
+    public static String USERNAME = "anirudh";
+    public static String PASSWORD = "";
 
     static {
         try {
