@@ -16,6 +16,7 @@ DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
+DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 
@@ -52,10 +53,11 @@ DROP TABLE IF EXISTS muff;
 -- now it can be easily changed without complex update chains or much db time
 -- handle update can be provided
 CREATE TABLE muff (
-  id     SERIAL,
-  handle VARCHAR(50) NOT NULL,
-  name   VARCHAR(50) NOT NULL,
-  level  INT         NOT NULL,
+  id        SERIAL,
+  handle    VARCHAR(50) NOT NULL,
+  name      VARCHAR(50) NOT NULL,
+  level     INT         NOT NULL,
+  joined_on TIMESTAMP   NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -85,9 +87,10 @@ CREATE TABLE follows (
 /*                   */
 -- handle update can be provided
 CREATE TABLE movie_owner (
-  id     SERIAL,
-  handle VARCHAR(50) NOT NULL,
-  name   VARCHAR(50) NOT NULL,
+  id        SERIAL,
+  handle    VARCHAR(50) NOT NULL,
+  name      VARCHAR(50) NOT NULL,
+  joined_on TIMESTAMP   NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -142,9 +145,10 @@ CREATE TABLE character (
 /*                               */
 -- handle update can be provided
 CREATE TABLE cinema_building_owner (
-  id     SERIAL,
-  handle VARCHAR(50) NOT NULL,
-  name   VARCHAR(50) NOT NULL,
+  id        SERIAL,
+  handle    VARCHAR(50) NOT NULL,
+  name      VARCHAR(50) NOT NULL,
+  joined_on TIMESTAMP   NOT NULL,
   UNIQUE (handle),
   PRIMARY KEY (id)
 );
@@ -256,6 +260,16 @@ CREATE TABLE review (
     This is to give freedom to user to give multiple reviews based on his mood
     The avg of those reviews give a better measure of likeness of movie
   */
+);
+
+CREATE TABLE post (
+  id        SERIAL,
+  muff_id   INT       NOT NULL,
+  text      TEXT      NOT NULL,
+  timestamp TIMESTAMP NOT NULL,
+  PRIMARY KEY (id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE
 );
 
 CREATE TABLE booking (
