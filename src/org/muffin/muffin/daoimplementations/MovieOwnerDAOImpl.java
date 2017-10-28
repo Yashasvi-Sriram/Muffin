@@ -33,11 +33,11 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
     @Override
     public Optional<MovieOwner> get(String handle) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name FROM movie_owner WHERE handle = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name,joined_on FROM movie_owner WHERE handle = ?")) {
             preparedStmt.setString(1, handle);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
-                MovieOwner movieOwner = new MovieOwner(result.getInt(1), result.getString(2), result.getString(3));
+                MovieOwner movieOwner = new MovieOwner(result.getInt(1), result.getString(2), result.getString(3), result.getTimestamp(4).toLocalDateTime());
                 return Optional.of(movieOwner);
             }
             return Optional.empty();
