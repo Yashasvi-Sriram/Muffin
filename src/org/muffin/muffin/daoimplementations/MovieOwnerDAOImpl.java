@@ -1,7 +1,5 @@
 package org.muffin.muffin.daoimplementations;
 
-import jdk.nashorn.internal.runtime.OptimisticReturnFilters;
-import lombok.NonNull;
 import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daos.MovieOwnerDAO;
 import org.muffin.muffin.db.DBConfig;
