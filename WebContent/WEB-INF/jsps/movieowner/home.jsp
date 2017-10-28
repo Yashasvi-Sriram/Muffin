@@ -3,6 +3,9 @@
 <m:base>
     <jsp:attribute name="title">Movie Owner Home</jsp:attribute>
     <jsp:body>
-        ${requestScope.movies[0].id}
+        <div class="container">
+            Hello, ${requestScope.movieOwner.name}
+        </div>
+        <a href="/movieownermovieseditor">Movies</a>
     </jsp:body>
 </m:base>
