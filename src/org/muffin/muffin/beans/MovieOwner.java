@@ -2,6 +2,8 @@ package org.muffin.muffin.beans;
 
 import lombok.*;
 
+import java.time.LocalDateTime;
+
 @ToString
 @EqualsAndHashCode
 @Getter
@@ -12,4 +14,6 @@ public class MovieOwner {
     private String handle;
     @NonNull
     private String name;
+    @NonNull
+    private LocalDateTime joinedOn;
 }
