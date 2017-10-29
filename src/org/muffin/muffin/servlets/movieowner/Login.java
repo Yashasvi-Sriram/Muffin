@@ -36,7 +36,7 @@ public class Login extends HttpServlet {
             }
             HttpSession newSession = request.getSession(true);
             Optional<MovieOwner> movieOwnerOpt = movieOwnerDAO.get(handle);
-            movieOwnerOpt.ifPresent(movieOwner -> newSession.setAttribute(SessionKeys.MOVIE_OWNER_ID, movieOwner.getId()));
+            movieOwnerOpt.ifPresent(movieOwner -> newSession.setAttribute(SessionKeys.MOVIE_OWNER, movieOwner));
             response.sendRedirect("./movieownerhome");
         } else {
             request.setAttribute("message", "Invalid Credentials");
