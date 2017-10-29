@@ -1,11 +1,12 @@
-<%@page contentType="text/html" pageEncoding="UTF-8" session="false" %>
+<%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">Movie Owner Home</jsp:attribute>
+    <jsp:attribute name="title">${sessionScope.movie_owner.name}  | Home</jsp:attribute>
     <jsp:body>
         <div class="container">
-            Hello, ${requestScope.movieOwner.name}
+                ${pageContext.request.contextPath}
+            Hello, ${sessionScope.movie_owner.name}
         </div>
-        <a href="./movieownermovieseditor">Movies</a>
+        <a href="${pageContext.request.contextPath}/movieownermovieseditor">Movies</a>
     </jsp:body>
 </m:base>

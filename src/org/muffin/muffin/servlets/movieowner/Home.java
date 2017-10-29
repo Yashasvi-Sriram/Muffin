@@ -18,7 +18,6 @@ import java.util.Optional;
 public class Home extends EnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        request.setAttribute("movieOwner", session.getAttribute(SessionKeys.MOVIE_OWNER));
         request.getRequestDispatcher("WEB-INF/jsps/movieowner/home.jsp").include(request, response);
     }
 
