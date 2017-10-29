@@ -20,7 +20,7 @@ public class Login extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        request.setAttribute("action", "/movieownerlogin");
+        request.setAttribute("action", "./movieownerlogin");
         request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);
     }
 
@@ -37,10 +37,10 @@ public class Login extends HttpServlet {
             HttpSession newSession = request.getSession(true);
             Optional<MovieOwner> movieOwnerOpt = movieOwnerDAO.get(handle);
             movieOwnerOpt.ifPresent(movieOwner -> newSession.setAttribute(SessionKeys.MOVIE_OWNER_ID, movieOwner.getId()));
-            response.sendRedirect("/movieownerhome");
+            response.sendRedirect("./movieownerhome");
         } else {
             request.setAttribute("message", "Invalid Credentials");
-            request.setAttribute("action", "/movieownerlogin");
+            request.setAttribute("action", "./movieownerlogin");
             request.setAttribute("handle", handle);
             request.setAttribute("password", password);
             request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);

@@ -6,6 +6,6 @@
         <div class="container">
             Hello, ${requestScope.movieOwner.name}
         </div>
-        <a href="/movieownermovieseditor">Movies</a>
+        <a href="./movieownermovieseditor">Movies</a>
     </jsp:body>
 </m:base>
