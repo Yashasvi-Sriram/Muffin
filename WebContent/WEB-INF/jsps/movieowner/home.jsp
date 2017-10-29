@@ -1,11 +1,11 @@
+<%@page import="org.muffin.muffin.servlets.SessionKeys" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">${sessionScope.movie_owner.name}  | Home</jsp:attribute>
+    <jsp:attribute name="title">${sessionScope.get(SessionKeys.MOVIE_OWNER).name}  | Home</jsp:attribute>
     <jsp:body>
         <div class="container">
-                ${pageContext.request.contextPath}
-            Hello, ${sessionScope.movie_owner.name}
+            Hello, ${sessionScope.get(SessionKeys.MOVIE_OWNER).name}
         </div>
         <a href="${pageContext.request.contextPath}/movieownermovieseditor">Movies</a>
     </jsp:body>
