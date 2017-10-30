@@ -14,11 +14,11 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 
-@WebServlet("/movieownerhome")
+@WebServlet("/movieowner/home")
 public class Home extends EnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        request.getRequestDispatcher("WEB-INF/jsps/movieowner/home.jsp").include(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsps/movieowner/home.jsp").include(request, response);
     }
 
     @Override

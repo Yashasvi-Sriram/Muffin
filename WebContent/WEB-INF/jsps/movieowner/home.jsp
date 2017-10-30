@@ -7,6 +7,6 @@
         <div class="container">
             Hello, ${sessionScope.get(SessionKeys.MOVIE_OWNER).name}
         </div>
-        <a href="${pageContext.request.contextPath}/movieownermovieseditor">Movies</a>
+        <a href="${pageContext.request.contextPath}/movieowner/movieeditor">Movies</a>
     </jsp:body>
 </m:base>

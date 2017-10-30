@@ -1,4 +1,4 @@
-package org.muffin.muffin.servlets.movieowner;
+package org.muffin.muffin.servlets.movieowner.movieeditor;
 
 import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.servlets.EnsuredSessionServlet;
@@ -23,14 +23,14 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
 
-@WebServlet("/movieowneraddmovie")
+@WebServlet("/movieowner/addmovie")
 public class AddMovie extends EnsuredSessionServlet {
 	MovieDAO movieDAO = new MovieDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
 //        request.setAttribute("action", request.getContextPath() + "/movieownerlogin");
-//        request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);
+//        request.getRequestDispatcher("/WEB-INF/jsps/movieowner/login.jsp").include(request, response);
     }
 
     @Override
@@ -72,7 +72,7 @@ public class AddMovie extends EnsuredSessionServlet {
 //            request.setAttribute("action", request.getContextPath() + "/movieownerlogin");
 //            request.setAttribute("handle", handle);
 //            request.setAttribute("password", password);
-//            request.getRequestDispatcher("WEB-INF/jsps/movieowner/login.jsp").include(request, response);
+//            request.getRequestDispatcher("/WEB-INF/jsps/movieowner/login.jsp").include(request, response);
 //        }
         
         

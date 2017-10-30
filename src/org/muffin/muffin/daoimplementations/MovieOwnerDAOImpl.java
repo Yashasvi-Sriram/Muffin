@@ -20,14 +20,11 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
             preparedStmt.setString(2, password);
             ResultSet result = preparedStmt.executeQuery();
             result.next();
-            boolean ans = (result.getInt(1) > 0);
-            preparedStmt.close();
-            conn.close();
-            return ans;
+            return (result.getInt(1) > 0);
         } catch (Exception e) {
             e.printStackTrace();
+            return false;
         }
-        return true;
     }
 
     @Override
@@ -48,7 +45,7 @@ public class MovieOwnerDAOImpl implements MovieOwnerDAO {
     }
 
     @Override
-    public Optional<MovieOwner> get(int id){
+    public Optional<MovieOwner> get(int id) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,handle,name,joined_on FROM movie_owner WHERE id = ?")) {
             preparedStmt.setInt(1, id);
