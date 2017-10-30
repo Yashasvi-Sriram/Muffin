@@ -2,7 +2,7 @@ package org.muffin.muffin.servlets;
 
 import com.google.gson.Gson;
 import lombok.NonNull;
-import org.muffin.muffin.responsetypes.StringResponse;
+import org.muffin.muffin.responses.GenericResponse;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -17,7 +17,7 @@ public class EnsuredSessionServlet extends HttpServlet {
     private boolean ensureSession(HttpServletRequest request, HttpServletResponse response) throws IOException {
         if (request.getSession(false) == null) {
             PrintWriter out = response.getWriter();
-            out.print(new Gson().toJson(StringResponse.error("invalid session")));
+            out.print(new Gson().toJson(GenericResponse.error("invalid session")));
             out.close();
             return false;
         }
