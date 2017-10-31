@@ -5,10 +5,7 @@ import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.db.DBConfig;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +24,7 @@ public class MovieDAOImpl implements MovieDAO {
                 movieList.add(movie);
             }
             return movieList;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Collections.emptyList();
         }
@@ -44,7 +41,7 @@ public class MovieDAOImpl implements MovieDAO {
                 return Optional.of(movie);
             }
             return Optional.empty();
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
         }
@@ -59,37 +56,51 @@ public class MovieDAOImpl implements MovieDAO {
             preparedStmt.setInt(3, durationInMinutes);
             int result = preparedStmt.executeUpdate();
             return result == 1;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean updateName(int movieID, int ownerID, String name) {
+    public boolean updateName(int movieId, int ownerId, String name) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=? WHERE id = ? AND movie_owner_id = ?;")) {
             preparedStmt.setString(1, name);
-            preparedStmt.setInt(2, movieID);
-            preparedStmt.setInt(3, ownerID);
+            preparedStmt.setInt(2, movieId);
+            preparedStmt.setInt(3, ownerId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
-        } catch (Exception e) {
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
     @Override
-    public boolean updateDuration(int movieID, int ownerID, int duration) {
+    public boolean updateDuration(int movieId, int ownerId, int duration) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET duration = ? WHERE id = ? AND movie_owner_id = ?;")) {
             preparedStmt.setInt(1, duration);
-            preparedStmt.setInt(2, movieID);
-            preparedStmt.setInt(3, ownerID);
+            preparedStmt.setInt(2, movieId);
+            preparedStmt.setInt(3, ownerId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
-        } catch (Exception e) {
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public boolean delete(int movieId, int ownerId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM movie WHERE id = ? AND movie_owner_id = ?;")) {
+            preparedStmt.setInt(1, movieId);
+            preparedStmt.setInt(2, ownerId);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }

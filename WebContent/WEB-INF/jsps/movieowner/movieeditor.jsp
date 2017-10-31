@@ -25,7 +25,7 @@
             };
 
             /**
-             * @propFunctions:
+             * @propFunctions: onDeleteClick
              * */
             let MovieItem = React.createClass({
                 render: function () {
@@ -35,6 +35,9 @@
                                 <td>{this.props.durationInMinutes}</td>
                                 <td>
                                     <a href="#"
+                                       onClick={(e) => {
+                                           this.props.onDeleteClick(this.props.id)
+                                       }}
                                        className="btn-floating waves-effect waves-light red">
                                         <i className="material-icons">remove</i>
                                     </a>
@@ -106,6 +109,34 @@
                         }
                     });
                 },
+                deleteMovie: function (id) {
+                    let self = this;
+                    $.ajax({
+                        url: '${pageContext.request.contextPath}/movieowner/movieeditor/delete',
+                        type: 'GET',
+                        data: {id: id},
+                        success: function (r) {
+                            let json = JSON.parse(r);
+                            if (json.status === -1) {
+                                Materialize.toast(json.error, 2000);
+                            } else {
+                                self.setState((prevState, props) => {
+                                    let delIndex = -1;
+                                    prevState.movies.forEach((movie, i) => {
+                                        if (movie.id === id) {
+                                            delIndex = i;
+                                        }
+                                    });
+                                    prevState.movies.splice(delIndex, 1);
+                                    return {movies: prevState.movies};
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            Materialize.toast('Server Error', 2000);
+                        }
+                    });
+                },
                 render: function () {
                     return (
                             <table className="highlight centered striped">
@@ -146,7 +177,8 @@
                                         return <MovieItem key={m.id}
                                                           id={m.id}
                                                           name={m.name}
-                                                          durationInMinutes={m.durationInMinutes}/>;
+                                                          durationInMinutes={m.durationInMinutes}
+                                                          onDeleteClick={this.deleteMovie}/>;
                                     })
                                 }
                                 </tbody>
