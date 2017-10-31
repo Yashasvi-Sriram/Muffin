@@ -5,6 +5,7 @@ import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daoimplementations.MovieDAOImpl;
 import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.servlets.EnsuredSessionServlet;
+import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 import org.muffin.muffin.servlets.SessionKeys;
 
 import javax.servlet.ServletException;
@@ -15,8 +16,12 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.List;
 
+/**
+ * doGetWithSession:  renders movieowner's movieeditor page
+ * doPostWithSession: same as get
+ */
 @WebServlet("/movieowner/movieeditor")
-public class MovieEditor extends EnsuredSessionServlet {
+public class MovieEditor extends MovieOwnerEnsuredSessionServlet {
     MovieDAO movieDAO = new MovieDAOImpl();
 
     @Override

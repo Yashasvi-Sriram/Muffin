@@ -14,6 +14,10 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Optional;
 
+/**
+ * doGet: renders movieowner login page
+ * doPost: if auth success redirect to movieowner home, else print error in login page
+ */
 @WebServlet("/movieowner/login")
 public class Login extends HttpServlet {
     MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
@@ -39,7 +43,7 @@ public class Login extends HttpServlet {
             movieOwnerOpt.ifPresent(movieOwner -> newSession.setAttribute(SessionKeys.MOVIE_OWNER, movieOwner));
             response.sendRedirect(request.getContextPath() + "/movieowner/home");
         } else {
-            request.setAttribute("message", "Invalid Credentials");
+            request.setAttribute("message", "Error! Hint: Check Credentials");
             request.setAttribute("action", request.getContextPath() + "/movieowner/login");
             request.setAttribute("handle", handle);
             request.setAttribute("password", password);
