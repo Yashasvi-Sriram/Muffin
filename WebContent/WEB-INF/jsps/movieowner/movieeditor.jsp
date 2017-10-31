@@ -38,22 +38,22 @@
             const DUR_MAX = 500;
             let isMovieValid = function (name, durationInMinutes) {
                 if (name === '') {
-                    Materialize.toast('Movie name is empty!', 1000);
+                    Materialize.toast('Movie name is empty!', 3000);
                     return false;
                 }
                 if (name.length > 50) {
-                    Materialize.toast('Movie name must be less than 50 characters!', 1000);
+                    Materialize.toast('Movie name must be less than 50 characters!', 3000);
                     return false;
                 }
 
                 if (durationInMinutes === ''
                     || isNaN(Number(durationInMinutes))) {
-                    Materialize.toast('Invalid duration!', 1000);
+                    Materialize.toast('Invalid duration!', 3000);
                     return false;
                 }
                 durationInMinutes = Number(durationInMinutes);
                 if (durationInMinutes <= 0 || durationInMinutes > DUR_MAX) {
-                    Materialize.toast('Invalid duration!', 1000);
+                    Materialize.toast('Invalid duration!', 3000);
                     return false;
                 }
                 return true;
