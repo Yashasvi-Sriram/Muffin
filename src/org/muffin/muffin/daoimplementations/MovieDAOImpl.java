@@ -1,6 +1,7 @@
 package org.muffin.muffin.daoimplementations;
 
 import org.muffin.muffin.beans.Movie;
+import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.db.DBConfig;
 
@@ -11,6 +12,7 @@ import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 public class MovieDAOImpl implements MovieDAO {
     @Override
@@ -32,9 +34,26 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
+    public Optional<Movie> get(String name) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, movie_owner_id, name, duration FROM movie WHERE name = ?")) {
+            preparedStmt.setString(1, name);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4));
+                return Optional.of(movie);
+            }
+            return Optional.empty();
+        } catch (Exception e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public boolean create(String name, int durationInMinutes, int ownerId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT into movie(name,movie_owner_id,duration) VALUES (?,?,?);")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO movie(name,movie_owner_id,duration) VALUES (?,?,?);")) {
             preparedStmt.setString(1, name);
             preparedStmt.setInt(2, ownerId);
             preparedStmt.setInt(3, durationInMinutes);
@@ -49,7 +68,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean updateName(int movieID, int ownerID, String name) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=? where id = ? and movie_owner_id = ?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=? WHERE id = ? AND movie_owner_id = ?;")) {
             preparedStmt.setString(1, name);
             preparedStmt.setInt(2, movieID);
             preparedStmt.setInt(3, ownerID);
@@ -64,7 +83,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean updateDuration(int movieID, int ownerID, int duration) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET duration = ? where id = ? and movie_owner_id = ?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET duration = ? WHERE id = ? AND movie_owner_id = ?;")) {
             preparedStmt.setInt(1, duration);
             preparedStmt.setInt(2, movieID);
             preparedStmt.setInt(3, ownerID);

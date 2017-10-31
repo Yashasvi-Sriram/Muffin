@@ -1,5 +1,6 @@
 package org.muffin.muffin.servlets.movieowner.movieeditor;
 
+import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.responses.ResponseWrapper;
 import org.muffin.muffin.servlets.EnsuredSessionServlet;
@@ -25,6 +26,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.Optional;
 
+/**
+ * doGetWithSession:  tries to create a new movie with given params, if success returns created obj, else returns error
+ * doPostWithSession: same as GET
+ */
 @WebServlet("/movieowner/movieeditor/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
     MovieDAO movieDAO = new MovieDAOImpl();
@@ -37,7 +42,13 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
         if (movieDAO.create(name, durationInMinutes, movieOwner.getId())) {
-            out.println(gson.toJson(ResponseWrapper.get(0, ResponseWrapper.NUMBER_RESPONSE)));
+            Optional<Movie> movieOpt = movieDAO.get(name);
+            if (movieOpt.isPresent()) {
+                out.println(gson.toJson(ResponseWrapper.get(movieOpt.get(), ResponseWrapper.NUMBER_RESPONSE)));
+            } else {
+                System.out.println("Critical error!");
+                out.println(gson.toJson(ResponseWrapper.error("Error!")));
+            }
         } else {
             out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Movie name has to be different from all the existing ones")));
         }

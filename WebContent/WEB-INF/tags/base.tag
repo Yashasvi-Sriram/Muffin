@@ -1,5 +1,6 @@
 <%@tag description="Basic template with javascript headers" pageEncoding="UTF-8" %>
 <%@attribute name="title" fragment="true" %>
+<%@attribute name="css" fragment="true" %>
 <!doctype html>
 <html lang="en">
 <head>
@@ -19,6 +20,7 @@
     <title>
         <jsp:invoke fragment="title"/>
     </title>
+    <jsp:invoke fragment="css"/>
 </head>
 <body>
 <jsp:doBody/>
