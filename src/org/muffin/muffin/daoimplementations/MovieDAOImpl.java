@@ -63,27 +63,13 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
-    public boolean updateName(int movieId, int ownerId, String name) {
+    public boolean update(int movieId, int ownerId, String name, int duration) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=? WHERE id = ? AND movie_owner_id = ?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=?, duration=? WHERE id = ? AND movie_owner_id = ?;")) {
             preparedStmt.setString(1, name);
-            preparedStmt.setInt(2, movieId);
-            preparedStmt.setInt(3, ownerId);
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
-    public boolean updateDuration(int movieId, int ownerId, int duration) {
-        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET duration = ? WHERE id = ? AND movie_owner_id = ?;")) {
-            preparedStmt.setInt(1, duration);
-            preparedStmt.setInt(2, movieId);
-            preparedStmt.setInt(3, ownerId);
+            preparedStmt.setInt(2, duration);
+            preparedStmt.setInt(3, movieId);
+            preparedStmt.setInt(4, ownerId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
         } catch (SQLException e) {

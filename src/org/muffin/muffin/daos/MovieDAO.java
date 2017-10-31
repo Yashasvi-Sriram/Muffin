@@ -13,9 +13,7 @@ public interface MovieDAO {
 
     public boolean create(@NonNull final String name, final int durationInMinutes, final int ownerId);
 
-    public boolean updateName(final int movieId, final int ownerId, @NonNull final String name);
-
-    public boolean updateDuration(final int movieId, final int ownerId, final int duration);
+    public boolean update(final int movieId, final int ownerId, @NonNull final String name, final int duration);
 
     public boolean delete(final int movieId, int ownerId);
 }

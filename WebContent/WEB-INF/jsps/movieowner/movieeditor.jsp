@@ -5,9 +5,21 @@
     <jsp:attribute name="title">Movie Editor</jsp:attribute>
     <jsp:attribute name="css">
         <style>
-            .create-movie-form input.validate {
-                margin: 0;
-                color: black;
+            input {
+                border: none!important;
+                box-shadow: none!important;
+                outline: none!important;
+                color: black!important;
+                font-size: x-large!important;
+                margin-left: 5%!important;
+                width: 80%!important;
+                margin-right: 5%!important;
+                margin-bottom: 0!important;
+            }
+            input:focus {
+                border: none!important;
+                box-shadow: none!important;
+                outline: 1px solid black!important;
             }
         </style>
     </jsp:attribute>
@@ -23,14 +35,47 @@
                 }
                 return label;
             };
+            const DUR_MAX = 500;
+            let isMovieValid = function (name, durationInMinutes) {
+                if (name === '') {
+                    Materialize.toast('Movie name is empty!', 1000);
+                    return false;
+                }
+                if (name.length > 50) {
+                    Materialize.toast('Movie name must be less than 50 characters!', 1000);
+                    return false;
+                }
+
+                if (durationInMinutes === ''
+                    || isNaN(Number(durationInMinutes))) {
+                    Materialize.toast('Invalid duration!', 1000);
+                    return false;
+                }
+                durationInMinutes = Number(durationInMinutes);
+                if (durationInMinutes <= 0 || durationInMinutes > DUR_MAX) {
+                    Materialize.toast('Invalid duration!', 1000);
+                    return false;
+                }
+                return true;
+            };
 
             /**
-             * @propFunctions: onDeleteClick
+             * @propFunctions: onDeleteClick, onEditClick
              * */
             let MovieItem = React.createClass({
-                render: function () {
+                getInitialState: function () {
+                    return {
+                        inReadMode: true,
+                    }
+                },
+                readModeRender: function () {
                     return (
-                            <tr title={this.props.name}>
+                            <tr title={this.props.name}
+                                onDoubleClick={() => {
+                                    this.setState(() => {
+                                        return {inReadMode: false}
+                                    })
+                                }}>
                                 <td className="flow-text">{truncate(this.props.name, 20)}</td>
                                 <td>{this.props.durationInMinutes}</td>
                                 <td>
@@ -42,17 +87,74 @@
                                         <i className="material-icons">remove</i>
                                     </a>
                                 </td>
+                                <td>
+                                    <a href="#"
+                                       onClick={(e) => {
+                                           this.setState(() => {
+                                               return {inReadMode: false}
+                                           })
+                                       }}
+                                       className="btn-floating waves-effect waves-light yellow darken-4">
+                                        <i className="material-icons">edit</i>
+                                    </a>
+                                </td>
                             </tr>
                     );
+                },
+                writeModeRender: function () {
+                    return (
+                            <tr title={this.props.name}
+                                onDoubleClick={() =>
+                                    this.setState(() => {
+                                        return {inReadMode: true}
+                                    })
+                                }>
+                                <td className="flow-text">
+                                    <input type="text"
+                                           ref="name"
+                                           name="name"
+                                           placeholder="Name"
+                                           defaultValue={this.props.name}/>
+                                </td>
+                                <td>
+                                    <input type="number"
+                                           ref="durationInMinutes"
+                                           name="durationInMinutes"
+                                           placeholder="Duration (In Minutes)"
+                                           defaultValue={this.props.durationInMinutes}/>
+                                </td>
+                                <td>
+                                    <a href="#"
+                                       onClick={(e) => {
+                                           this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
+                                           this.setState(() => {
+                                               return {inReadMode: true}
+                                           });
+                                       }}
+                                       className="btn-floating waves-effect waves-light yellow darken-4">
+                                        <i className="material-icons">send</i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <a href="#"
+                                       onClick={(e) => {
+                                           this.setState(() => {
+                                               return {inReadMode: true}
+                                           })
+                                       }}
+                                       className="btn-floating waves-effect waves-light black">
+                                        <i className="material-icons">cancel</i>
+                                    </a>
+                                </td>
+                            </tr>
+                    );
+                },
+                render: function () {
+                    return this.state.inReadMode ? this.readModeRender() : this.writeModeRender();
                 }
             });
 
             let MovieEditor = React.createClass({
-                getDefaultProps: function () {
-                    return {
-                        DUR_MAX: 500,
-                    }
-                },
                 getInitialState: function () {
                     return {
                         movies: [
@@ -70,19 +172,7 @@
                 createMovie: function () {
                     let self = this;
                     // validation
-                    if (this.refs.name.value === '') {
-                        Materialize.toast('Movie name is empty!', 1000);
-                        return;
-                    }
-                    let duration = this.refs.durationInMinutes.value;
-                    if (duration === ''
-                        || isNaN(Number(duration))) {
-                        Materialize.toast('Invalid duration!', 1000);
-                        return;
-                    }
-                    duration = Number(duration);
-                    if (duration <= 0 || duration > this.props.DUR_MAX) {
-                        Materialize.toast('Invalid duration!', 1000);
+                    if (!isMovieValid(this.refs.name.value, this.refs.durationInMinutes.value)) {
                         return;
                     }
                     // ajax call
@@ -95,13 +185,50 @@
                             let json = JSON.parse(r);
                             if (json.status === -1) {
                                 Materialize.toast(json.error, 2000);
-                            } else {
+                            }
+                            else {
                                 let data = json.data;
                                 self.setState((prevState, props) => {
                                     prevState.movies.push(data);
-                                    return {movies: prevState.movies};
+                                    return prevState;
                                 });
                                 $(self.refs.createMovieForm).find('input').val('');
+                            }
+                        },
+                        error: function (data) {
+                            Materialize.toast('Server Error', 2000);
+                        }
+                    });
+                },
+                editMovie: function (id, name, durationInMinutes) {
+                    let self = this;
+                    // validation
+                    if (!isMovieValid(name, durationInMinutes)) {
+                        return;
+                    }
+                    // ajax call
+                    $.ajax({
+                        url: '${pageContext.request.contextPath}/movieowner/movieeditor/update',
+                        type: 'GET',
+                        data: {id: id, name: name, durationInMinutes: durationInMinutes},
+                        success: function (r) {
+                            let json = JSON.parse(r);
+                            if (json.status === -1) {
+                                Materialize.toast(json.error, 2000);
+                            }
+                            else {
+                                let data = json.data;
+                                self.setState((prevState, props) => {
+                                    let updateIndex = -1;
+                                    prevState.movies.forEach((movie, i) => {
+                                        if (movie.id === id) {
+                                            updateIndex = i;
+                                        }
+                                    });
+                                    prevState.movies.splice(updateIndex, 1, data);
+                                    return prevState;
+                                });
+                                self.forceUpdate();
                             }
                         },
                         error: function (data) {
@@ -119,7 +246,8 @@
                             let json = JSON.parse(r);
                             if (json.status === -1) {
                                 Materialize.toast(json.error, 2000);
-                            } else {
+                            }
+                            else {
                                 self.setState((prevState, props) => {
                                     let delIndex = -1;
                                     prevState.movies.forEach((movie, i) => {
@@ -128,7 +256,7 @@
                                         }
                                     });
                                     prevState.movies.splice(delIndex, 1);
-                                    return {movies: prevState.movies};
+                                    return prevState;
                                 });
                             }
                         },
@@ -149,21 +277,21 @@
                                 <tbody>
                                 <tr className="create-movie-form"
                                     ref="createMovieForm">
-                                    <td className="flow-text">
-                                        <input className="validate"
-                                               type="text"
+                                    <td>
+                                        <input type="text"
                                                ref="name"
                                                name="name"
                                                placeholder="Name"
                                                defaultValue=""/>
                                     </td>
                                     <td>
-                                        <input className="validate"
-                                               type="number"
+                                        <input type="number"
                                                ref="durationInMinutes"
                                                name="durationInMinutes"
-                                               placeholder="Duration (in Minutes)"
+                                               placeholder="Duration (In Minutes)"
                                                defaultValue=""/>
+                                    </td>
+                                    <td>
                                     </td>
                                     <td>
                                         <button onClick={this.createMovie}
@@ -178,7 +306,8 @@
                                                           id={m.id}
                                                           name={m.name}
                                                           durationInMinutes={m.durationInMinutes}
-                                                          onDeleteClick={this.deleteMovie}/>;
+                                                          onDeleteClick={this.deleteMovie}
+                                                          onEditClick={this.editMovie}/>;
                                     })
                                 }
                                 </tbody>
