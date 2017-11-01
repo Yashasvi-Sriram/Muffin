@@ -2,8 +2,9 @@ package org.muffin.muffin.daos;
 
 import org.muffin.muffin.beans.Actor;
 
+import java.util.List;
 import java.util.Optional;
 
 public interface ActorDAO {
-    public Optional<Actor> search(final String searchkey);
+    public Optional<List<Actor>> search(final String searchkey);
 }
