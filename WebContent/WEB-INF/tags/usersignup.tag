@@ -3,6 +3,7 @@
 <%@attribute name="bgColor" fragment="true" %>
 <%@attribute name="message" fragment="true" %>
 <%@attribute name="action" fragment="true" required="true" %>
+<%@attribute name="nameValue" fragment="true" %>
 <%@attribute name="handleValue" fragment="true" %>
 <%@attribute name="passwordValue" fragment="true" %>
 <div class="container <jsp:invoke fragment="bgColor"/>">
@@ -15,6 +16,13 @@
             <div class="card-content">
                 <p class="flow-text">Login</p>
                 <form action="<jsp:invoke fragment="action"/>" method="post">
+                    <div class="input-field">
+                        <i class="material-icons prefix">face</i>
+                        <input id="icon_prefix2" name="name"
+                               value="<jsp:invoke fragment="nameValue"/>"
+                               type="text" maxlength="50">
+                        <label for="icon_prefix2">Name</label>
+                    </div>
                     <div class="input-field">
                         <i class="material-icons prefix">account_circle</i>
                         <input id="icon_prefix" name="handle"

@@ -1,17 +1,17 @@
-INSERT INTO movie_owner (handle, name, joined_on) VALUES ('marvel', 'marvel', CURRENT_TIMESTAMP);
-INSERT INTO movie_owner (handle, name, joined_on) VALUES ('dc', 'dc', CURRENT_TIMESTAMP);
-INSERT INTO movie_owner (handle, name, joined_on) VALUES ('universal', 'universal', CURRENT_TIMESTAMP);
-INSERT INTO movie_owner (handle, name, joined_on) VALUES ('annapurna', 'annapurna', CURRENT_TIMESTAMP);
+INSERT INTO movie_owner (handle, name) VALUES ('marvel', 'marvel');
+INSERT INTO movie_owner (handle, name) VALUES ('dc', 'dc');
+INSERT INTO movie_owner (handle, name) VALUES ('universal', 'universal');
+INSERT INTO movie_owner (handle, name) VALUES ('annapurna', 'annapurna');
 
 INSERT INTO movie_owner_password (id, password) VALUES (1, '.');
 INSERT INTO movie_owner_password (id, password) VALUES (2, '.');
 INSERT INTO movie_owner_password (id, password) VALUES (3, '.');
 INSERT INTO movie_owner_password (id, password) VALUES (4, '.');
 
-INSERT INTO muff (handle, name, level, joined_on) VALUES ('madsc', 'yashasvi', 1, CURRENT_TIMESTAMP);
-INSERT INTO muff (handle, name, level, joined_on) VALUES ('theone', 'sam', 1, CURRENT_TIMESTAMP);
-INSERT INTO muff (handle, name, level, joined_on) VALUES ('hucklecliff', 'robin', 1, CURRENT_TIMESTAMP);
-INSERT INTO muff (handle, name, level, joined_on) VALUES ('@Iamben', 'ben', 1, CURRENT_TIMESTAMP);
+INSERT INTO muff (handle, name) VALUES ('madsc', 'yashasvi');
+INSERT INTO muff (handle, name) VALUES ('theone', 'sam');
+INSERT INTO muff (handle, name) VALUES ('hucklecliff', 'robin');
+INSERT INTO muff (handle, name) VALUES ('@Iamben', 'ben');
 
 INSERT INTO muff_password (id, password) VALUES (1, '.');
 INSERT INTO muff_password (id, password) VALUES (2, '.');

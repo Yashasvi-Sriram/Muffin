@@ -56,8 +56,8 @@ CREATE TABLE muff (
   id        SERIAL,
   handle    VARCHAR(50) NOT NULL,
   name      VARCHAR(50) NOT NULL,
-  level     INT         NOT NULL,
-  joined_on TIMESTAMP   NOT NULL,
+  level     INT         NOT NULL DEFAULT 0,
+  joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -90,7 +90,7 @@ CREATE TABLE movie_owner (
   id        SERIAL,
   handle    VARCHAR(50) NOT NULL,
   name      VARCHAR(50) NOT NULL,
-  joined_on TIMESTAMP   NOT NULL,
+  joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -148,7 +148,7 @@ CREATE TABLE cinema_building_owner (
   id        SERIAL,
   handle    VARCHAR(50) NOT NULL,
   name      VARCHAR(50) NOT NULL,
-  joined_on TIMESTAMP   NOT NULL,
+  joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (handle),
   PRIMARY KEY (id)
 );

@@ -1,8 +1,6 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.beans.Muff;
-import org.muffin.muffin.daos.MovieOwnerDAO;
 import org.muffin.muffin.daos.MuffDAO;
 import org.muffin.muffin.db.DBConfig;
 
@@ -10,6 +8,38 @@ import java.sql.*;
 import java.util.Optional;
 
 public class MuffDAOImpl implements MuffDAO {
+
+    @Override
+    public boolean create(String handle, String name, String password) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?);");
+             PreparedStatement getMuffId = conn.prepareStatement("SELECT id FROM muff WHERE handle = ?;");
+             PreparedStatement createMuffPassword = conn.prepareStatement("INSERT INTO muff_password(id, password) VALUES (?, ?);");) {
+            // createMuff
+            createMuff.setString(1, handle);
+            createMuff.setString(2, name);
+            int result = createMuff.executeUpdate();
+            if (result != 1) {
+                return false;
+            }
+            // getCreatedMuff
+            getMuffId.setString(1, handle);
+            ResultSet rs = getMuffId.executeQuery();
+            if (rs.next()) {
+                int id = rs.getInt(1);
+                createMuffPassword.setInt(1, id);
+                createMuffPassword.setString(2, password);
+                result = createMuffPassword.executeUpdate();
+                return result == 1;
+            } else {
+                return false;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
     @Override
     public boolean exists(String handle, String password) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
