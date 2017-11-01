@@ -1,10 +1,13 @@
 package org.muffin.muffin.daoimplementations;
 
+import org.muffin.muffin.beans.Actor;
 import org.muffin.muffin.beans.Muff;
 import org.muffin.muffin.daos.MuffDAO;
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 public class MuffDAOImpl implements MuffDAO {
@@ -95,5 +98,28 @@ public class MuffDAOImpl implements MuffDAO {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public List<Muff> search(String searchKey) {
+        List<Muff> muffs = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE name ILIKE ? OR handle ILIKE ?")) {
+            preparedStmt.setString(1, "%" + searchKey + "%");
+            preparedStmt.setString(2, "%" + searchKey + "%");
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                Muff muff = new Muff(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getInt(4),
+                        resultSet.getTimestamp(5).toLocalDateTime());
+                muffs.add(muff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return muffs;
     }
 }
