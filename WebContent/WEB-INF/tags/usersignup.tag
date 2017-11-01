@@ -14,7 +14,7 @@
         <div class="col l4 m4 s4"></div>
         <div class="col l4 m4 s4 card">
             <div class="card-content">
-                <p class="flow-text">Login</p>
+                <p class="flow-text">Signup</p>
                 <form action="<jsp:invoke fragment="action"/>" method="post">
                     <div class="input-field">
                         <i class="material-icons prefix">face</i>
