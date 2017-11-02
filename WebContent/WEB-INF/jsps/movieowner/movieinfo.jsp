@@ -62,51 +62,17 @@
             /**
              * @propFunctions: onDeleteClick, onEditClick
              * */
-            let MovieItem = React.createClass({
+            let CharacterItem = React.createClass({
                 getInitialState: function () {
                     return {
                         inReadMode: true,
                     }
                 },
                 readModeRender: function () {
-
-					var url = "${pageContext.request.contextPath}/movieowner/movieinfo?movieId=" + this.props.id;
-				
                     return (
-                            <tr title={this.props.name}
-                                onDoubleClick={() => {
-                                    this.setState(() => {
-                                        return {inReadMode: false}
-                                    })
-                                }}>
-                                <td className="flow-text">{truncate(this.props.name, 20)}</td>
-                                <td>{this.props.durationInMinutes}</td>
-								<td>
-                                    <form action="${pageContext.request.contextPath}/movieowner/movieinfo" method="post">
-  									<button type="submit" name="movieId" value={this.props.id} className="btn-floating waves-effect waves-light blue">
-									<i className="material-icons">info</i></button>
-									</form>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.props.onDeleteClick(this.props.id)
-                                       }}
-                                       className="btn-floating waves-effect waves-light red">
-                                        <i className="material-icons">remove</i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.setState(() => {
-                                               return {inReadMode: false}
-                                           })
-                                       }}
-                                       className="btn-floating waves-effect waves-light yellow darken-4">
-                                        <i className="material-icons">edit</i>
-                                    </a>
-                                </td>
+                            <tr title={this.props.name}>
+                                <td className="flow-text">{truncate(this.props.name, 25)}</td>
+                                <td className="flow-text">{truncate(this.props.actorName, 25)}</td>
                             </tr>
                     );
                 },
@@ -159,20 +125,21 @@
                     );
                 },
                 render: function () {
-                    return this.state.inReadMode ? this.readModeRender() : this.writeModeRender();
+                    return  this.readModeRender();
                 }
             });
 
-            let MovieEditor = React.createClass({
+            let CharacterEditor = React.createClass({
                 getInitialState: function () {
                     return {
-                        movies: [
-                            <jstl:forEach items="${requestScope.movieList}" var="movie">
+                        characters: [
+                            <jstl:forEach items="${requestScope.characterList}" var="character">
                             {
-                                id: ${movie.id},
-                                name: '${movie.name}',
-                                movieOwnerId: '${movie.movieOwnerId}',
-                                durationInMinutes: ${movie.durationInMinutes},
+                                id: ${character.id},
+                                name: '${character.name}',
+                                movieId: '${character.movieId}',
+                                actorId: '${character.actorId}',
+								actorName: '${character.actorName}',
                             },
                             </jstl:forEach>
                         ],
@@ -277,16 +244,14 @@
 
 				infoMovie: function (id) {
                     let self = this;
-					
+					console.log('${pageContext.request.contextPath}/movieowner/movieinfo');
                     $.ajax({
                         url: '${pageContext.request.contextPath}/movieowner/movieinfo',
                         type: 'POST',
                         data: {id: id},
 						success: function (r) {
                            		console.log(r);
-                            }
-                        ,
-						
+                            },
                         error: function (data) {
                             Materialize.toast('Server Error', 2000);
                         }
@@ -298,46 +263,17 @@
                                 <thead>
                                 <tr>
                                     <th>Name</th>
-                                    <th>Duration (In minutes)</th>
+                                    <th>Actor Name</th>
                                 </tr>
                                 </thead>
                                 <tbody>
-                                <tr className="create-movie-form"
-                                    ref="createMovieForm">
-                                    <td>
-                                        <input type="text"
-                                               ref="name"
-                                               name="name"
-                                               placeholder="Name"
-                                               defaultValue=""/>
-                                    </td>
-                                    <td>
-                                        <input type="number"
-                                               ref="durationInMinutes"
-                                               name="durationInMinutes"
-                                               placeholder="Duration (In Minutes)"
-                                               defaultValue=""/>
-                                    </td>
-                                    <td>
-									</td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <button onClick={this.createMovie}
-                                                className="btn-floating waves-effect waves-light green">
-                                            <i className="material-icons">add</i>
-                                        </button>
-                                    </td>
-                                </tr>
                                 {
-                                    this.state.movies.map(m => {
-                                        return <MovieItem key={m.id}
+                                    this.state.characters.map(m => {
+                                        return <CharacterItem key={m.id}
                                                           id={m.id}
                                                           name={m.name}
-                                                          durationInMinutes={m.durationInMinutes}
-                                                          onDeleteClick={this.deleteMovie}
-                                                          onEditClick={this.editMovie}
-														  onInfoClick={this.infoMovie}/>;
+                                                          actorName={m.actorName}
+                                                          />;
                                     })
                                 }
                                 </tbody>
@@ -346,7 +282,7 @@
                 }
             });
 
-            ReactDOM.render(<MovieEditor/>, document.getElementById('app'));
+            ReactDOM.render(<CharacterEditor/>, document.getElementById('app'));
         </script>
         <div id="app" class="container"></div>
     </jsp:body>
