@@ -22,6 +22,7 @@
                 box-shadow: none !important;
                 outline: 1px solid black !important;
             }
+
         </style>
     </jsp:attribute>
     <jsp:body>
@@ -187,6 +188,7 @@
                 },
                 updateActor: function (text) {
                     this.refs.actorName.value = text;
+                    $(this.refs.actors).hide();
                 },
                 onRegexInputKeyDown: function (e) {
                     let self = this;
@@ -235,7 +237,32 @@
                     });
                     return (
                             <div>
-                                <a href="${pageContext.request.contextPath}/movieowner/movieeditor">Go to Movies</a>
+                                <table className="bordered highlight">
+                                    <thead>
+                                    <tr className="create-character-form"
+                                        ref="createCharacterForm">
+                                        <td>
+                                            <input type="text" ref="actorName"
+                                                   name="actorName" placeholder="Actor Name"
+                                                   defaultValue="" onKeyDown={this.onRegexInputKeyDown}/>
+                                        </td>
+                                        <td>
+                                            <input type="text"
+                                                   ref="characterName"
+                                                   name="characterName"
+                                                   placeholder="Character Name"
+                                                   defaultValue=""/>
+                                        </td>
+                                        <td>
+                                            <button onClick={this.createCharacter}
+                                                    className="btn-floating waves-effect waves-light green">
+                                                <i className="material-icons">add</i>
+                                            </button>
+                                        </td>
+                                    </tr>
+                                    </thead>
+                                    <tbody ref="actors">{actors}</tbody>
+                                </table>
                                 <table className="highlight centered striped">
                                     <thead>
                                     <tr>
@@ -251,48 +278,21 @@
                                                                   name={m.name}
                                                                   actorName={m.actorName}
                                                                   onDeleteClick={this.deleteCharacter}
-
                                             />;
                                         })
                                     }
-                                    <tr className="create-character-form"
-                                        ref="createCharacterForm">
-                                        <td>
-                                            <input type="text" ref="actorName" name="actorName" placeholder="Actor Name"
-                                                   defaultValue="" onKeyDown={this.onRegexInputKeyDown}/>
-                                        </td>
-                                        <td>
-                                            <input type="text"
-                                                   ref="characterName"
-                                                   name="characterName"
-                                                   placeholder="Character Name"
-                                                   defaultValue=""/>
-                                        </td>
-                                        <td>
-                                        </td>
-                                        <td>
-                                            <button onClick={this.createCharacter}
-                                                    className="btn-floating waves-effect waves-light green">
-                                                <i className="material-icons">add</i>
-                                            </button>
-                                        </td>
-                                    </tr>
-                                    </tbody>
-                                </table>
-                                <table ref="actors" className="striped highlight">
-                                    <tbody>
-                                    {actors.length === 0 ? <tr>
-                                        <td className="red white-text">No matching actors</td>
-                                    </tr> : actors}
                                     </tbody>
                                 </table>
                             </div>
                     );
-                }
+                },
             });
 
             ReactDOM.render(<CharacterEditor/>, document.getElementById('app'));
         </script>
-        <div id="app" class="container"></div>
+        <div class="container">
+            <div id="app"></div>
+            <a href="${pageContext.request.contextPath}/movieowner/movieeditor">Go to Movies</a>
+        </div>
     </jsp:body>
 </m:base>
