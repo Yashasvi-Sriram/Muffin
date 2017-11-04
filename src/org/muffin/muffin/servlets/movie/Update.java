@@ -1,4 +1,4 @@
-package org.muffin.muffin.servlets.movieowner.movieeditor;
+package org.muffin.muffin.servlets.movie;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -23,7 +23,7 @@ import java.util.Optional;
  * doGetWithSession:  tries to update a new movie with given id, if success returns updated object, else returns error
  * doPostWithSession: same as GET
  */
-@WebServlet("/movieowner/movieeditor/update")
+@WebServlet("/movie/update")
 public class Update extends MovieOwnerEnsuredSessionServlet {
     MovieDAO movieDAO = new MovieDAOImpl();
 

@@ -6,20 +6,21 @@
     <jsp:attribute name="css">
         <style>
             input {
-                border: none!important;
-                box-shadow: none!important;
-                outline: none!important;
-                color: black!important;
-                font-size: x-large!important;
-                margin-left: 5%!important;
-                width: 80%!important;
-                margin-right: 5%!important;
-                margin-bottom: 0!important;
+                border: none !important;
+                box-shadow: none !important;
+                outline: none !important;
+                color: black !important;
+                font-size: x-large !important;
+                margin-left: 5% !important;
+                width: 80% !important;
+                margin-right: 5% !important;
+                margin-bottom: 0 !important;
             }
+
             input:focus {
-                border: none!important;
-                box-shadow: none!important;
-                outline: 1px solid black!important;
+                border: none !important;
+                box-shadow: none !important;
+                outline: 1px solid black !important;
             }
         </style>
     </jsp:attribute>
@@ -69,23 +70,18 @@
                     }
                 },
                 readModeRender: function () {
-
-					var url = "${pageContext.request.contextPath}/movieowner/movieinfo?movieId=" + this.props.id;
-				
+                    let url = "${pageContext.request.contextPath}/movieowner/moviedetail?movieId=" + this.props.id;
                     return (
                             <tr title={this.props.name}
-                                onDoubleClick={() => {
-                                    this.setState(() => {
-                                        return {inReadMode: false}
-                                    })
-                                }}>
+                                onDoubleClick={() => this.setState(() => {
+                                    return {inReadMode: false}
+                                })}>
                                 <td className="flow-text">{truncate(this.props.name, 20)}</td>
                                 <td>{this.props.durationInMinutes}</td>
-								<td>
-                                    <form action="${pageContext.request.contextPath}/movieowner/movieinfo" method="post">
-  									<button type="submit" name="movieId" value={this.props.id} className="btn-floating waves-effect waves-light blue">
-									<i className="material-icons">info</i></button>
-									</form>
+                                <td>
+                                    <a href={url} type="submit" name="movieId" value={this.props.id}
+                                       className="btn-floating waves-effect waves-light blue">
+                                        <i className="material-icons">info</i></a>
                                 </td>
                                 <td>
                                     <a href="#"
@@ -131,6 +127,8 @@
                                            name="durationInMinutes"
                                            placeholder="Duration (In Minutes)"
                                            defaultValue={this.props.durationInMinutes}/>
+                                </td>
+                                <td>
                                 </td>
                                 <td>
                                     <a href="#"
@@ -187,7 +185,7 @@
                     // ajax call
                     let newMovieSerialized = $(this.refs.createMovieForm).find('input').serialize();
                     $.ajax({
-                        url: '${pageContext.request.contextPath}/movieowner/movieeditor/create',
+                        url: '${pageContext.request.contextPath}/movie/create',
                         type: 'GET',
                         data: newMovieSerialized,
                         success: function (r) {
@@ -217,7 +215,7 @@
                     }
                     // ajax call
                     $.ajax({
-                        url: '${pageContext.request.contextPath}/movieowner/movieeditor/update',
+                        url: '${pageContext.request.contextPath}/movie/update',
                         type: 'GET',
                         data: {id: id, name: name, durationInMinutes: durationInMinutes},
                         success: function (r) {
@@ -248,7 +246,7 @@
                 deleteMovie: function (id) {
                     let self = this;
                     $.ajax({
-                        url: '${pageContext.request.contextPath}/movieowner/movieeditor/delete',
+                        url: '${pageContext.request.contextPath}/movie/delete',
                         type: 'GET',
                         data: {id: id},
                         success: function (r) {
@@ -269,24 +267,6 @@
                                 });
                             }
                         },
-                        error: function (data) {
-                            Materialize.toast('Server Error', 2000);
-                        }
-                    });
-                },
-
-				infoMovie: function (id) {
-                    let self = this;
-					
-                    $.ajax({
-                        url: '${pageContext.request.contextPath}/movieowner/movieinfo',
-                        type: 'POST',
-                        data: {id: id},
-						success: function (r) {
-                           		console.log(r);
-                            }
-                        ,
-						
                         error: function (data) {
                             Materialize.toast('Server Error', 2000);
                         }
@@ -319,7 +299,7 @@
                                                defaultValue=""/>
                                     </td>
                                     <td>
-									</td>
+                                    </td>
                                     <td>
                                     </td>
                                     <td>
@@ -336,8 +316,7 @@
                                                           name={m.name}
                                                           durationInMinutes={m.durationInMinutes}
                                                           onDeleteClick={this.deleteMovie}
-                                                          onEditClick={this.editMovie}
-														  onInfoClick={this.infoMovie}/>;
+                                                          onEditClick={this.editMovie}/>;
                                     })
                                 }
                                 </tbody>

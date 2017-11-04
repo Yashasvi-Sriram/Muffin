@@ -1,4 +1,4 @@
-package org.muffin.muffin.servlets.movieowner.movieeditor;
+package org.muffin.muffin.servlets.movieowner;
 
 import java.io.IOException;
 
@@ -19,26 +19,26 @@ import org.muffin.muffin.daos.CharacterDAO;
 
 import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 
-
 /**
- * Servlet implementation class MovieInfo
+ * doGetWithSession:  renders movie detail page in movieowner's perspective
+ * doPostWithSession: same as get
  */
-@WebServlet("/movieowner/movieinfo")
-public class MovieInfo extends MovieOwnerEnsuredSessionServlet {
+@WebServlet("/movieowner/moviedetail")
+public class MovieDetail extends MovieOwnerEnsuredSessionServlet {
     CharacterDAO characterDAO = new CharacterDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-    		doPostWithSession(request,response,session);
+        int movieId = Integer.parseInt(request.getParameter("movieId"));
+        List<Character> characterList = characterDAO.getByMovie(movieId);
+
+        request.setAttribute("characterList", characterList);
+        request.setAttribute("movieId", movieId);
+        request.getRequestDispatcher("/WEB-INF/jsps/movieowner/moviedetail.jsp").include(request, response);
     }
 
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-    	int movieId = Integer.parseInt(request.getParameter("movieId"));
-    	List<Character> characterList = characterDAO.getByMovie(movieId);
-    	
-        request.setAttribute("characterList", characterList);
-        request.setAttribute("movieId", movieId);
-        request.getRequestDispatcher("/WEB-INF/jsps/movieowner/movieinfo.jsp").include(request, response);
+        doGetWithSession(request, response, session);
     }
 }

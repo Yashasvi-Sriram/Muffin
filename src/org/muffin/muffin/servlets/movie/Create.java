@@ -1,24 +1,19 @@
-package org.muffin.muffin.servlets.movieowner.movieeditor;
+package org.muffin.muffin.servlets.movie;
 
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.responses.ResponseWrapper;
-import org.muffin.muffin.servlets.EnsuredSessionServlet;
 import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 import org.muffin.muffin.servlets.SessionKeys;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
 
 import org.muffin.muffin.daoimplementations.MovieDAOImpl;
-import org.muffin.muffin.daoimplementations.MovieOwnerDAOImpl;
 import org.muffin.muffin.daos.MovieDAO;
-import org.muffin.muffin.daos.MovieOwnerDAO;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
@@ -30,7 +25,7 @@ import java.util.Optional;
  * doGetWithSession:  tries to create a new movie with given params, if success returns created obj, else returns error
  * doPostWithSession: same as GET
  */
-@WebServlet("/movieowner/movieeditor/create")
+@WebServlet("/movie/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
     MovieDAO movieDAO = new MovieDAOImpl();
 
