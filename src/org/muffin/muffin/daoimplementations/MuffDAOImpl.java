@@ -122,4 +122,41 @@ public class MuffDAOImpl implements MuffDAO {
         }
         return muffs;
     }
+
+    @Override
+    public List<Muff> userfollows(int id) {
+        List<Muff> muffs = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE name follows.id1 = ?  and follows.id2 = muff.id")) {
+            preparedStmt.setInt(1,id);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                Muff muff = new Muff(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getInt(4),
+                        resultSet.getTimestamp(5).toLocalDateTime());
+                muffs.add(muff);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return muffs;
+    }
+
+    @Override
+    public boolean follow(int uid1, int uid2) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("insert into follows(id1,id2) values (?,?)")) {
+            preparedStmt.setInt(1, uid1);
+            preparedStmt.setInt(2, uid2);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
