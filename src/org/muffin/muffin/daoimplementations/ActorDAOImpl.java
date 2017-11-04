@@ -30,35 +30,35 @@ public class ActorDAOImpl implements ActorDAO {
         return actorList;
     }
 
-	@Override
-	public boolean create(String name) {
-		try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-	             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO actor(name) VALUES (?);")) {
-	            preparedStmt.setString(1, name);
-	          
-	            int result = preparedStmt.executeUpdate();
-	            return result == 1;
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return false;
-	        }
-	}
+    @Override
+    public boolean create(String name) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO actor(name) VALUES (?);")) {
+            preparedStmt.setString(1, name);
 
-	@Override
-	public Optional<Actor> get(String name) {
-		// TODO Auto-generated method stub
-		try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-	             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, name FROM actor WHERE name = ?")) {
-	            preparedStmt.setString(1, name);
-	            ResultSet result = preparedStmt.executeQuery();
-	            if (result.next()) {
-	                Actor actor = new Actor(result.getInt(1), result.getString(2));
-	                return Optional.of(actor);
-	            }
-	            return Optional.empty();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	            return Optional.empty();
-	        }
-	}
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+
+    @Override
+    public Optional<Actor> get(String name) {
+        // TODO Auto-generated method stub
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, name FROM actor WHERE name = ?")) {
+            preparedStmt.setString(1, name);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                Actor actor = new Actor(result.getInt(1), result.getString(2));
+                return Optional.of(actor);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
 }

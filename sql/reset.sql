@@ -106,13 +106,14 @@ CREATE TABLE movie_owner_password (
 
 -- name update can be allowed
 CREATE TABLE movie (
-  id             SERIAL,
-  name           VARCHAR(50) NOT NULL,
-  movie_owner_id INT         NOT NULL,
-  duration       INT         NOT NULL,
+  id       SERIAL,
+  name     VARCHAR(50) NOT NULL,
+  owner_id INT         NOT NULL,
+  duration INT         NOT NULL,
   PRIMARY KEY (id),
   UNIQUE (name),
-  FOREIGN KEY (movie_owner_id) REFERENCES movie_owner (id)
+  UNIQUE (id, owner_id),
+  FOREIGN KEY (owner_id) REFERENCES movie_owner (id)
   ON DELETE CASCADE
 );
 
@@ -127,14 +128,15 @@ CREATE TABLE actor (
 
 -- name update can be allowed
 CREATE TABLE character (
-  id       SERIAL,
-  name     VARCHAR(50) NOT NULL,
-  movie_id INT         NOT NULL,
-  actor_id INT         NOT NULL,
+  id             SERIAL,
+  name           VARCHAR(50) NOT NULL,
+  movie_id       INT         NOT NULL,
+  movie_owner_id INT         NOT NULL,
+  actor_id       INT         NOT NULL,
   PRIMARY KEY (id),
   --   name is unique per movie basis
   UNIQUE (movie_id, name),
-  FOREIGN KEY (movie_id) REFERENCES movie (id)
+  FOREIGN KEY (movie_id, movie_owner_id) REFERENCES movie (id, owner_id)
   ON DELETE CASCADE,
   FOREIGN KEY (actor_id) REFERENCES actor (id)
   ON DELETE CASCADE
@@ -244,11 +246,11 @@ CREATE TABLE muff_likes_actor (
 
 CREATE TABLE review (
   id        SERIAL,
-  muff_id   INT           NOT NULL,
-  movie_id  INT           NOT NULL,
+  muff_id   INT       NOT NULL,
+  movie_id  INT       NOT NULL,
   rating    NUMERIC(3, 1) CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
-  text      TEXT          ,
-  timestamp TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  text      TEXT,
+  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
   CHECK (rating IS NOT NULL OR text IS NOT NULL),
@@ -256,11 +258,6 @@ CREATE TABLE review (
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
-  /*
-    This unique condition of (muff_id, movie_id) is deliberately not used
-    This is to give freedom to user to give multiple reviews based on his mood
-    The avg of those reviews give a better measure of likeness of movie
-  */
 );
 
 CREATE TABLE post (

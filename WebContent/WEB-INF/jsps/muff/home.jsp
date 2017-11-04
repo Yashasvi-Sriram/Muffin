@@ -2,25 +2,9 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">${sessionScope.get(SessionKeys.MUFF).name}  | Home</jsp:attribute>
+    <jsp:attribute name="title">${sessionScope.get(SessionKeys.MUFF).name}  | Muffin Home</jsp:attribute>
     <jsp:attribute name="css">
         <style>
-            #top-action-bar {
-                position: fixed;
-                z-index: 1000;
-                top: 0;
-                left: 0;
-                width: 100vw;
-                height: 60px;
-                background-color: #6d4c41;
-            }
-
-            #icon {
-                position: absolute;
-                left: 10px;
-                top: 20px;
-            }
-
             #search-app {
                 position: absolute;
                 z-index: 1000;
@@ -51,38 +35,10 @@
                 outline: none;
                 box-shadow: none !important;
             }
-
-            #left-action-bar {
-                position: fixed;
-                z-index: 1000;
-                top: 100px;
-                left: 10px;
-                width: 16vw;
-                height: 85vh;
-                border: 1px solid black;
-            }
-
-            #right-action-bar {
-                position: fixed;
-                z-index: 1000;
-                top: 100px;
-                right: 10px;
-                width: 16vw;
-                height: 85vh;
-                border: 1px solid black;
-            }
-
-            #feed {
-                position: relative;
-                z-index: 999;
-                top: 100px;
-                border: 1px solid black;
-            }
         </style>
     </jsp:attribute>
     <jsp:body>
         <script type="text/babel">
-
             let isReviewValid = function (name, rating, review) {
                 if (name === '') {
                     Materialize.toast('Movie name is empty!', 3000);
@@ -110,7 +66,6 @@
                 }
                 return true;
             };
-
 
             let MuffSearchResult = React.createClass({
                 render: function () {
@@ -282,25 +237,31 @@
                 }
             });
 
-            ReactDOM.render(<MuffSearchApp/>, document.getElementById('muff-search-app'));
+            ReactDOM.render(<SearchApp/>, document.getElementById('search-app'));
             ReactDOM.render(<MuffAddMovieReview/>, document.getElementById('muff-movie-review'));
         </script>
-        <div class="container-fluid">
-            <div id="top-action-bar">
-                <div id="icon"><img src="${pageContext.request.contextPath}/static/logo.ico"
-                                    alt="muffin" width="64" height="64"></div>
-                <div id="search-app"></div>
-            </div>
-            <div id="left-action-bar"></div>
-            <div id="right-action-bar"></div>
-            <div class="row">
-                <div class="col l8 m8 s8 offset-s2 offset-m2 offset-l2">
-                    <div id="feed" style="height: 200vh;">
-                        <div id="muff-movie-review"></div>
 
-                    </div>
+        <ul id="nav-bar" class="side-nav">
+            <li>
+                <div class="user-view">
+                    <img src="${pageContext.request.contextPath}/static/logo.ico" alt="Muffi(co)n">
+                    <span class="flow-text brown-text">Movie Buff Inc.</span>
                 </div>
-            </div>
-        </div>
+            </li>
+            <li><a href="#"><i class="material-icons">cloud</i>First Link With Icon</a></li>
+            <li>
+                <div class="divider"></div>
+            </li>
+        </ul>
+        <a href="#" data-activates="nav-bar" class="button-collapse"><i class="material-icons">menu</i></a>
+        <script>
+            $('.button-collapse').sideNav({
+                    menuWidth: '50vw',
+                    edge: 'right',
+                    closeOnClick: true,
+                    draggable: true,
+                }
+            );
+        </script>
     </jsp:body>
 </m:base>

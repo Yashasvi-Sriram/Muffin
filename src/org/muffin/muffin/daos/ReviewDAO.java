@@ -8,9 +8,9 @@ import org.muffin.muffin.beans.Review;
 import lombok.NonNull;
 
 public interface ReviewDAO {
-	
-	public boolean create(  final int movieId,final int muffId, final float rating,@NonNull final String text);
-	
-	public Optional<Review> get(final int movieId,final int muffId);
+
+    public boolean create(final int movieId, final int muffId, final float rating, @NonNull final String text);
+
+    public Optional<Review> get(final int movieId, final int muffId);
 
 }

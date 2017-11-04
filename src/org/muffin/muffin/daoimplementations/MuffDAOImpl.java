@@ -128,7 +128,7 @@ public class MuffDAOImpl implements MuffDAO {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE name follows.id1 = ?  and follows.id2 = muff.id")) {
-            preparedStmt.setInt(1,id);
+            preparedStmt.setInt(1, id);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Muff muff = new Muff(resultSet.getInt(1),

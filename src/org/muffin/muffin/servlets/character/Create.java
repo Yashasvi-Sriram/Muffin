@@ -2,6 +2,7 @@ package org.muffin.muffin.servlets.character;
 
 import org.muffin.muffin.beans.Actor;
 import org.muffin.muffin.beans.Character;
+import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.responses.ResponseWrapper;
 import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 
@@ -12,6 +13,7 @@ import org.muffin.muffin.daoimplementations.ActorDAOImpl;
 import org.muffin.muffin.daoimplementations.CharacterDAOImpl;
 import org.muffin.muffin.daos.ActorDAO;
 import org.muffin.muffin.daos.CharacterDAO;
+import org.muffin.muffin.servlets.SessionKeys;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -36,7 +38,7 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         String characterName = request.getParameter("characterName");
         String actorName = request.getParameter("actorName");
         int movieId = Integer.parseInt(request.getParameter("movieId"));
-
+        MovieOwner movieOwner = (MovieOwner) session.getAttribute(SessionKeys.MOVIE_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
         Optional<Actor> actorOpt = actorDAO.get(actorName);
@@ -56,8 +58,8 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         }
         if (error == 0) {
             int actorId = actorOpt.get().getId();
-            if (characterDAO.create(characterName, movieId, actorId)) {
-                Optional<Character> characterOpt = characterDAO.get(characterName, movieId, actorId);
+            if (characterDAO.create(characterName, movieId, movieOwner.getId(), actorId)) {
+                Optional<Character> characterOpt = characterDAO.get(characterName, movieId, movieOwner.getId(), actorId);
                 if (characterOpt.isPresent()) {
                     out.println(gson.toJson(ResponseWrapper.get(characterOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
                 } else {

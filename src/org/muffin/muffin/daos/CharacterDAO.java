@@ -10,11 +10,11 @@ import java.util.Optional;
 
 
 public interface CharacterDAO {
-    public List<Character> getByMovie(final int movieId);
-    
-    public boolean create(@NonNull final String name, final int movieId,final int actorId);
-    
-    public Optional<Character> get(final String name,final int movieId,final int actorId);
-    
-    public boolean delete(final int characterId);
+    public List<Character> getByMovie(final int movieId, final int movieOwnerId);
+
+    public boolean create(@NonNull final String name, final int movieId, final int movieOwnerId, final int actorId);
+
+    public Optional<Character> get(final String name, final int movieId, final int movieOwnerId, final int actorId);
+
+    public boolean delete(final int characterId, final int movieOwnerId);
 }

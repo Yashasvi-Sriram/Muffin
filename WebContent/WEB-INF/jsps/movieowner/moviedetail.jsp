@@ -63,11 +63,6 @@
              * @propFunctions: onDeleteClick
              * */
             let CharacterItem = React.createClass({
-                getInitialState: function () {
-                    return {
-                        inReadMode: true,
-                    }
-                },
                 render: function () {
                     return (
                             <tr title={this.props.name}>
@@ -235,6 +230,14 @@
                                 onActorClick={this.updateActor}
                         />;
                     });
+                    let characters = this.state.characters.map(m => {
+                        return <CharacterItem key={m.id}
+                                              id={m.id}
+                                              name={m.name}
+                                              actorName={m.actorName}
+                                              onDeleteClick={this.deleteCharacter}
+                        />;
+                    });
                     return (
                             <div>
                                 <table className="bordered highlight">
@@ -270,18 +273,7 @@
                                         <th>Character Name</th>
                                     </tr>
                                     </thead>
-                                    <tbody>
-                                    {
-                                        this.state.characters.map(m => {
-                                            return <CharacterItem key={m.id}
-                                                                  id={m.id}
-                                                                  name={m.name}
-                                                                  actorName={m.actorName}
-                                                                  onDeleteClick={this.deleteCharacter}
-                                            />;
-                                        })
-                                    }
-                                    </tbody>
+                                    <tbody>{characters}</tbody>
                                 </table>
                             </div>
                     );

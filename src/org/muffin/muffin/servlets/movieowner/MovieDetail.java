@@ -13,11 +13,13 @@ import javax.servlet.http.HttpSession;
 
 import org.muffin.muffin.beans.Character;
 
+import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daoimplementations.CharacterDAOImpl;
 
 import org.muffin.muffin.daos.CharacterDAO;
 
 import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
+import org.muffin.muffin.servlets.SessionKeys;
 
 /**
  * doGetWithSession:  renders movie detail page in movieowner's perspective
@@ -30,8 +32,8 @@ public class MovieDetail extends MovieOwnerEnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         int movieId = Integer.parseInt(request.getParameter("movieId"));
-        List<Character> characterList = characterDAO.getByMovie(movieId);
-
+        MovieOwner movieOwner = (MovieOwner) session.getAttribute(SessionKeys.MOVIE_OWNER);
+        List<Character> characterList = characterDAO.getByMovie(movieId, movieOwner.getId());
         request.setAttribute("characterList", characterList);
         request.setAttribute("movieId", movieId);
         request.getRequestDispatcher("/WEB-INF/jsps/movieowner/moviedetail.jsp").include(request, response);

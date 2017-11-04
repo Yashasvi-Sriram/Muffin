@@ -26,7 +26,6 @@ public class Search extends MuffEnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-    	
         String searchKey = request.getParameter("searchKey");
         List<Muff> muffs = muffDAO.search(searchKey);
         PrintWriter out = response.getWriter();

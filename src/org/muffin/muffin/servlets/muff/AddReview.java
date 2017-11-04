@@ -32,69 +32,67 @@ import java.util.Optional;
  */
 @WebServlet("/muff/addreview")
 public class AddReview extends MuffEnsuredSessionServlet {
-    
+
     MovieDAO movieDAO = new MovieDAOImpl();
     ReviewDAO reviewDAO = new ReviewDAOImpl();
+
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-    	doPostWithSession(request, response, session);
+        doPostWithSession(request, response, session);
     }
 
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-    	String movieName = request.getParameter("movieName");
-    
-    	String ratingString = request.getParameter("movieRating");
-    	
-    	float movieRating = -1;
-    	if(ratingString.equals("")) {
-    		
-    	}
-    	else {
-    		
-    		movieRating = Integer.parseInt(ratingString);
-    		
-    	}
-    	
-        
+        String movieName = request.getParameter("movieName");
+
+        String ratingString = request.getParameter("movieRating");
+
+        float movieRating = -1;
+        if (ratingString.equals("")) {
+
+        } else {
+
+            movieRating = Integer.parseInt(ratingString);
+
+        }
+
+
         String movieReview = request.getParameter("movieReview");
-        
+
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
         Optional<Movie> movieOpt = movieDAO.get(movieName);
         if (movieOpt.isPresent()) {
-        	
-        	int movieId = movieOpt.get().getId();
-        	Optional<Review> reviewOpt = reviewDAO.get(movieId, muffId);
-        	if ( reviewOpt.isPresent()) {
-        		out.println(gson.toJson(ResponseWrapper.error("Error! You can give only a single review for this movie")));
-        	}
-        	else {
-        	if (reviewDAO.create(movieId, muffId, movieRating, movieReview)) {
-        		reviewOpt = reviewDAO.get(movieId, muffId);
-                if (reviewOpt.isPresent()) {
-                    out.println(gson.toJson(ResponseWrapper.get(reviewOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-                } else {
-                    System.out.println("Critical error!");
-                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                }
+
+            int movieId = movieOpt.get().getId();
+            Optional<Review> reviewOpt = reviewDAO.get(movieId, muffId);
+            if (reviewOpt.isPresent()) {
+                out.println(gson.toJson(ResponseWrapper.error("Error! You can give only a single review for this movie")));
             } else {
-            	
-            	out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                
+                if (reviewDAO.create(movieId, muffId, movieRating, movieReview)) {
+                    reviewOpt = reviewDAO.get(movieId, muffId);
+                    if (reviewOpt.isPresent()) {
+                        out.println(gson.toJson(ResponseWrapper.get(reviewOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
+                    } else {
+                        System.out.println("Critical error!");
+                        out.println(gson.toJson(ResponseWrapper.error("Error!")));
+                    }
+                } else {
+
+                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
+
+                }
             }
-        	}
-        	
-            
+
+
         } else {
-        	out.println(gson.toJson(ResponseWrapper.error("Error! The Movie name doesn't exist")));
-            
+            out.println(gson.toJson(ResponseWrapper.error("Error! The Movie name doesn't exist")));
+
         }
-        
-       
-        
+
+
         out.close();
     }
 }

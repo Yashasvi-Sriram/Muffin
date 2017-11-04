@@ -16,7 +16,7 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Movie> getByOwner(int ownerId) {
         List<Movie> movieList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.movie_owner_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.owner_id = ?")) {
             preparedStmt.setInt(1, ownerId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
@@ -33,7 +33,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public Optional<Movie> get(String name) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, movie_owner_id, name, duration FROM movie WHERE name = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, duration FROM movie WHERE name = ?")) {
             preparedStmt.setString(1, name);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
@@ -50,7 +50,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean create(String name, int durationInMinutes, int ownerId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO movie(name,movie_owner_id,duration) VALUES (?,?,?);")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO movie(name,owner_id,duration) VALUES (?,?,?);")) {
             preparedStmt.setString(1, name);
             preparedStmt.setInt(2, ownerId);
             preparedStmt.setInt(3, durationInMinutes);
@@ -65,7 +65,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean update(int movieId, int ownerId, String name, int duration) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=?, duration=? WHERE id = ? AND movie_owner_id = ?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE movie SET name=?, duration=? WHERE id = ? AND owner_id = ?;")) {
             preparedStmt.setString(1, name);
             preparedStmt.setInt(2, duration);
             preparedStmt.setInt(3, movieId);
@@ -81,7 +81,7 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean delete(int movieId, int ownerId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM movie WHERE id = ? AND movie_owner_id = ?;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM movie WHERE id = ? AND owner_id = ?;")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, ownerId);
             int result = preparedStmt.executeUpdate();
