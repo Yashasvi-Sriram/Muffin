@@ -1,4 +1,4 @@
-package org.muffin.muffin.servlets.muff;
+package org.muffin.muffin.servlets.review;
 
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.MovieOwner;
@@ -30,9 +30,8 @@ import java.util.Optional;
  * doGetWithSession:  same as Post
  * doPostWithSession: Adds a review posted by the user
  */
-@WebServlet("/muff/addreview")
-public class AddReview extends MuffEnsuredSessionServlet {
-
+@WebServlet("/review/create")
+public class Create extends MuffEnsuredSessionServlet {
     MovieDAO movieDAO = new MovieDAOImpl();
     ReviewDAO reviewDAO = new ReviewDAOImpl();
 
@@ -44,20 +43,9 @@ public class AddReview extends MuffEnsuredSessionServlet {
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         String movieName = request.getParameter("movieName");
-
-        String ratingString = request.getParameter("movieRating");
-
-        float movieRating = -1;
-        if (ratingString.equals("")) {
-
-        } else {
-
-            movieRating = Integer.parseInt(ratingString);
-
-        }
-
-
-        String movieReview = request.getParameter("movieReview");
+        String ratingS = request.getParameter("movieRating");
+        String textReview = request.getParameter("movieReview");
+        float rating = ratingS.equals("") ? -1 : Float.parseFloat(ratingS);
 
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
@@ -65,13 +53,12 @@ public class AddReview extends MuffEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         Optional<Movie> movieOpt = movieDAO.get(movieName);
         if (movieOpt.isPresent()) {
-
             int movieId = movieOpt.get().getId();
             Optional<Review> reviewOpt = reviewDAO.get(movieId, muffId);
             if (reviewOpt.isPresent()) {
                 out.println(gson.toJson(ResponseWrapper.error("Error! You can give only a single review for this movie")));
             } else {
-                if (reviewDAO.create(movieId, muffId, movieRating, movieReview)) {
+                if (reviewDAO.create(movieId, muffId, rating, textReview)) {
                     reviewOpt = reviewDAO.get(movieId, muffId);
                     if (reviewOpt.isPresent()) {
                         out.println(gson.toJson(ResponseWrapper.get(reviewOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
@@ -80,19 +67,12 @@ public class AddReview extends MuffEnsuredSessionServlet {
                         out.println(gson.toJson(ResponseWrapper.error("Error!")));
                     }
                 } else {
-
                     out.println(gson.toJson(ResponseWrapper.error("Error!")));
-
                 }
             }
-
-
         } else {
             out.println(gson.toJson(ResponseWrapper.error("Error! The Movie name doesn't exist")));
-
         }
-
-
         out.close();
     }
 }

@@ -246,14 +246,13 @@ CREATE TABLE muff_likes_actor (
 
 CREATE TABLE review (
   id        SERIAL,
-  muff_id   INT       NOT NULL,
-  movie_id  INT       NOT NULL,
-  rating    NUMERIC(3, 1) CHECK (rating >= 0.00 AND rating <= 10.00), -- Ex: 07.42 / 10.00
-  text      TEXT,
-  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  muff_id   INT           NOT NULL,
+  movie_id  INT           NOT NULL,
+  rating    NUMERIC(3, 1) NOT NULL CHECK ((rating >= 0.0 AND rating <= 10.0) OR rating = -1.0), -- Ex: 07.42 / 10.00
+  text      TEXT          NOT NULL,
+  timestamp TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (muff_id, movie_id),
-  CHECK (rating IS NOT NULL OR text IS NOT NULL),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)

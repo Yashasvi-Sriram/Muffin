@@ -10,13 +10,13 @@ import lombok.NonNull;
 
 public interface ReviewDAO {
 
-    public boolean create(final int movieId, final int muffId, final float rating, @NonNull final String text);
+    public boolean create(final int movieId, final int muffId, final float rating, final String text);
 
     public Optional<Review> get(final int movieId, final int muffId);
 
-    public List<Review> getbymovie(final int movieId);
+    public List<Review> getByMovie(final int movieId);
 
-    public List<Review> getbyuser(final int userid);
+    public List<Review> getByUser(final int userid);
 
     public boolean update(final int id, final float rating, @NonNull final String text);
 

@@ -12,10 +12,12 @@ public class Review {
     private int id;
     private int movieId;
     @NonNull
-    private String moviename;
+    private String movieName;
     private int muffId;
     @NonNull
-    private String username;
+    private String muffName;
+    @NonNull
+    private String muffHandle;
     private float rating;
     @NonNull
     private String text;

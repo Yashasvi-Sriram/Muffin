@@ -33,13 +33,21 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public Optional<Review> get(int movieId, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, movie_id, movie.name, muff_id, muff.name ,rating,text, timestamp FROM (review NATURAL JOIN movie) NATURAL JOIN muff WHERE movie_id = ? and muff_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE movie_id = ? AND muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id;")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, muffId);
-
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
-                Review review = new Review(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), result.getString(5), result.getFloat(6), result.getString(7), result.getTimestamp(8).toLocalDateTime());
+                Review review = new Review(
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getString(3),
+                        result.getInt(4),
+                        result.getString(5),
+                        result.getString(6),
+                        result.getFloat(7),
+                        result.getString(8),
+                        result.getTimestamp(9).toLocalDateTime());
                 return Optional.of(review);
             }
             return Optional.empty();
@@ -50,15 +58,24 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public List<Review> getbymovie(int movieId) {
+    public List<Review> getByMovie(int movieId) {
         List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, movie_id, movie.name, muff_id, muff.name ,rating,text, timestamp FROM (review NATURAL JOIN movie) NATURAL JOIN muff WHERE movie_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
             preparedStmt.setInt(1, movieId);
 
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
-                Review review = new Review(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), result.getString(5), result.getFloat(6), result.getString(7), result.getTimestamp(8).toLocalDateTime());
+                Review review = new Review(
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getString(3),
+                        result.getInt(4),
+                        result.getString(5),
+                        result.getString(6),
+                        result.getFloat(7),
+                        result.getString(8),
+                        result.getTimestamp(9).toLocalDateTime());
                 reviews.add(review);
             }
         } catch (SQLException e) {
@@ -68,15 +85,24 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public List<Review> getbyuser(int userId) {
+    public List<Review> getByUser(int muffId) {
         List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, movie_id, movie.name, muff_id, muff.name ,rating,text, timestamp FROM (review NATURAL JOIN movie) NATURAL JOIN muff WHERE muff_id = ?")) {
-            preparedStmt.setInt(1, userId);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
+            preparedStmt.setInt(1, muffId);
 
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
-                Review review = new Review(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), result.getString(5), result.getFloat(6), result.getString(7), result.getTimestamp(8).toLocalDateTime());
+                Review review = new Review(
+                        result.getInt(1),
+                        result.getInt(2),
+                        result.getString(3),
+                        result.getInt(4),
+                        result.getString(5),
+                        result.getString(6),
+                        result.getFloat(7),
+                        result.getString(8),
+                        result.getTimestamp(9).toLocalDateTime());
                 reviews.add(review);
             }
         } catch (SQLException e) {
@@ -89,13 +115,13 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public boolean update(int id, float rating, String text) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review set rating = ? and text = ? where id = ?")) {
-            preparedStmt.setFloat(1,rating);
-            preparedStmt.setString(2,text);
-            preparedStmt.setInt(3,id);
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ?")) {
+            preparedStmt.setFloat(1, rating);
+            preparedStmt.setString(2, text);
+            preparedStmt.setInt(3, id);
             int result = preparedStmt.executeUpdate();
             return result == 1;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;
@@ -104,11 +130,11 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public boolean delete(int id) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE from review where id = ?")) {
-            preparedStmt.setInt(1,id);
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ?")) {
+            preparedStmt.setInt(1, id);
             int result = preparedStmt.executeUpdate();
             return result == 1;
-        }catch (SQLException e){
+        } catch (SQLException e) {
             e.printStackTrace();
         }
         return false;

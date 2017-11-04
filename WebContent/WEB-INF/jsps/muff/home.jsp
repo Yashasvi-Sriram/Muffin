@@ -197,7 +197,7 @@
                     console.log(this.refs.movieRating.value);
 
                     $.ajax({
-                        url: '${pageContext.request.contextPath}/muff/addreview',
+                        url: '${pageContext.request.contextPath}/review/create',
                         type: 'POST',
                         data: {
                             movieName: this.refs.movieName.value,
@@ -263,5 +263,7 @@
                 }
             );
         </script>
+        <div id="search-app"></div>
+        <div id="muff-movie-review"></div>
     </jsp:body>
 </m:base>
