@@ -18,6 +18,9 @@ INSERT INTO muff_password (id, password) VALUES (2, '.');
 INSERT INTO muff_password (id, password) VALUES (3, '.');
 INSERT INTO muff_password (id, password) VALUES (4, '.');
 
+
+
+
 --
 -- INSERT INTO follows (id1, id2) VALUES (1, 2);
 -- INSERT INTO follows (id1, id2) VALUES (2, 3);
@@ -30,6 +33,21 @@ INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Rear Window', 2, 100
 INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Indiana Jones', 3, 123);
 INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Imitation Game', 4, 122);
 INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Birdman', 1, 140);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Ironman 2',1, 140);
+INSERT INTO movie (name, movie_owner_id, duration) VALUES ('Avengers 2.5', 1, 160);
+
+
+
+
+
+INSERT INTO actor(id,name) VALUES (1,'Robert Downey');
+INSERT INTO actor(id,name) VALUES (2,'Chris Evans');
+
+
+
+INSERT INTO character(name,movie_id,actor_id) VALUES ('Tony Stark',7,1);
+INSERT INTO character(name,movie_id,actor_id) VALUES ('Tony Stark',6,1);
+INSERT INTO character(name,movie_id,actor_id) VALUES ('Steve Rogers',7,2);
 
 -- INSERT INTO actor (name) VALUES ('Emma Stone');
 -- INSERT INTO actor (name) VALUES ('Ryan Reynolds');
