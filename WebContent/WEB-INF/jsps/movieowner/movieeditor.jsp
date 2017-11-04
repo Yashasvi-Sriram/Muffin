@@ -69,6 +69,9 @@
                     }
                 },
                 readModeRender: function () {
+
+					var url = "${pageContext.request.contextPath}/movieowner/movieinfo?movieId=" + this.props.id;
+				
                     return (
                             <tr title={this.props.name}
                                 onDoubleClick={() => {
@@ -78,6 +81,12 @@
                                 }}>
                                 <td className="flow-text">{truncate(this.props.name, 20)}</td>
                                 <td>{this.props.durationInMinutes}</td>
+								<td>
+                                    <form action="${pageContext.request.contextPath}/movieowner/movieinfo" method="post">
+  									<button type="submit" name="movieId" value={this.props.id} className="btn-floating waves-effect waves-light blue">
+									<i className="material-icons">info</i></button>
+									</form>
+                                </td>
                                 <td>
                                     <a href="#"
                                        onClick={(e) => {
@@ -265,6 +274,24 @@
                         }
                     });
                 },
+
+				infoMovie: function (id) {
+                    let self = this;
+					
+                    $.ajax({
+                        url: '${pageContext.request.contextPath}/movieowner/movieinfo',
+                        type: 'POST',
+                        data: {id: id},
+						success: function (r) {
+                           		console.log(r);
+                            }
+                        ,
+						
+                        error: function (data) {
+                            Materialize.toast('Server Error', 2000);
+                        }
+                    });
+                },
                 render: function () {
                     return (
                             <table className="highlight centered striped">
@@ -292,6 +319,8 @@
                                                defaultValue=""/>
                                     </td>
                                     <td>
+									</td>
+                                    <td>
                                     </td>
                                     <td>
                                         <button onClick={this.createMovie}
@@ -307,7 +336,8 @@
                                                           name={m.name}
                                                           durationInMinutes={m.durationInMinutes}
                                                           onDeleteClick={this.deleteMovie}
-                                                          onEditClick={this.editMovie}/>;
+                                                          onEditClick={this.editMovie}
+														  onInfoClick={this.infoMovie}/>;
                                     })
                                 }
                                 </tbody>
