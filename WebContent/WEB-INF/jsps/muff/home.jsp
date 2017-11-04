@@ -21,7 +21,7 @@
                 top: 20px;
             }
 
-            #muff-search-app {
+            #search-app {
                 position: absolute;
                 z-index: 1000;
                 top: 10px;
@@ -32,13 +32,13 @@
                 border-radius: 2px;
             }
 
-            #muff-search-app td {
+            #search-app td {
                 padding: 10px;
                 font-size: large;
                 cursor: pointer;
             }
 
-            #muff-search-app input {
+            #search-app input {
                 border: none !important;
                 outline: none;
                 box-shadow: none;
@@ -46,7 +46,7 @@
                 font-size: large !important;
             }
 
-            #muff-search-app input:focus {
+            #search-app input:focus {
                 border: none !important;
                 outline: none;
                 box-shadow: none !important;
@@ -59,7 +59,7 @@
                 left: 10px;
                 width: 16vw;
                 height: 85vh;
-                border: 2px solid black;
+                border: 1px solid black;
             }
 
             #right-action-bar {
@@ -69,14 +69,14 @@
                 right: 10px;
                 width: 16vw;
                 height: 85vh;
-                border: 2px solid black;
+                border: 1px solid black;
             }
 
             #feed {
                 position: relative;
                 z-index: 999;
                 top: 100px;
-                border: 2px solid black;
+                border: 1px solid black;
             }
         </style>
     </jsp:attribute>
@@ -93,10 +93,18 @@
                 }
             });
 
-            let MuffSearchApp = React.createClass({
+            let SearchApp = React.createClass({
+                MODE: {
+                    MOVIE: 0,
+                    ACTOR: 1,
+                    MUFF: 2,
+                },
                 getInitialState: function () {
                     return {
+                        mode: this.MODE.MUFF,
+                        movies: [],
                         muffs: [],
+                        actors: [],
                     }
                 },
                 onRegexInputKeyDown: function (e) {
@@ -104,9 +112,22 @@
                     switch (e.keyCode || e.which) {
                         // Enter Key
                         case 13:
-                            let self = this;
+                            let url;
+                            switch (this.state.mode) {
+                                case this.MODE.MUFF:
+                                    url = '${pageContext.request.contextPath}/muff/search';
+                                    break;
+                                case this.MODE.ACTOR:
+                                    url = '${pageContext.request.contextPath}/actor/search';
+                                    break;
+                                case this.MODE.MOVIE:
+                                    url = '${pageContext.request.contextPath}/movie/search';
+                                    break;
+                                default:
+                                    break;
+                            }
                             $.ajax({
-                                url: '${pageContext.request.contextPath}/muff/search',
+                                url: url,
                                 type: 'GET',
                                 data: {searchKey: e.target.value},
                                 success: function (r) {
@@ -116,9 +137,25 @@
                                     }
                                     else {
                                         let data = json.data;
-                                        self.setState(ps => {
-                                            return {muffs: data};
-                                        });
+                                        switch (self.state.mode) {
+                                            case self.MODE.MUFF:
+                                                self.setState(ps => {
+                                                    return {muffs: data};
+                                                });
+                                                break;
+                                            case self.MODE.ACTOR:
+                                                self.setState(ps => {
+                                                    return {actors: data};
+                                                });
+                                                break;
+                                            case self.MODE.MOVIE:
+                                                self.setState(ps => {
+                                                    return {movies: data};
+                                                });
+                                                break;
+                                            default:
+                                                break;
+                                        }
                                         $(self.refs.results).show();
                                     }
                                 },
@@ -164,23 +201,18 @@
                 },
             });
 
-            ReactDOM.render(<MuffSearchApp/>, document.getElementById('muff-search-app'));
+            ReactDOM.render(<SearchApp/>, document.getElementById('search-app'));
         </script>
         <div class="container-fluid">
             <div id="top-action-bar">
                 <div id="icon"><img src="${pageContext.request.contextPath}/static/logo.ico"
                                     alt="muffin" width="64" height="64"></div>
-                <div id="muff-search-app"></div>
+                <div id="search-app"></div>
             </div>
+            <div id="left-action-bar"></div>
+            <div id="right-action-bar"></div>
             <div class="row">
-                <div id="left-action-bar">
-                    <div class="truncate flow-text">${sessionScope.get(SessionKeys.MUFF).name}</div>
-                </div>
-                <div id="right-action-bar">
-                    <div class="truncate flow-text">${sessionScope.get(SessionKeys.MUFF).name}</div>
-                </div>
-                <div class="col l2 m2 s2"></div>
-                <div class="col l8 m8 s8">
+                <div class="col l8 m8 s8 offset-s2 offset-m2 offset-l2">
                     <div id="feed" style="height: 200vh;">
                         <div>afddsafsas</div>
                         <div>afddsafsas</div>
@@ -188,7 +220,6 @@
                         <div>afddsafsas</div>
                     </div>
                 </div>
-                <div class="col l2 m2 s2"></div>
             </div>
         </div>
     </jsp:body>
