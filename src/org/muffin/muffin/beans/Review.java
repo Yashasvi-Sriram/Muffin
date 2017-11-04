@@ -11,7 +11,11 @@ import lombok.*;
 public class Review {
     private int id;
     private int movieId;
+    @NonNull
+    private String moviename;
     private int muffId;
+    @NonNull
+    private String username;
     private float rating;
     @NonNull
     private String text;
