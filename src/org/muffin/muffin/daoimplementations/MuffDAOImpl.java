@@ -101,12 +101,14 @@ public class MuffDAOImpl implements MuffDAO {
     }
 
     @Override
-    public List<Muff> search(String searchKey) {
+    public List<Muff> search(String searchKey, final int offset, final int limit) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE name ILIKE ? OR handle ILIKE ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE name ILIKE ? OR handle ILIKE ? ORDER BY handle OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + searchKey + "%");
             preparedStmt.setString(2, "%" + searchKey + "%");
+            preparedStmt.setInt(3, offset);
+            preparedStmt.setInt(4, limit);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Muff muff = new Muff(resultSet.getInt(1),
@@ -127,7 +129,7 @@ public class MuffDAOImpl implements MuffDAO {
     public List<Muff> userfollows(int id) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE name follows.id1 = ?  and follows.id2 = muff.id")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE name follows.id1 = ?  AND follows.id2 = muff.id")) {
             preparedStmt.setInt(1, id);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
@@ -148,7 +150,7 @@ public class MuffDAOImpl implements MuffDAO {
     @Override
     public boolean follow(int uid1, int uid2) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("insert into follows(id1,id2) values (?,?)")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO follows(id1,id2) VALUES (?,?)")) {
             preparedStmt.setInt(1, uid1);
             preparedStmt.setInt(2, uid2);
             int result = preparedStmt.executeUpdate();

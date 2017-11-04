@@ -17,7 +17,7 @@ public interface MuffDAO {
 
     public Optional<Muff> get(final int id);
 
-    public List<Muff> search(final String searchKey);
+    public List<Muff> search(final String searchKey, final int offset, final int limit);
 
     public List<Muff> userfollows(final int id);
 
