@@ -1,5 +1,5 @@
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
-<%@tag description="Generic login template" pageEncoding="UTF-8" %>
+<%@tag description="Generic signup template" pageEncoding="UTF-8" %>
 <%@attribute name="bgColor" fragment="true" %>
 <%@attribute name="message" fragment="true" %>
 <%@attribute name="action" fragment="true" required="true" %>

@@ -1,5 +1,6 @@
 <%@tag description="Basic template with javascript headers" pageEncoding="UTF-8" %>
 <%@attribute name="title" fragment="true" %>
+<%@attribute name="extraHeaders" fragment="true" %>
 <%@attribute name="css" fragment="true" %>
 <!doctype html>
 <html lang="en">
@@ -17,6 +18,8 @@
     <script src="${pageContext.request.contextPath}/static/reactjs/react.js"></script>
     <script src="${pageContext.request.contextPath}/static/reactjs/react-dom.js"></script>
     <script src="${pageContext.request.contextPath}/static/reactjs/babel.js"></script>
+    <%--Extra Headers--%>
+    <jsp:invoke fragment="extraHeaders"/>
     <title>
         <jsp:invoke fragment="title"/>
     </title>
