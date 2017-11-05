@@ -16,6 +16,8 @@ public interface MovieDAO {
 
     public Optional<Movie> get(final String name);
 
+    public List<Movie> search(final String substring);
+
     public boolean create(@NonNull final String name, final int durationInMinutes, final int ownerId);
 
     public boolean update(final int movieId, final int ownerId, @NonNull final String name, final int duration);
