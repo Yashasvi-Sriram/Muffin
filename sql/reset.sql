@@ -19,6 +19,8 @@ DROP TABLE IF EXISTS cinema_building_owner;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
+DROP TABLE IF EXISTS genre;
+DROP TABLE IF EXISTS movie_genre;
 
 /*
   Anything can be done with data as long as the sql constraints are followed
@@ -294,5 +296,20 @@ CREATE TABLE booked_show_seats (
   FOREIGN KEY (show_id, theatre_id) REFERENCES show (id, theatre_id)
   ON DELETE CASCADE,
   FOREIGN KEY (booking_id, show_id) REFERENCES booking (id, show_id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE genre (
+  id   SERIAL,
+  name TEXT NOT NULL
+);
+
+CREATE TABLE movie_genre (
+  movie_id INT,
+  genre_id INT,
+  PRIMARY KEY (movie_id.genre_id),
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (genre_id) REFERENCES genre (id)
   ON DELETE CASCADE
 );

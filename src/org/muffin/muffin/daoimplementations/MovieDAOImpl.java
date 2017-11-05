@@ -1,5 +1,6 @@
 package org.muffin.muffin.daoimplementations;
 
+import org.muffin.muffin.beans.Genre;
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.MovieOwner;
 import org.muffin.muffin.daos.MovieDAO;
@@ -16,11 +17,19 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Movie> getByOwner(int ownerId) {
         List<Movie> movieList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.owner_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.owner_id = ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("select genre.* from genre,movie_genre where movie_id = ? and genre.id = genre_id")) {
             preparedStmt.setInt(1, ownerId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
-                Movie movie = new Movie(result.getInt(1), result.getInt(3), result.getString(2), result.getInt(4));
+                preparedStmt2.setInt(1, result.getInt(1));
+                ResultSet resultSet = preparedStmt2.executeQuery();
+                List<Genre> genres = new ArrayList<>();
+                while (resultSet.next()) {
+                    Genre genre = new Genre(result.getInt(1), result.getString(2));
+                    genres.add(genre);
+                }
+                Movie movie = new Movie(result.getInt(1), result.getInt(3), result.getString(2), result.getInt(4), genres);
                 movieList.add(movie);
             }
             return movieList;
@@ -31,13 +40,59 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
+    public List<Genre> getGenre(String substring) {
+        List<Genre> genres = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name is ILIKE ?")) {
+            preparedStmt.setString(1, "%" + substring + "%");
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return genres;
+    }
+
+    @Override
+    public List<Movie> getByGenre(int genreId) {
+        List<Movie> movies = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* from movie,movie_genre where movie.id = movie_genre.movieId and genreId = ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("select genre.* from genre,movie_genre where movie_id = ? and genre.id = genre_id")) {
+            preparedStmt.setInt(1, genreId);
+            ResultSet result = preparedStmt.executeQuery();
+            while (result.next()) {
+                preparedStmt2.setInt(1, result.getInt(1));
+                ResultSet resultSet = preparedStmt2.executeQuery();
+                List<Genre> genres = new ArrayList<>();
+                while (resultSet.next()) {
+                    Genre genre = new Genre(result.getInt(1), result.getString(2));
+                    genres.add(genre);
+                }
+                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), genres);
+                movies.add(movie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+
+        return movies;
+    }
+
+    @Override
     public Optional<Movie> get(String name) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, duration FROM movie WHERE name = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, duration FROM movie WHERE name = ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("select genre.* from genre,movie_genre where movie_id = ? and genre.id = genre_id")) {
             preparedStmt.setString(1, name);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
-                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4));
+                preparedStmt2.setInt(1, result.getInt(1));
+                ResultSet resultSet = preparedStmt2.executeQuery();
+                List<Genre> genres = new ArrayList<>();
+                while (resultSet.next()) {
+                    Genre genre = new Genre(result.getInt(1), result.getString(2));
+                    genres.add(genre);
+                }
+                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), genres);
                 return Optional.of(movie);
             }
             return Optional.empty();
@@ -76,6 +131,33 @@ public class MovieDAOImpl implements MovieDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public boolean update_genre(int movieId,int ownerId,int genreId,int flag){
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+            PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre(movieId,genreId) SELECT id,? from movie where id = ? and owner_id = ?");
+            PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre where genreId = ? and movieId = ? and EXISTS (SELECT * from movie where id = ? and owner_id = ?)")){
+            if (flag == 1){
+                preparedStmt1.setInt(1,genreId);
+                preparedStmt1.setInt(2,movieId);
+                preparedStmt1.setInt(3,ownerId);
+                int result = preparedStmt1.executeUpdate();
+                return result == 1;
+            }
+            else if (flag == 0){
+                preparedStmt2.setInt(1,genreId);
+                preparedStmt2.setInt(2,movieId);
+                preparedStmt2.setInt(3,movieId);
+                preparedStmt2.setInt(4,ownerId);
+                int result = preparedStmt2.executeUpdate();
+                return result == 1;
+            }
+
+        }catch (SQLException e){
+                e.printStackTrace();
+        }
+        return false;
     }
 
     @Override
