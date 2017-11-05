@@ -1,24 +1,26 @@
-let SearchResult = React.createClass({
+let SearchResultWrapper = React.createClass({
     render: function () {
         return (
             <tr>
-                <td>{this.props.id}</td>
+                <td>{this.props.name}</td>
+                <td className="pink-text">{this.props.handle}</td>
             </tr>
         );
     }
 });
 
-let SearchApp = React.createClass({
+window.BaseSearchApp = React.createClass({
     getInitialState: function () {
         return {
-            offset: 0,
             results: [],
+            offset: 0,
         }
     },
     getDefaultProps: function () {
         return {
+            limit: 3,
+            contextPath: '',
             url: '',
-            limit: 10,
         }
     },
     _resetOffset: function () {
@@ -44,7 +46,8 @@ let SearchApp = React.createClass({
             this.state.offset = prevOffset < 0 ? 0 : prevOffset;
         }
     },
-    fetchNextBatch: function (pattern, url) {
+    fetchNextBatch: function (pattern) {
+        let url = this.props.contextPath + this.props.url;
         let self = this;
         $.ajax({
             url: url,
@@ -82,38 +85,53 @@ let SearchApp = React.createClass({
         }
         this.fetchNextBatch(pattern);
     },
-    onPatternInputKeyDown: function (e) {
+    onRegexInputKeyDown: function (e) {
         switch (e.keyCode || e.which) {
             // Enter Key
             case 13:
+                let self = this;
                 this._resetOffset();
-                this.fetchNextBatch(e.target.value, this.props.url);
+                self.setState(ps => {
+                    return {results: []};
+                });
+                this.fetchNextBatch(e.target.value);
                 break;
             // Escape key
             case 27:
                 $(this.refs.results).hide();
+                break;
+            // Left key
+            case 37:
+                this.fetchPreviousBatch(this.refs.pattern.value);
+                break;
+            // Right key
+            case 39:
+                this.fetchNextBatch(this.refs.pattern.value);
                 break;
             default:
                 break;
         }
     },
     render: function () {
-        let results = this.state.results.map(result => {
-            return <SearchResult
-                key={result.id}
-                id={result.id}
+        let results = this.state.results.map(muff => {
+            return <SearchResultWrapper
+                key={muff.id}
+                id={muff.id}
+                name={muff.name}
+                handle={muff.handle}
+                level={muff.level}
             />;
         });
         return (
             <div>
-                <input onKeyDown={this.onPatternInputKeyDown}
+                <input onKeyDown={this.onRegexInputKeyDown}
                        ref="pattern"
                        placeholder="Search" type="text"/>
                 <div ref="results">
-                    <button className="btn-floating"
+                    <button className="btn btn-flat"
                             onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
                         className="material-icons">keyboard_arrow_left</i></button>
-                    <button className="btn-floating"
+                    <button className="btn btn-flat"
                             onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
                         className="material-icons">keyboard_arrow_right</i></button>
                     <table className="white">
