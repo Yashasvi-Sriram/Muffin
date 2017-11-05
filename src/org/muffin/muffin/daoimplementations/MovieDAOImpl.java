@@ -82,10 +82,10 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
-    public List<Movie> search(String substring) {
+    public List<Movie> search(String substring, final int offset, final int limit) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* from movie where name is ILIKE ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* from movie where name is ILIKE ?  ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + substring + "%");
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {

@@ -13,10 +13,10 @@ import java.util.Optional;
 
 public class ActorDAOImpl implements ActorDAO {
     @Override
-    public List<Actor> search(String searchKey) {
+    public List<Actor> search(String searchKey,  final int offset, final int limit) {
         List<Actor> actorList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM actor WHERE name ilike ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM actor WHERE name ilike ? ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + searchKey + "%");
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {

@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface ActorDAO {
-    public List<Actor> search(final String searchKey);
+    public List<Actor> search(final String searchKey, final int offset, final int limit);
 
     public boolean create(@NonNull final String name);
 
