@@ -20,7 +20,7 @@ import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
- * doGetWithSession:  tries to update a new movie with given id, if success returns updated object, else returns error
+ * doGetWithSession:  tries to update a new movie with given id, if success returns updated object
  * doPostWithSession: same as GET
  */
 @WebServlet("/movie/update")

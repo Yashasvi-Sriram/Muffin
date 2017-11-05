@@ -152,6 +152,14 @@ window.ButterSearchApp = React.createClass({
             case 27:
                 $(this.refs.results).hide();
                 break;
+            // Left key
+            case 37:
+                this.fetchPreviousBatch(this.refs.pattern.value);
+                break;
+            // Right key
+            case 39:
+                this.fetchNextBatch(this.refs.pattern.value);
+                break;
             default:
                 break;
         }
@@ -171,23 +179,17 @@ window.ButterSearchApp = React.createClass({
                 <input onKeyDown={this.onRegexInputKeyDown}
                        ref="pattern"
                        placeholder="Search" type="text"/>
-                <table className="white" ref="results">
-                    <thead>
-                    <tr>
-                        <td>
-                            <button className="btn"
-                                    onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
-                                className="material-icons">keyboard_arrow_left</i></button>
-                        </td>
-                        <td>
-                            <button className="btn"
-                                    onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
-                                className="material-icons">keyboard_arrow_right</i></button>
-                        </td>
-                    </tr>
-                    </thead>
-                    <tbody>{results}</tbody>
-                </table>
+                <div ref="results">
+                    <button className="btn btn-flat"
+                            onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                        className="material-icons">keyboard_arrow_left</i></button>
+                    <button className="btn btn-flat"
+                            onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                        className="material-icons">keyboard_arrow_right</i></button>
+                    <table className="white">
+                        <tbody>{results}</tbody>
+                    </table>
+                </div>
             </div>
         );
     },

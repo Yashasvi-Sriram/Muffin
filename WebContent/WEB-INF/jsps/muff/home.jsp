@@ -15,17 +15,7 @@
             }
 
             #search-app input {
-                border: none !important;
-                outline: none;
-                box-shadow: none;
-                margin: 0 !important;
                 font-size: large !important;
-            }
-
-            #search-app input:focus {
-                border: none !important;
-                outline: none;
-                box-shadow: none !important;
             }
         </style>
     </jsp:attribute>
@@ -35,7 +25,7 @@
         <script type="text/babel"
                 src="${pageContext.request.contextPath}/static/muffinjs/givereviewapp.jsx"></script>
         <script type="text/babel">
-            ReactDOM.render(<ButterSearchApp limit={3}
+            ReactDOM.render(<ButterSearchApp limit={5}
                                              contextPath="${pageContext.request.contextPath}"/>, document.getElementById('search-app'));
             ReactDOM.render(<GiveReviewApp
                     contextPath="${pageContext.request.contextPath}"/>, document.getElementById('give-review-app'));
@@ -90,7 +80,7 @@
 
         <a href="#"
            data-activates="nav-bar"
-           class="btn-floating btn-large waves-effect waves-light  red button-collapse"
+           class="btn-floating btn-large waves-effect waves-light brown button-collapse pulse"
            style="position:fixed;bottom: 20px; right: 20px">
             <i class="material-icons">menu</i>
         </a>

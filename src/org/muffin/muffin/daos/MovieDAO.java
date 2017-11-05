@@ -22,7 +22,7 @@ public interface MovieDAO {
 
     public boolean update(final int movieId, final int ownerId, @NonNull final String name, final int duration);
 
-    public boolean update_genre(final int movieId,final int ownerId,final int genre,final int flag);
+    public boolean updateGenre(final int movieId, final int ownerId, final int genre, final int flag);
 
     public boolean delete(final int movieId, int ownerId);
 }

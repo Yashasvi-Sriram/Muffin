@@ -33,21 +33,18 @@ window.GiveReviewApp = React.createClass({
         }
     },
     addMovieReview: function () {
-        let self = this;
         // validation
-        if (!isReviewValid(this.refs.movieName.value, this.refs.movieRating.value, this.refs.movieReview.value)) {
+        if (!isReviewValid(this.refs.name.value, this.refs.rating.value, this.refs.textReview.value)) {
             return;
         }
         // ajax call
-        console.log(this.refs.movieRating.value);
-
         $.ajax({
-            url: '/review/create',
+            url: this.props.contextPath + '/review/create',
             type: 'POST',
             data: {
-                movieName: this.refs.movieName.value,
-                movieRating: this.refs.movieRating.value,
-                movieReview: this.refs.movieReview.value
+                name: this.refs.name.value,
+                rating: this.refs.rating.value,
+                textReview: this.refs.textReview.value
             },
             success: function (r) {
                 let json = JSON.parse(r);
@@ -66,17 +63,29 @@ window.GiveReviewApp = React.createClass({
     render: function () {
         return (
             <div>
-                <input type="text" ref="movieName"
-                       name="movieName" placeholder="Movie Name" defaultValue=""/>
-                <input type="number" min="1" max="10"
-                       ref="movieRating" name="movieRating" placeholder="Movie Rating"
-                       defaultValue=""/>
-                <input type="text" ref="movieReview"
-                       name="movieReview" placeholder="Movie Review" defaultValue=""/>
-                <button onClick={this.addMovieReview}
-                        className="btn-floating waves-effect waves-light green">
-                    <i className="material-icons">add</i>
-                </button>
+                <div className="row">
+                    <div className="input-field col s12">
+                        <p className="range-field">
+                            <span>Rating</span>
+                            <input type="range" min="0" max="10" ref="rating" step="0.1"
+                                   defaultValue="0"/>
+                        </p>
+                    </div>
+                    <div className="input-field col s12">
+                        <textarea ref="textReview" placeholder="Your comment" defaultValue=""
+                                  className="materialize-textarea">
+                        </textarea>
+                    </div>
+                    <div className="input-field col s6">
+                        <input type="text" ref="name" placeholder="Name of the movie" defaultValue=""/>
+                    </div>
+                    <div className="input-field col s6">
+                        <button onClick={this.addMovieReview}
+                                className="btn-flat btn">
+                            <i className="material-icons">send</i>
+                        </button>
+                    </div>
+                </div>
             </div>
         );
     }
