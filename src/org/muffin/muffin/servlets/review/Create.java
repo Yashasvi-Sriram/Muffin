@@ -28,7 +28,7 @@ import java.util.Optional;
 
 /**
  * doGetWithSession:  same as Post
- * doPostWithSession: Adds a review posted by the user
+ * doPostWithSession: Adds a review posted by the user, returns review object on success
  */
 @WebServlet("/review/create")
 public class Create extends MuffEnsuredSessionServlet {
@@ -42,9 +42,9 @@ public class Create extends MuffEnsuredSessionServlet {
 
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        String movieName = request.getParameter("movieName");
-        String ratingS = request.getParameter("movieRating");
-        String textReview = request.getParameter("movieReview");
+        String movieName = request.getParameter("name");
+        String ratingS = request.getParameter("rating");
+        String textReview = request.getParameter("textReview");
         float rating = ratingS.equals("") ? -1 : Float.parseFloat(ratingS);
 
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);

@@ -131,7 +131,7 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
-    public boolean update_genre(int movieId, int ownerId, int genreId, int flag) {
+    public boolean updateGenre(int movieId, int ownerId, int genreId, int flag) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre(movieId,genreId) SELECT id,? from movie where id = ? and owner_id = ?");
              PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre where genreId = ? and movieId = ? and EXISTS (SELECT * from movie where id = ? and owner_id = ?)")) {

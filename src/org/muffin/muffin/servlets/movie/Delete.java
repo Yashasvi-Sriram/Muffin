@@ -18,7 +18,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 
 /**
- * doGetWithSession:  tries to delete a new movie with given id, if success returns 0, else returns error
+ * doGetWithSession:  tries to delete a new movie with given id, if success returns 0
  * doPostWithSession: same as GET
  */
 @WebServlet("/movie/delete")

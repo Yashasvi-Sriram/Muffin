@@ -22,7 +22,7 @@ import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
- * doGetWithSession:  tries to create a new movie with given params, if success returns created obj, else returns error
+ * doGetWithSession:  tries to create a new movie with given params, if success returns created obj
  * doPostWithSession: same as GET
  */
 @WebServlet("/movie/create")
