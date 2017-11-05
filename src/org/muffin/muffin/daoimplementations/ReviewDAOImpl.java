@@ -113,12 +113,13 @@ public class ReviewDAOImpl implements ReviewDAO {
 
 
     @Override
-    public boolean update(int id, float rating, String text) {
+    public boolean update(int id, int muffId, float rating, String text) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ? and muff_id = ?")) {
             preparedStmt.setFloat(1, rating);
             preparedStmt.setString(2, text);
             preparedStmt.setInt(3, id);
+            preparedStmt.setInt(4, muffId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
         } catch (SQLException e) {
@@ -128,10 +129,11 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean delete(int id, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ? and muff_id = ?")) {
             preparedStmt.setInt(1, id);
+            preparedStmt.setInt(2, muffId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
         } catch (SQLException e) {

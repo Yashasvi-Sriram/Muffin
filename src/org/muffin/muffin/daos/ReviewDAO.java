@@ -18,8 +18,8 @@ public interface ReviewDAO {
 
     public List<Review> getByUser(final int userid);
 
-    public boolean update(final int id, final float rating, @NonNull final String text);
+    public boolean update(final int id, final int muffId, final float rating, @NonNull final String text);
 
-    public boolean delete(final int id);
+    public boolean delete(final int id, final int muffId);
 
 }
