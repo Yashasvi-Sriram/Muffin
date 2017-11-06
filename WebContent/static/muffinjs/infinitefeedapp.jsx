@@ -47,7 +47,7 @@ window.InfiniteFeedApp = React.createClass({
             type: 'GET',
             data: {
                 muffId: self.props.muffId,
-                reviewOffset: self.state.reviewOffset,
+                offset: self.state.reviewOffset,
                 limit: self.props.limit,
             },
             success: function (r) {

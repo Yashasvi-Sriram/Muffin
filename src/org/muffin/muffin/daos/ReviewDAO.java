@@ -20,7 +20,6 @@ public interface ReviewDAO {
 
     public List<Review> getByFollowers(final int muffId, final int offset, final int limit);
 
-
     public boolean update(final int id, final int muffId, final float rating, final String text);
 
     public boolean delete(final int id, final int muffId);

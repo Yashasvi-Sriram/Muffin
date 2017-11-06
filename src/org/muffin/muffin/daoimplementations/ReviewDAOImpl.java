@@ -84,6 +84,8 @@ public class ReviewDAOImpl implements ReviewDAO {
             preparedStmt.setInt(1, muffId);
             preparedStmt.setInt(2,offset);
             preparedStmt.setInt(3,limit);
+            preparedStmt.setInt(2, offset);
+            preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
             resultsetconverter(reviews,result);
         } catch (SQLException e) {
