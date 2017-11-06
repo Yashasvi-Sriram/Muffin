@@ -1,4 +1,4 @@
-let MuffSearchResult = React.createClass({
+let MuffButterSearchResult = React.createClass({
     render: function () {
         return (
             <tr>
@@ -9,7 +9,7 @@ let MuffSearchResult = React.createClass({
     }
 });
 
-let MovieSearchResult = React.createClass({
+let MovieButterSearchResult = React.createClass({
     render: function () {
         return (
             <tr>
@@ -19,7 +19,7 @@ let MovieSearchResult = React.createClass({
     }
 });
 
-let ActorSearchResult = React.createClass({
+let ActorButterSearchResult = React.createClass({
     render: function () {
         return (
             <tr>
@@ -48,6 +48,9 @@ window.ButterSearchApp = React.createClass({
         return {
             limit: 3,
             contextPath: '',
+            muffSearchUrl: '/muff/search',
+            movieSearchUrl: '/movie/search',
+            actorSearchUrl: '/actor/search',
         }
     },
     _resetOffset: function () {
@@ -78,13 +81,13 @@ window.ButterSearchApp = React.createClass({
         let url = this.props.contextPath;
         switch (this.state.mode) {
             case this.MODE.MUFF:
-                url += '/muff/search';
+                url += this.props.muffSearchUrl;
                 break;
             case this.MODE.ACTOR:
-                url += '/actor/search';
+                url += this.props.actorSearchUrl;
                 break;
             case this.MODE.MOVIE:
-                url += '/movie/search';
+                url += this.props.movieSearchUrl;
                 break;
             default:
                 break;
@@ -193,7 +196,7 @@ window.ButterSearchApp = React.createClass({
         switch (this.state.mode) {
             case this.MODE.MUFF:
                 results = this.state.muffs.map(muff => {
-                    return <MuffSearchResult
+                    return <MuffButterSearchResult
                         key={muff.id}
                         id={muff.id}
                         name={muff.name}
@@ -204,7 +207,7 @@ window.ButterSearchApp = React.createClass({
                 break;
             case this.MODE.ACTOR:
                 results = this.state.actors.map(muff => {
-                    return <ActorSearchResult
+                    return <ActorButterSearchResult
                         key={muff.id}
                         id={muff.id}
                         name={muff.name}
@@ -213,7 +216,7 @@ window.ButterSearchApp = React.createClass({
                 break;
             case this.MODE.MOVIE:
                 results = this.state.movies.map(muff => {
-                    return <MovieSearchResult
+                    return <MovieButterSearchResult
                         key={muff.id}
                         id={muff.id}
                         name={muff.name}
@@ -253,7 +256,7 @@ window.ButterSearchApp = React.createClass({
                             onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
                         className="material-icons">keyboard_arrow_right</i></button>
                     <span>Or use PageUp | PageDown to navigate</span>
-                    <table className="white">
+                    <table>
                         <tbody>{results}</tbody>
                     </table>
                 </div>

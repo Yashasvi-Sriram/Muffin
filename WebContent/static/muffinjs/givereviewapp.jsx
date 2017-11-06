@@ -30,6 +30,7 @@ window.GiveReviewApp = React.createClass({
     getDefaultProps: function () {
         return {
             contextPath: '',
+            url: '/review/create',
         }
     },
     addMovieReview: function () {
@@ -37,9 +38,10 @@ window.GiveReviewApp = React.createClass({
         if (!isReviewValid(this.refs.name.value, this.refs.rating.value, this.refs.textReview.value)) {
             return;
         }
+        let self = this;
         // ajax call
         $.ajax({
-            url: this.props.contextPath + '/review/create',
+            url: self.props.contextPath + self.props.url,
             type: 'POST',
             data: {
                 name: this.refs.name.value,
