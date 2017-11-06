@@ -49,19 +49,16 @@ INSERT INTO character (name, movie_id, actor_id, movie_owner_id) VALUES ('Tony S
 INSERT INTO character (name, movie_id, actor_id, movie_owner_id) VALUES ('Steve Rogers', 7, 2, 1);
 
 
-INSERT INTO cinema_building_owner(handle,name) VALUES ('don','Akshith');
-INSERT INTO cinema_building_owner(handle,name) VALUES ('bat','Wayne');
+INSERT INTO cinema_building_owner (handle, name) VALUES ('don', 'Akshith');
+INSERT INTO cinema_building_owner (handle, name) VALUES ('bat', 'Wayne');
 
 INSERT INTO cinema_building_owner_password (id, password) VALUES (1, '.');
 INSERT INTO cinema_building_owner_password (id, password) VALUES (2, '.');
 
-INSERT INTO valid_region(city,state,country)  VALUES ('Mumbai','Maharashtra','India');
-INSERT INTO valid_region(city,state,country)  VALUES ('Hyderabad','Telangana','India');
-INSERT INTO valid_region(city,state,country)  VALUES ('Pune','Maharashtra','India');
-INSERT INTO valid_region(city,state,country)  VALUES ('Bangalore','Karnataka','India');
-
-
-
+INSERT INTO valid_region (city, state, country) VALUES ('Mumbai', 'Maharashtra', 'India');
+INSERT INTO valid_region (city, state, country) VALUES ('Hyderabad', 'Telangana', 'India');
+INSERT INTO valid_region (city, state, country) VALUES ('Pune', 'Maharashtra', 'India');
+INSERT INTO valid_region (city, state, country) VALUES ('Bangalore', 'Karnataka', 'India');
 
 -- INSERT INTO actor (name) VALUES ('Emma Stone');
 -- INSERT INTO actor (name) VALUES ('Ryan Reynolds');

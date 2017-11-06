@@ -22,5 +22,4 @@ public class CinemaBuilding {
     private String country;
     @NonNull
     private String zip;
-    
 }

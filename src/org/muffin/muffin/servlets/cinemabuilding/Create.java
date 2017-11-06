@@ -42,7 +42,7 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
         String state = request.getParameter("state");
         String country = request.getParameter("country");
         String zip = request.getParameter("zip");
-        
+
         CinemaBuildingOwner cinemaBuildingOwner = (CinemaBuildingOwner) session.getAttribute(SessionKeys.CINEMA_BUILDING_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();

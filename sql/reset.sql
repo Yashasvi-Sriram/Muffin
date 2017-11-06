@@ -145,16 +145,6 @@ CREATE TABLE character (
   ON DELETE CASCADE
 );
 
-CREATE TABLE valid_region(
-
-  city        VARCHAR(50) NOT NULL,
-  state       VARCHAR(50) NOT NULL,
-  country     VARCHAR(50) NOT NULL,
-  PRIMARY KEY (city,state,country)
-
-
-);
-
 /*                               */
 /* Cinema (Building) Owner Stuff */
 /*                               */
@@ -177,6 +167,13 @@ CREATE TABLE cinema_building_owner_password (
   ON DELETE CASCADE
 );
 
+CREATE TABLE valid_region (
+  city    VARCHAR(50) NOT NULL,
+  state   VARCHAR(50) NOT NULL,
+  country VARCHAR(50) NOT NULL,
+  PRIMARY KEY (city, state, country)
+);
+
 CREATE TABLE cinema_building (
   id          SERIAL,
   owner_id    INT         NOT NULL,
@@ -191,7 +188,7 @@ CREATE TABLE cinema_building (
   --   though even if these fields are unique they may point to same cinema building
   --   this is the least we can do in db space
   UNIQUE (name, street_name, city, state, zip, country),
-  FOREIGN KEY (city,state,country) REFERENCES valid_region (city,state,country)
+  FOREIGN KEY (city, state, country) REFERENCES valid_region (city, state, country)
   ON DELETE CASCADE,
   FOREIGN KEY (owner_id) REFERENCES cinema_building_owner (id)
   ON DELETE CASCADE
@@ -314,14 +311,15 @@ CREATE TABLE booked_show_seats (
 
 CREATE TABLE genre (
   id   SERIAL,
-  name TEXT NOT NULL,
+  name VARCHAR(50) NOT NULL,
+  UNIQUE (name),
   PRIMARY KEY (id)
 );
 
 CREATE TABLE movie_genre (
   movie_id INT,
   genre_id INT,
-  PRIMARY KEY (movie_id,genre_id),
+  PRIMARY KEY (movie_id, genre_id),
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES genre (id)

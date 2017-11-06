@@ -32,7 +32,7 @@ public class Search extends EnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         String searchKey = request.getParameter("searchKey");
-        List<Actor> actors = actorDAO.search(searchKey);
+        List<Actor> actors = actorDAO.search(searchKey, 0, 1000);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(actors, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();
@@ -40,7 +40,7 @@ public class Search extends EnsuredSessionServlet {
 
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-
+        doGetWithSession(request, response, session);
     }
 }
 

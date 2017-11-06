@@ -2,7 +2,8 @@
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).name}  | Cinema Building Owner Home</jsp:attribute>
+    <jsp:attribute
+            name="title">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).name}  | Cinema Building Owner Home</jsp:attribute>
     <jsp:attribute name="css">
         <style>
             #search-app {
@@ -48,7 +49,7 @@
                     Materialize.toast('Cinema Building name must be less than 50 characters!', 3000);
                     return false;
                 }
-				if (streetName === '') {
+                if (streetName === '') {
                     Materialize.toast('Street Name is empty!', 3000);
                     return false;
                 }
@@ -56,41 +57,37 @@
                     Materialize.toast('Street Name must be less than 50 characters!', 3000);
                     return false;
                 }
-				if (city === '') {
+                if (city === '') {
                     Materialize.toast('City field is empty!', 3000);
                     return false;
                 }
-				if (state === '') {
+                if (state === '') {
                     Materialize.toast('State field is empty!', 3000);
                     return false;
                 }
-				if (country === '') {
+                if (country === '') {
                     Materialize.toast('State field is empty!', 3000);
                     return false;
                 }
-				if (zip === '') {
+                if (zip === '') {
                     Materialize.toast('Zip field is empty!', 3000);
                     return false;
                 }
 
-               
 
-               
                 return true;
             };
-
-          
 
 
             let CreateCinemaBuilding = React.createClass({
                 createNewBuilding: function () {
                     let self = this;
                     // validation
-                    if (!isReviewValid(this.refs.name.value, this.refs.streetName.value, this.refs.city.value,this.refs.state.value,this.refs.country.value,this.refs.zip.value )) {
+                    if (!isReviewValid(this.refs.name.value, this.refs.streetName.value, this.refs.city.value, this.refs.state.value, this.refs.country.value, this.refs.zip.value)) {
                         return;
                     }
                     // ajax call
-                  
+
 
                     $.ajax({
                         url: '${pageContext.request.contextPath}/cinemabuilding/create',
@@ -98,9 +95,9 @@
                         data: {
                             name: this.refs.name.value,
                             streetName: this.refs.streetName.value,
-							city: this.refs.city.value,
-							state: this.refs.state.value,
-							country: this.refs.country.value,
+                            city: this.refs.city.value,
+                            state: this.refs.state.value,
+                            country: this.refs.country.value,
                             zip: this.refs.zip.value
                         },
                         success: function (r) {
@@ -122,15 +119,15 @@
                             <div>
                                 <input type="text" ref="name"
                                        name="name" placeholder="Cinema Building Name" defaultValue=""/>
-								<input type="text" ref="streetName"
+                                <input type="text" ref="streetName"
                                        name="streetName" placeholder="Street Name" defaultValue=""/>
-								<input type="text" ref="city"
+                                <input type="text" ref="city"
                                        name="city" placeholder="City" defaultValue=""/>
-								<input type="text" ref="state"
+                                <input type="text" ref="state"
                                        name="state" placeholder="State" defaultValue=""/>
-								<input type="text" ref="country"
+                                <input type="text" ref="country"
                                        name="country" placeholder="Country" defaultValue=""/>
-								<input type="text" ref="zip"
+                                <input type="text" ref="zip"
                                        name="zip" placeholder="Zip" defaultValue=""/>
                                 <button onClick={this.createNewBuilding}
                                         className="btn-floating waves-effect waves-light green">
@@ -141,7 +138,7 @@
                 }
             });
 
-           
+
             ReactDOM.render(<CreateCinemaBuilding/>, document.getElementById('create-cinema-building'));
         </script>
 
