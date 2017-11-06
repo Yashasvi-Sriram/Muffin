@@ -89,11 +89,13 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public List<Review> getByMuff(int muffId) {
+    public List<Review> getByMuff(int muffId, final int offset, final int limit) {
         List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id ORDER BY review.timestamp OFFSET ? LIMIT ?")) {
             preparedStmt.setInt(1, muffId);
+            preparedStmt.setInt(2, offset);
+            preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
                 Review review = new Review(

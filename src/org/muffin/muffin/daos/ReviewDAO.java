@@ -15,7 +15,7 @@ public interface ReviewDAO {
 
     public List<Review> getByMovie(final int movieId);
 
-    public List<Review> getByMuff(final int userid);
+    public List<Review> getByMuff(final int muffId, final int offset, final int limit);
 
     public boolean update(final int id, final int muffId, final float rating, final String text);
 

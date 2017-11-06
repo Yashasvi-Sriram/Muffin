@@ -27,9 +27,9 @@ public class FetchByMuff extends EnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         int muffId = Integer.parseInt(request.getParameter("muffId"));
-//        int offset = Integer.parseInt(request.getParameter("offset"));
-//        int limit = Integer.parseInt(request.getParameter("limit"));
-        List<Review> reviews = reviewDAO.getByMuff(muffId);
+        int offset = Integer.parseInt(request.getParameter("offset"));
+        int limit = Integer.parseInt(request.getParameter("limit"));
+        List<Review> reviews = reviewDAO.getByMuff(muffId, offset, limit);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(reviews, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();
