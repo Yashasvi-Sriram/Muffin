@@ -26,10 +26,10 @@ public class Search extends MuffEnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        String searchKey = request.getParameter("pattern");
+        String pattern = request.getParameter("pattern");
         int offset = Integer.parseInt(request.getParameter("offset"));
         int limit = Integer.parseInt(request.getParameter("limit"));
-        List<Muff> muffs = muffDAO.search(searchKey, offset, limit);
+        List<Muff> muffs = muffDAO.search(pattern, offset, limit);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(muffs, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();

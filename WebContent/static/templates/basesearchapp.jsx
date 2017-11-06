@@ -91,21 +91,19 @@ window.BaseSearchApp = React.createClass({
             case 13:
                 let self = this;
                 this._resetOffset();
-                self.setState(ps => {
-                    return {results: []};
-                });
+                self.setState({results: []});
                 this.fetchNextBatch(e.target.value);
                 break;
             // Escape key
             case 27:
                 $(this.refs.results).hide();
                 break;
-            // Left key
-            case 37:
+            // Page Up key
+            case 33:
                 this.fetchPreviousBatch(this.refs.pattern.value);
                 break;
-            // Right key
-            case 39:
+            // Page Down key
+            case 34:
                 this.fetchNextBatch(this.refs.pattern.value);
                 break;
             default:
@@ -134,6 +132,7 @@ window.BaseSearchApp = React.createClass({
                     <button className="btn btn-flat"
                             onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
                         className="material-icons">keyboard_arrow_right</i></button>
+                    <span>Or use PageUp | PageDown to navigate</span>
                     <table className="white">
                         <tbody>{results}</tbody>
                     </table>

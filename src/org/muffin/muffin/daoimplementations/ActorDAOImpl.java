@@ -16,8 +16,10 @@ public class ActorDAOImpl implements ActorDAO {
     public List<Actor> search(String searchKey, final int offset, final int limit) {
         List<Actor> actorList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM actor WHERE name ilike ? ORDER BY name OFFSET ? LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM actor WHERE name ILIKE ? ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + searchKey + "%");
+            preparedStmt.setInt(2, offset);
+            preparedStmt.setInt(3, limit);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Actor actor = new Actor(resultSet.getInt(1), resultSet.getString(2));

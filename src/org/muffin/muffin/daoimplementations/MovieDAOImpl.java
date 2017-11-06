@@ -36,7 +36,7 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Genre> getGenre(String substring) {
         List<Genre> genres = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name is ILIKE ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name ILIKE ?")) {
             preparedStmt.setString(1, "%" + substring + "%");
         } catch (SQLException e) {
             e.printStackTrace();
@@ -48,7 +48,7 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Movie> getByGenre(int genreId) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* from movie,movie_genre where movie.id = movie_genre.movieId and genreId = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* FROM movie,movie_genre WHERE movie.id = movie_genre.movieId AND genreId = ?")) {
             preparedStmt.setInt(1, genreId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
@@ -85,12 +85,15 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Movie> search(String substring, final int offset, final int limit) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* from movie where name is ILIKE ?  ORDER BY name OFFSET ? LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, duration FROM movie WHERE name ILIKE ?  ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + substring + "%");
-            ResultSet result = preparedStmt.executeQuery();
-            while (result.next()) {
-                List<Genre> genres = getGenreList(result.getInt(1), conn);
-                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), genres);
+            preparedStmt.setInt(2, offset);
+            preparedStmt.setInt(3, limit);
+            ResultSet rs = preparedStmt.executeQuery();
+            while (rs.next()) {
+                int movieId = rs.getInt(1);
+                List<Genre> genres = getGenreList(movieId, conn);
+                Movie movie = new Movie(movieId, rs.getInt(2), rs.getString(3), rs.getInt(4), genres);
                 movies.add(movie);
             }
         } catch (SQLException e) {
@@ -133,8 +136,8 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean updateGenre(int movieId, int ownerId, int genreId, int flag) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre(movieId,genreId) SELECT id,? from movie where id = ? and owner_id = ?");
-             PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre where genreId = ? and movieId = ? and EXISTS (SELECT * from movie where id = ? and owner_id = ?)")) {
+             PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre(movieId,genreId) SELECT id,? FROM movie WHERE id = ? AND owner_id = ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre WHERE genreId = ? AND movieId = ? AND EXISTS (SELECT * FROM movie WHERE id = ? AND owner_id = ?)")) {
             if (flag == 1) {
                 preparedStmt1.setInt(1, genreId);
                 preparedStmt1.setInt(2, movieId);
@@ -172,7 +175,7 @@ public class MovieDAOImpl implements MovieDAO {
 
     private List<Genre> getGenreList(int movieId, Connection conn) {
         List<Genre> genres = new ArrayList<>();
-        try (PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.* from genre,movie_genre where movie_id = ? and genre.id = genre_id")) {
+        try (PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setInt(1, movieId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {

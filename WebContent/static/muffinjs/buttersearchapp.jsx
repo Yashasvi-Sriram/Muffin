@@ -9,6 +9,26 @@ let MuffSearchResult = React.createClass({
     }
 });
 
+let MovieSearchResult = React.createClass({
+    render: function () {
+        return (
+            <tr>
+                <td>{this.props.name}</td>
+            </tr>
+        );
+    }
+});
+
+let ActorSearchResult = React.createClass({
+    render: function () {
+        return (
+            <tr>
+                <td>{this.props.name}</td>
+            </tr>
+        );
+    }
+});
+
 window.ButterSearchApp = React.createClass({
     MODE: {
         MOVIE: 0,
@@ -17,7 +37,7 @@ window.ButterSearchApp = React.createClass({
     },
     getInitialState: function () {
         return {
-            mode: this.MODE.MUFF,
+            mode: this.MODE.MOVIE,
             movies: [],
             muffs: [],
             actors: [],
@@ -152,30 +172,76 @@ window.ButterSearchApp = React.createClass({
             case 27:
                 $(this.refs.results).hide();
                 break;
-            // Left key
-            case 37:
+            // Page Up key
+            case 33:
                 this.fetchPreviousBatch(this.refs.pattern.value);
                 break;
-            // Right key
-            case 39:
+            // Page Down key
+            case 34:
                 this.fetchNextBatch(this.refs.pattern.value);
                 break;
             default:
                 break;
         }
     },
+    onDomainSelect: function (e) {
+        this.setState({mode: Number(e.target.value), offset: 0});
+        $(this.refs.pattern).focus();
+    },
     render: function () {
-        let results = this.state.muffs.map(muff => {
-            return <MuffSearchResult
-                key={muff.id}
-                id={muff.id}
-                name={muff.name}
-                handle={muff.handle}
-                level={muff.level}
-            />;
-        });
+        let results;
+        switch (this.state.mode) {
+            case this.MODE.MUFF:
+                results = this.state.muffs.map(muff => {
+                    return <MuffSearchResult
+                        key={muff.id}
+                        id={muff.id}
+                        name={muff.name}
+                        handle={muff.handle}
+                        level={muff.level}
+                    />;
+                });
+                break;
+            case this.MODE.ACTOR:
+                results = this.state.actors.map(muff => {
+                    return <ActorSearchResult
+                        key={muff.id}
+                        id={muff.id}
+                        name={muff.name}
+                    />;
+                });
+                break;
+            case this.MODE.MOVIE:
+                results = this.state.movies.map(muff => {
+                    return <MovieSearchResult
+                        key={muff.id}
+                        id={muff.id}
+                        name={muff.name}
+                    />;
+                });
+                break;
+            default:
+                break;
+        }
         return (
             <div>
+                <div className="row">
+                    <div className="col s4">
+                        <input type="radio" value={this.MODE.MOVIE} id="movie-domain-select" name="domain"
+                               defaultChecked="defaultChecked" onClick={this.onDomainSelect}/>
+                        <label htmlFor="movie-domain-select">Movies</label>
+                    </div>
+                    <div className="col s4">
+                        <input type="radio" value={this.MODE.MUFF} id="muff-domain-select" name="domain"
+                               onClick={this.onDomainSelect}/>
+                        <label htmlFor="muff-domain-select">Muffs</label>
+                    </div>
+                    <div className="col s4">
+                        <input type="radio" value={this.MODE.ACTOR} id="actor-domain-select" name="domain"
+                               onClick={this.onDomainSelect}/>
+                        <label htmlFor="actor-domain-select">Actors</label>
+                    </div>
+                </div>
                 <input onKeyDown={this.onRegexInputKeyDown}
                        ref="pattern"
                        placeholder="Search" type="text"/>
@@ -186,6 +252,7 @@ window.ButterSearchApp = React.createClass({
                     <button className="btn btn-flat"
                             onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
                         className="material-icons">keyboard_arrow_right</i></button>
+                    <span>Or use PageUp | PageDown to navigate</span>
                     <table className="white">
                         <tbody>{results}</tbody>
                     </table>
