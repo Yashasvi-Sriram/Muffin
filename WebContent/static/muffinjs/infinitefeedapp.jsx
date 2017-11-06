@@ -24,9 +24,10 @@ window.InfiniteFeedApp = React.createClass({
     },
     getDefaultProps: function () {
         return {
+            muffId: 0,
             limit: 10,
             contextPath: '',
-            reviewFetchUrl: '/review/fetch',
+            reviewFetchUrl: '/review/fetch/muffandfollowers',
         }
     },
     _incrementReviewOffset: function (fetchedDataLength) {
@@ -44,7 +45,11 @@ window.InfiniteFeedApp = React.createClass({
         $.ajax({
             url: url,
             type: 'GET',
-            data: {reviewOffset: self.state.reviewOffset, limit: self.props.limit},
+            data: {
+                muffId: self.props.muffId,
+                reviewOffset: self.state.reviewOffset,
+                limit: self.props.limit,
+            },
             success: function (r) {
                 let json = JSON.parse(r);
                 if (json.status === -1) {
@@ -61,7 +66,7 @@ window.InfiniteFeedApp = React.createClass({
                     // add results
                     self.setState(ps => {
                         let feed = ps.feed;
-                        feed.push(reviews.map((review, i) => {
+                        feed = feed.concat(reviews.map((review, i) => {
                             return {
                                 type: self.TYPES.REVIEW,
                                 data: review
@@ -81,10 +86,10 @@ window.InfiniteFeedApp = React.createClass({
             switch (feedItem.type) {
                 case this.TYPES.REVIEW:
                     return <Review
-                        key={feedItem.id}
-                        id={feedItem.id}
-                        rating={feedItem.rating}
-                        movieName={feedItem.movieName}/>;
+                        key={feedItem.data.id}
+                        id={feedItem.data.id}
+                        rating={feedItem.data.rating}
+                        movieName={feedItem.data.movieName}/>;
                     break;
                 default:
                     return <div>Unknown Element</div>;

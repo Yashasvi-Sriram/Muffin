@@ -10,17 +10,14 @@ import lombok.*;
 @AllArgsConstructor
 public class Review {
     private int id;
-    private int movieId;
-    @NonNull
-    private String movieName;
-    private int muffId;
-    @NonNull
-    private String muffName;
-    @NonNull
-    private String muffHandle;
     private float rating;
     @NonNull
     private String text;
     @NonNull
     private LocalDateTime addedOn;
+    private int movieId;
+    @NonNull
+    private String movieName;
+    @NonNull
+    private Muff muff;
 }

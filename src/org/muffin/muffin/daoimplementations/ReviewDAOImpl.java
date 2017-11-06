@@ -1,6 +1,7 @@
 package org.muffin.muffin.daoimplementations;
 
 import org.muffin.muffin.beans.Movie;
+import org.muffin.muffin.beans.Muff;
 import org.muffin.muffin.beans.Review;
 import org.muffin.muffin.daos.ReviewDAO;
 import org.muffin.muffin.db.DBConfig;
@@ -33,21 +34,23 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public Optional<Review> get(int movieId, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE movie_id = ? AND muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on  FROM review, movie, muff WHERE movie_id = ? AND muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id;")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, muffId);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
                 Review review = new Review(
                         result.getInt(1),
-                        result.getInt(2),
+                        result.getFloat(2),
                         result.getString(3),
-                        result.getInt(4),
-                        result.getString(5),
+                        result.getTimestamp(4).toLocalDateTime(),
+                        result.getInt(5),
                         result.getString(6),
-                        result.getFloat(7),
-                        result.getString(8),
-                        result.getTimestamp(9).toLocalDateTime());
+                        new Muff(result.getInt(7),
+                                result.getString(8),
+                                result.getString(9),
+                                result.getInt(10),
+                                result.getTimestamp(11).toLocalDateTime()));
                 return Optional.of(review);
             }
             return Optional.empty();
@@ -61,21 +64,22 @@ public class ReviewDAOImpl implements ReviewDAO {
     public List<Review> getByMovie(int movieId) {
         List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
             preparedStmt.setInt(1, movieId);
-
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
                 Review review = new Review(
                         result.getInt(1),
-                        result.getInt(2),
+                        result.getFloat(2),
                         result.getString(3),
-                        result.getInt(4),
-                        result.getString(5),
+                        result.getTimestamp(4).toLocalDateTime(),
+                        result.getInt(5),
                         result.getString(6),
-                        result.getFloat(7),
-                        result.getString(8),
-                        result.getTimestamp(9).toLocalDateTime());
+                        new Muff(result.getInt(7),
+                                result.getString(8),
+                                result.getString(9),
+                                result.getInt(10),
+                                result.getTimestamp(11).toLocalDateTime()));
                 reviews.add(review);
             }
         } catch (SQLException e) {
@@ -85,24 +89,25 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public List<Review> getByUser(int muffId) {
+    public List<Review> getByMuff(int muffId) {
         List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  movie_id, movie.name,  muff_id,  muff.name, muff.handle, rating,  text,  timestamp FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id")) {
             preparedStmt.setInt(1, muffId);
-
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
                 Review review = new Review(
                         result.getInt(1),
-                        result.getInt(2),
+                        result.getFloat(2),
                         result.getString(3),
-                        result.getInt(4),
-                        result.getString(5),
+                        result.getTimestamp(4).toLocalDateTime(),
+                        result.getInt(5),
                         result.getString(6),
-                        result.getFloat(7),
-                        result.getString(8),
-                        result.getTimestamp(9).toLocalDateTime());
+                        new Muff(result.getInt(7),
+                                result.getString(8),
+                                result.getString(9),
+                                result.getInt(10),
+                                result.getTimestamp(11).toLocalDateTime()));
                 reviews.add(review);
             }
         } catch (SQLException e) {
@@ -110,12 +115,11 @@ public class ReviewDAOImpl implements ReviewDAO {
         }
         return reviews;
     }
-
 
     @Override
     public boolean update(int id, int muffId, float rating, String text) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ? and muff_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ? AND muff_id = ?")) {
             preparedStmt.setFloat(1, rating);
             preparedStmt.setString(2, text);
             preparedStmt.setInt(3, id);
@@ -131,7 +135,7 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public boolean delete(int id, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ? and muff_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ? AND muff_id = ?")) {
             preparedStmt.setInt(1, id);
             preparedStmt.setInt(2, muffId);
             int result = preparedStmt.executeUpdate();

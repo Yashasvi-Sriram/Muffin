@@ -11,7 +11,6 @@ public class Character {
     @NonNull
     private String name;
     private int movieId;
-    private int actorId;
     @NonNull
-    private String actorName;
+    private Actor actor;
 }

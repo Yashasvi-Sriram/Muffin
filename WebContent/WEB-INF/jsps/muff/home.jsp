@@ -34,8 +34,9 @@
                                              actorSearchUrl="/actor/search"/>, document.getElementById('search-app'));
             ReactDOM.render(<GiveReviewApp contextPath="${pageContext.request.contextPath}"
                                            url="/review/create"/>, document.getElementById('give-review-app'));
-            ReactDOM.render(<InfiniteFeedApp contextPath="${pageContext.request.contextPath}"
-                                             reviewFetchUrl="/review/fetch"/>, document.getElementById('give-review-app'));
+            ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                                             contextPath="${pageContext.request.contextPath}"
+                                             reviewFetchUrl="/review/fetch/muff"/>, document.getElementById('infinite-feed-app'));
         </script>
         <script type="text/javascript">
             $(document).ready(function () {
@@ -121,6 +122,8 @@
         </a>
 
         <%--Infinite Feed App--%>
-        <div id="infinite-feed-app"></div>
+        <div class="container">
+            <div id="infinite-feed-app"></div>
+        </div>
     </jsp:body>
 </m:base>

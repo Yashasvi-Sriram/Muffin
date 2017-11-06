@@ -14,5 +14,6 @@ public class Movie {
     @NonNull
     private String name;
     private int durationInMinutes;
+    @NonNull
     private List<Genre> genres;
 }

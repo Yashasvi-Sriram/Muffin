@@ -20,7 +20,6 @@ import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 
 import com.google.gson.GsonBuilder;
 
-
 /**
  * doGetWithSession:  returns matched actors
  * doPostWithSession: same as get

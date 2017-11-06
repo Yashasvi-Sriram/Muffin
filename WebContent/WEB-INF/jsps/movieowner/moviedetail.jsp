@@ -66,7 +66,7 @@
                 render: function () {
                     return (
                             <tr title={this.props.name}>
-                                <td className="flow-text">{truncate(this.props.actorName, 25)}</td>
+                                <td className="flow-text">{truncate(this.props.actor.name, 25)}</td>
                                 <td className="flow-text">{truncate(this.props.name, 25)}</td>
                                 <td>
                                 </td>
@@ -107,8 +107,7 @@
                                 id: ${character.id},
                                 name: '${character.name}',
                                 movieId: '${character.movieId}',
-                                actorId: '${character.actorId}',
-                                actorName: '${character.actorName}',
+                                actor: {name: '${character.actor.name}', id: ${character.actor.id}},
                             },
                             </jstl:forEach>
                         ],
@@ -181,7 +180,7 @@
                         }
                     });
                 },
-                updateActor: function (text) {
+                selectActor: function (text) {
                     this.refs.actorName.value = text;
                     $(this.refs.actors).hide();
                 },
@@ -194,7 +193,7 @@
                             $.ajax({
                                 url: '${pageContext.request.contextPath}/actor/search',
                                 type: 'GET',
-                                data: {searchKey: e.target.value},
+                                data: {pattern: e.target.value, offset: 0, limit: 1000},
                                 success: function (r) {
                                     let json = JSON.parse(r);
                                     if (json.status === -1) {
@@ -227,14 +226,14 @@
                                 key={actor.id}
                                 id={actor.id}
                                 actorName={actor.name}
-                                onActorClick={this.updateActor}
+                                onActorClick={this.selectActor}
                         />;
                     });
-                    let characters = this.state.characters.map(m => {
-                        return <CharacterItem key={m.id}
-                                              id={m.id}
-                                              name={m.name}
-                                              actorName={m.actorName}
+                    let characters = this.state.characters.map(c => {
+                        return <CharacterItem key={c.id}
+                                              id={c.id}
+                                              name={c.name}
+                                              actor={c.actor}
                                               onDeleteClick={this.deleteCharacter}
                         />;
                     });

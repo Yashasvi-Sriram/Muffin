@@ -1,5 +1,6 @@
 package org.muffin.muffin.daoimplementations;
 
+import org.muffin.muffin.beans.Actor;
 import org.muffin.muffin.beans.Character;
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.daos.CharacterDAO;
@@ -27,9 +28,8 @@ public class CharacterDAOImpl implements CharacterDAO {
                         result.getInt(1),
                         result.getString(2),
                         result.getInt(3),
-                        result.getInt(4),
-                        result.getString(5));
-                System.out.println(character);
+                        new Actor(result.getInt(4), result.getString(5))
+                );
                 characterList.add(character);
             }
             return characterList;
@@ -70,7 +70,7 @@ public class CharacterDAOImpl implements CharacterDAO {
             ResultSet result2 = preparedStmt2.executeQuery();
             if (result.next()) {
                 if (result2.next()) {
-                    Character character = new Character(result.getInt(1), result.getString(2), result.getInt(3), result.getInt(4), result2.getString(2));
+                    Character character = new Character(result.getInt(1), result.getString(2), result.getInt(3), new Actor(result.getInt(4), result2.getString(2)));
                     return Optional.of(character);
                 }
             }

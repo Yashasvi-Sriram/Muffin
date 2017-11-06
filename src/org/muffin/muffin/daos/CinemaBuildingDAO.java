@@ -11,8 +11,7 @@ import java.util.Optional;
 
 public interface CinemaBuildingDAO {
 
+    public boolean create(final int ownerId, final String name, final String streetName, final String city, final String state, final String country, final String zip);
 
-    public boolean create(final int ownerId, @NonNull final String name, @NonNull final String streetName, @NonNull final String city, @NonNull final String state, @NonNull final String country, @NonNull final String zip);
-
-    public Optional<CinemaBuilding> get(@NonNull final String name, @NonNull final String streetName, @NonNull final String city, @NonNull final String state, @NonNull final String country, @NonNull final String zip);
+    public Optional<CinemaBuilding> get(final String name, final String streetName, final String city, final String state, final String country, final String zip);
 }
