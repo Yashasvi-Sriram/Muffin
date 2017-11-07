@@ -27,7 +27,9 @@
     </jsp:attribute>
     <jsp:body>
         <script type="text/babel">
-            let truncate = function (string, maxLength) {
+
+
+			let truncate = function (string, maxLength) {
                 let label;
                 if (string.length > maxLength) {
                     label = string.substring(0, maxLength) + '...';
@@ -37,6 +39,7 @@
                 }
                 return label;
             };
+
             let isCharacterValid = function (actorName, characterName) {
                 if (actorName === '') {
                     Materialize.toast('Actor Name name is empty!', 3000);
@@ -59,10 +62,18 @@
                 return true;
             };
 
-            /**
-             * @propFunctions: onDeleteClick
-             * */
-            let CharacterItem = React.createClass({
+	
+            let SearchResultWrapper = React.createClass({
+            render: function () {
+                return (
+                    <tr>
+                        <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
+                    </tr>
+                );
+            }
+            });
+
+			let CharacterItem = React.createClass({
                 render: function () {
                     return (
                             <tr title={this.props.name}>
@@ -84,23 +95,13 @@
                 }
             });
 
-            /**
-             * @propFunctions: onActorClick
-             * */
-            let ActorSearchResult = React.createClass({
-                render: function () {
-                    return (
-                            <tr>
-                                <td onClick={e => this.props.onActorClick(this.props.actorName)}>{this.props.actorName}</td>
-                            </tr>
-                    );
-                }
-            });
-
-            let CharacterEditor = React.createClass({
+            let ActorSearchApp = React.createClass({
                 getInitialState: function () {
+					console.log(${requestScope.movieId});
+					console.log("${requestScope.characterList}");
+					console.log("hey");
                     return {
-                        movieId: ${requestScope.movieId},
+						movieId: ${requestScope.movieId},
                         characters: [
                             <jstl:forEach items="${requestScope.characterList}" var="character">
                             {
@@ -111,13 +112,113 @@
                             },
                             </jstl:forEach>
                         ],
-                        actors: [],
+                        results: [],
+                        offset: 0,
                     }
                 },
-                createCharacter: function () {
+            getDefaultProps: function () {
+                return {
+                    limit: 3,
+                    contextPath: '',
+                    url: '',
+                }
+            },
+            _resetOffset: function () {
+                this.state.offset = 0;
+            },
+            _incrementOffset: function (fetchedDataLength) {
+                // last batch
+                if (fetchedDataLength < this.props.limit) {
+                    this.state.offset -= this.props.limit;
+                    this.state.offset += fetchedDataLength;
+                }
+                // update limit
+                this.state.offset += this.props.limit;
+            },
+            _decrementOffset: function () {
+                let floorExcess = this.state.offset % this.props.limit;
+                this.state.offset -= floorExcess;
+                if (floorExcess === 0) {
+                    let prevOffset = this.state.offset - 2 * this.props.limit;
+                    this.state.offset = prevOffset < 0 ? 0 : prevOffset;
+                } else {
+                    let prevOffset = this.state.offset - this.props.limit;
+                    this.state.offset = prevOffset < 0 ? 0 : prevOffset;
+                }
+            },
+            fetchNextBatch: function (pattern) {
+                let url = '${pageContext.request.contextPath}/actor/search';
+                let self = this;
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: {pattern: pattern, offset: self.state.offset, limit: self.props.limit},
+                    success: function (r) {
+                        let json = JSON.parse(r);
+                        if (json.status === -1) {
+                            Materialize.toast(json.error, 2000);
+                        }
+                        else {
+                            let data = json.data;
+                            self._incrementOffset(data.length);
+                            // no results
+                            if (data.length === 0) {
+                                Materialize.toast('End of search!', 2000);
+                                return;
+                            }
+                            // add results
+                            self.setState(ps => {
+                                return {results: data};
+                            });
+                            $(self.refs.results).show();
+                        }
+                    },
+                    error: function (data) {
+                        Materialize.toast('Server Error', 2000);
+                    }
+                });
+            },
+            fetchPreviousBatch: function (pattern) {
+                this._decrementOffset();
+                if (this.state.offset === 0) {
+                    Materialize.toast('Start of search!', 2000);
+                }
+                this.fetchNextBatch(pattern);
+            },
+            onRegexInputKeyDown: function (e) {
+                switch (e.keyCode || e.which) {
+                    // Enter Key
+                    case 13:
+                        let self = this;
+                        this._resetOffset();
+                        self.setState({results: []});
+                        this.fetchNextBatch(e.target.value);
+                        break;
+                    // Escape key
+                    case 27:
+                        $(this.refs.results).hide();
+                        break;
+                    // Page Up key
+                    case 33:
+                        this.fetchPreviousBatch(this.refs.pattern.value);
+                        break;
+                    // Page Down key
+                    case 34:
+                        this.fetchNextBatch(this.refs.pattern.value);
+                        break;
+                    default:
+                        break;
+                }
+            },
+			selectActor: function (text) {
+                    this.refs.pattern.value = text;
+					$(this.refs.results).hide();
+                    
+                },
+			createCharacter: function () {
                     let self = this;
                     // validation
-                    if (!isCharacterValid(this.refs.actorName.value, this.refs.characterName.value)) {
+                    if (!isCharacterValid(this.refs.pattern.value, this.refs.characterName.value)) {
                         return;
                     }
                     // ajax call
@@ -125,7 +226,7 @@
                         url: '${pageContext.request.contextPath}/character/create',
                         type: 'POST',
                         data: {
-                            actorName: this.refs.actorName.value,
+                            actorName: this.refs.pattern.value,
                             characterName: this.refs.characterName.value,
                             movieId: this.state.movieId
                         },
@@ -180,56 +281,17 @@
                         }
                     });
                 },
-                selectActor: function (text) {
-                    this.refs.actorName.value = text;
-                    $(this.refs.actors).hide();
-                },
-                onRegexInputKeyDown: function (e) {
-                    let self = this;
-                    switch (e.keyCode || e.which) {
-                        // Enter Key
-                        case 13:
-                            let self = this;
-                            $.ajax({
-                                url: '${pageContext.request.contextPath}/actor/search',
-                                type: 'GET',
-                                data: {pattern: e.target.value, offset: 0, limit: 1000},
-                                success: function (r) {
-                                    let json = JSON.parse(r);
-                                    if (json.status === -1) {
-                                        Materialize.toast(json.error, 2000);
-                                    }
-                                    else {
-                                        let data = json.data;
-                                        self.setState(ps => {
-                                            return {actors: data};
-                                        });
-                                        $(self.refs.actors).show();
-                                    }
-                                },
-                                error: function (data) {
-                                    Materialize.toast('Server Error', 2000);
-                                }
-                            });
-                            break;
-                        // Escape key
-                        case 27:
-                            $(this.refs.actors).hide();
-                            break;
-                        default:
-                            break;
-                    }
-                },
-                render: function () {
-                    let actors = this.state.actors.map(actor => {
-                        return <ActorSearchResult
-                                key={actor.id}
-                                id={actor.id}
-                                actorName={actor.name}
-                                onActorClick={this.selectActor}
-                        />;
-                    });
-                    let characters = this.state.characters.map(c => {
+            render: function () {
+                let results = this.state.results.map(actor => {
+                    return <SearchResultWrapper
+                        key={actor.id}
+                        id={actor.id}
+                        name={actor.name}
+						onItemClick={this.selectActor}
+                       
+                    />;
+                });
+				let characters = this.state.characters.map(c => {
                         return <CharacterItem key={c.id}
                                               id={c.id}
                                               name={c.name}
@@ -237,18 +299,18 @@
                                               onDeleteClick={this.deleteCharacter}
                         />;
                     });
-                    return (
-                            <div>
-                                <table className="bordered highlight">
+                return (
+                    <div>
+						<table className="bordered highlight">
                                     <thead>
                                     <tr className="create-character-form"
                                         ref="createCharacterForm">
                                         <td>
-                                            <input type="text" ref="actorName"
-                                                   name="actorName" placeholder="Actor Name"
-                                                   defaultValue="" onKeyDown={this.onRegexInputKeyDown}/>
-                                        </td>
-                                        <td>
+                        <input onKeyDown={this.onRegexInputKeyDown}
+                               ref="pattern"
+                               placeholder="Search" type="text"/>
+						</td>
+						<td>
                                             <input type="text"
                                                    ref="characterName"
                                                    name="characterName"
@@ -263,9 +325,22 @@
                                         </td>
                                     </tr>
                                     </thead>
-                                    <tbody ref="actors">{actors}</tbody>
-                                </table>
-                                <table className="highlight centered striped">
+						</table>
+                        <div ref="results">
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_left</i></button>
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_right</i></button>
+                            <span>Or use PageUp | PageDown to navigate</span>
+                            <table className="white highlight">
+                                <tbody>{results}</tbody>
+                            </table>
+							
+
+                        </div>
+						<table className="highlight centered striped">
                                     <thead>
                                     <tr>
                                         <th>Actor Name</th>
@@ -274,12 +349,16 @@
                                     </thead>
                                     <tbody>{characters}</tbody>
                                 </table>
-                            </div>
-                    );
-                },
-            });
+                    </div>
+                );
+            },
+            componentDidMount: function () {
+                $(this.refs.results).hide();
+            },
+});
 
-            ReactDOM.render(<CharacterEditor/>, document.getElementById('app'));
+		ReactDOM.render(<ActorSearchApp/>, document.getElementById('app'));
+
         </script>
         <div class="container">
             <div id="app"></div>

@@ -325,7 +325,9 @@
                                                placeholder="Duration (In Minutes)"
                                                defaultValue=""/>
                                     </td>
+										
                                     <td>
+                                    <div className="chips"></div>
                                     </td>
 									<td>
                                     </td>
@@ -356,6 +358,11 @@
             });
 
             ReactDOM.render(<MovieEditor/>, document.getElementById('app'));
+        </script>
+        <script>
+        $( document ).ready(function() {
+        	 $('.chips').material_chip();
+        });
         </script>
         <div id="app" class="container"></div>
     </jsp:body>
