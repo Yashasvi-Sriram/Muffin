@@ -23,13 +23,18 @@
                 outline: 1px solid black !important;
             }
 
+            .autocomplete-result-div {
+                position: absolute;
+                z-index: 1000;
+                outline: 1px solid gray;
+                background-color: white;
+                cursor: pointer;
+            }
         </style>
     </jsp:attribute>
     <jsp:body>
         <script type="text/babel">
-
-
-			let truncate = function (string, maxLength) {
+            let truncate = function (string, maxLength) {
                 let label;
                 if (string.length > maxLength) {
                     label = string.substring(0, maxLength) + '...';
@@ -62,18 +67,17 @@
                 return true;
             };
 
-	
-            let SearchResultWrapper = React.createClass({
-            render: function () {
-                return (
-                    <tr>
-                        <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
-                    </tr>
-                );
-            }
+            let Actor = React.createClass({
+                render: function () {
+                    return (
+                            <tr>
+                                <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
+                            </tr>
+                    );
+                }
             });
 
-			let CharacterItem = React.createClass({
+            let CharacterItem = React.createClass({
                 render: function () {
                     return (
                             <tr title={this.props.name}>
@@ -95,13 +99,10 @@
                 }
             });
 
-            let ActorSearchApp = React.createClass({
+            let ActorCharacterMapper = React.createClass({
                 getInitialState: function () {
-					console.log(${requestScope.movieId});
-					console.log("${requestScope.characterList}");
-					console.log("hey");
                     return {
-						movieId: ${requestScope.movieId},
+                        movieId: ${requestScope.movieId},
                         characters: [
                             <jstl:forEach items="${requestScope.characterList}" var="character">
                             {
@@ -212,10 +213,10 @@
             },
 			selectActor: function (text) {
                     this.refs.pattern.value = text;
-					$(this.refs.results).hide();
-                    
+                    $(this.refs.results).hide();
+
                 },
-			createCharacter: function () {
+                createCharacter: function () {
                     let self = this;
                     // validation
                     if (!isCharacterValid(this.refs.pattern.value, this.refs.characterName.value)) {
@@ -281,17 +282,17 @@
                         }
                     });
                 },
-            render: function () {
-                let results = this.state.results.map(actor => {
-                    return <SearchResultWrapper
-                        key={actor.id}
-                        id={actor.id}
-                        name={actor.name}
-						onItemClick={this.selectActor}
-                       
-                    />;
-                });
-				let characters = this.state.characters.map(c => {
+                render: function () {
+                    let results = this.state.results.map(actor => {
+                        return <Actor
+                                key={actor.id}
+                                id={actor.id}
+                                name={actor.name}
+                                onItemClick={this.selectActor}
+
+                        />;
+                    });
+                    let characters = this.state.characters.map(c => {
                         return <CharacterItem key={c.id}
                                               id={c.id}
                                               name={c.name}
@@ -299,18 +300,18 @@
                                               onDeleteClick={this.deleteCharacter}
                         />;
                     });
-                return (
-                    <div>
-						<table className="bordered highlight">
+                    return (
+                            <div>
+                                <table className="bordered highlight">
                                     <thead>
                                     <tr className="create-character-form"
                                         ref="createCharacterForm">
                                         <td>
-                        <input onKeyDown={this.onRegexInputKeyDown}
-                               ref="pattern"
-                               placeholder="Search" type="text"/>
-						</td>
-						<td>
+                                            <input onKeyDown={this.onRegexInputKeyDown}
+                                                   ref="pattern"
+                                                   placeholder="Actor" type="text"/>
+                                        </td>
+                                        <td>
                                             <input type="text"
                                                    ref="characterName"
                                                    name="characterName"
@@ -325,22 +326,20 @@
                                         </td>
                                     </tr>
                                     </thead>
-						</table>
-                        <div ref="results">
-                            <button className="btn btn-flat"
-                                    onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
-                                className="material-icons">keyboard_arrow_left</i></button>
-                            <button className="btn btn-flat"
-                                    onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
-                                className="material-icons">keyboard_arrow_right</i></button>
-                            <span>Or use PageUp | PageDown to navigate</span>
-                            <table className="white highlight">
-                                <tbody>{results}</tbody>
-                            </table>
-							
-
-                        </div>
-						<table className="highlight centered striped">
+                                </table>
+                                <div ref="results" className="autocomplete-result-div">
+                                    <button className="btn btn-flat"
+                                            onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                            className="material-icons">keyboard_arrow_left</i></button>
+                                    <button className="btn btn-flat"
+                                            onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                            className="material-icons">keyboard_arrow_right</i></button>
+                                    <span>Or use PageUp | PageDown to navigate</span>
+                                    <table className="white highlight bordered">
+                                        <tbody>{results}</tbody>
+                                    </table>
+                                </div>
+                                <table className="highlight centered striped">
                                     <thead>
                                     <tr>
                                         <th>Actor Name</th>
@@ -349,16 +348,14 @@
                                     </thead>
                                     <tbody>{characters}</tbody>
                                 </table>
-                    </div>
-                );
-            },
-            componentDidMount: function () {
-                $(this.refs.results).hide();
-            },
-});
-
-		ReactDOM.render(<ActorSearchApp/>, document.getElementById('app'));
-
+                            </div>
+                    );
+                },
+                componentDidMount: function () {
+                    $(this.refs.results).hide();
+                },
+            });
+            ReactDOM.render(<ActorCharacterMapper/>, document.getElementById('app'));
         </script>
         <div class="container">
             <div id="app"></div>
