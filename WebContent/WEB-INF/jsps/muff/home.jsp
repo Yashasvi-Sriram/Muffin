@@ -17,6 +17,14 @@
             #search-app input {
                 font-size: large !important;
             }
+
+            #infinite-feed-app .review textarea {
+                border: none;
+            }
+
+            #infinite-feed-app .review {
+                border-radius: 15px!important;
+            }
         </style>
     </jsp:attribute>
     <jsp:body>

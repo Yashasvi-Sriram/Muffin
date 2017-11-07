@@ -1,10 +1,14 @@
 let Review = React.createClass({
     render: function () {
         return (
-            <div className="card">
+            <div className="card review hoverable">
                 <div className="card-content">
-                    <div>{this.props.rating}</div>
-                    <div className="pink-text">{this.props.movieName}</div>
+                    <h4>{this.props.movieName}</h4>
+                    <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
+                    <br/>
+                    <div className="red-text">{this.props.rating}</div>
+                    <textarea disabled="disabled" className="flow-text" defaultValue={this.props.text}>
+                    </textarea>
                 </div>
             </div>
         );
@@ -89,7 +93,9 @@ window.InfiniteFeedApp = React.createClass({
                         key={feedItem.data.id}
                         id={feedItem.data.id}
                         rating={feedItem.data.rating}
-                        movieName={feedItem.data.movieName}/>;
+                        text={feedItem.data.text}
+                        movieName={feedItem.data.movieName}
+                        muff={feedItem.data.muff}/>;
                     break;
                 default:
                     return <div>Unknown Element</div>;
@@ -101,9 +107,9 @@ window.InfiniteFeedApp = React.createClass({
                 <div ref="feed">
                     {feed}
                 </div>
-                <button className="btn btn-flat"
+                <button className="btn-floating"
                         onClick={e => this.fetchNextReviewBatch()}>
-                    <i className="material-icons">keyboard_arrow_right</i>
+                    <i className="material-icons">keyboard_arrow_down</i>
                 </button>
             </div>
         );
