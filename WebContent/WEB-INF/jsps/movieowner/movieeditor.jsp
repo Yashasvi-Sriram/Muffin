@@ -60,17 +60,21 @@
                 return true;
             };
 
+			
+
             /**
              * @propFunctions: onDeleteClick, onEditClick
              * */
             let MovieItem = React.createClass({
                 getInitialState: function () {
+					
                     return {
                         inReadMode: true,
                     }
                 },
                 readModeRender: function () {
                     let url = "${pageContext.request.contextPath}/movieowner/moviedetail?movieId=" + this.props.id;
+					
                     return (
                             <tr title={this.props.name}
                                 onDoubleClick={() => this.setState(() => {
@@ -78,6 +82,16 @@
                                 })}>
                                 <td className="flow-text">{truncate(this.props.name, 20)}</td>
                                 <td>{this.props.durationInMinutes}</td>
+								<td>
+								<ul>
+          						 {
+                                    this.props.genres.map(m => {
+                                        return <li>{m.name}</li>;
+                                    })
+                                }
+                                
+        						</ul>
+								</td>
                                 <td>
                                     <a href={url} type="submit" name="movieId" value={this.props.id}
                                        className="btn-floating waves-effect waves-light blue">
@@ -129,7 +143,10 @@
                                            defaultValue={this.props.durationInMinutes}/>
                                 </td>
                                 <td>
+								
                                 </td>
+								<td>
+								</td>
                                 <td>
                                     <a href="#"
                                        onClick={(e) => {
@@ -163,6 +180,7 @@
 
             let MovieEditor = React.createClass({
                 getInitialState: function () {
+					
                     return {
                         movies: [
                             <jstl:forEach items="${requestScope.movieList}" var="movie">
@@ -171,6 +189,14 @@
                                 name: '${movie.name}',
                                 movieOwnerId: '${movie.movieOwnerId}',
                                 durationInMinutes: ${movie.durationInMinutes},
+								genres:  [
+                            		<jstl:forEach items="${movie.genres}" var="genre">
+                            		{
+                                	genreid: ${genre.id},
+                                	name: '${genre.name}', 
+                           			 },
+                           			 </jstl:forEach>
+                        		],
                             },
                             </jstl:forEach>
                         ],
@@ -279,6 +305,7 @@
                                 <tr>
                                     <th>Name</th>
                                     <th>Duration (In minutes)</th>
+									<th>Genre(s)</th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -300,6 +327,8 @@
                                     </td>
                                     <td>
                                     </td>
+									<td>
+                                    </td>
                                     <td>
                                     </td>
                                     <td>
@@ -315,6 +344,7 @@
                                                           id={m.id}
                                                           name={m.name}
                                                           durationInMinutes={m.durationInMinutes}
+														  genres = {m.genres}
                                                           onDeleteClick={this.deleteMovie}
                                                           onEditClick={this.editMovie}/>;
                                     })
