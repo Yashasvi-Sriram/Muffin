@@ -10,6 +10,7 @@ Find the description, objectives and features [here](https://docs.google.com/doc
 	c. a window shoud popup, it will ask for eclipse binary location
 	d. give the eclipse binary location and click install/update
 	e. if the installer shows installation successful, then lombok is configured for eclipse
+	f. restart eclipse if above step showed installation successful
 7. /src/org/muffin/muffin/db/DBConfig.java contains db credential fields
 8. All sql files are in `sql/` dir
 9. `reset.sql` re-sets the tables, `init.sql` initializes tables with some sample data
