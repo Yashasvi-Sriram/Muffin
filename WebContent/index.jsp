@@ -11,7 +11,7 @@
             });
         </script>
         <div class="parallax-container">
-            <div class="parallax"><img src="${pageContext.request.contextPath}/static/penguin.jpg"/></div>
+            <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/penguin.jpg"/></div>
         </div>
         <div class="container" style="height: 50vh">
             <div class="section flow-text white">
@@ -19,7 +19,7 @@
                 <span class="pink-text">M</span>ovie
                 B<span class="pink-text">uff</span>
                 <span class="pink-text">In</span>c.
-                <img src="${pageContext.request.contextPath}/static/logo.ico" alt="Muffin">
+                <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="Muffin">
                 <br/>
                 A community for <span class="pink-text">m</span>ovie b<span class="pink-text">uffs</span>
             </div>
@@ -43,7 +43,7 @@
             </div>
         </div>
         <div class="parallax-container">
-            <div class="parallax"><img src="${pageContext.request.contextPath}/static/fireways.jpg"/></div>
+            <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/fireways.jpg"/></div>
         </div>
     </jsp:body>
 </m:base>

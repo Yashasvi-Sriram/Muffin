@@ -6,7 +6,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <link rel="icon" href="${pageContext.request.contextPath}/static/logo.ico">
+    <link rel="icon" href="${pageContext.request.contextPath}/static/images/logo.png">
     <%--JQuery--%>
     <script type="text/javascript" src="${pageContext.request.contextPath}/static/jquery/jquery-3.2.1.min.js"></script>
     <%--Materialize--%>

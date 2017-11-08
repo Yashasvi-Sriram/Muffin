@@ -99,7 +99,7 @@
         <ul id="nav-bar" class="side-nav">
             <li>
                 <div class="user-view brown" style="margin: 0">
-                    <img src="${pageContext.request.contextPath}/static/logo.ico" alt="Muffi(co)n">
+                    <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="Muffi(co)n">
                     <span class="white-text"
                           style="font-size: 50px; font-family: 'Lobster', cursive;">Movie Buff Inc.</span>
                 </div>
