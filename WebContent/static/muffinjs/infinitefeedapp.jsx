@@ -31,7 +31,7 @@ window.InfiniteFeedApp = React.createClass({
             muffId: 0,
             limit: 10,
             contextPath: '',
-            reviewFetchUrl: '/review/fetch/muffandfollowers',
+            reviewFetchUrl: '/review/fetch/followers',
         }
     },
     _incrementReviewOffset: function (fetchedDataLength) {
@@ -107,7 +107,7 @@ window.InfiniteFeedApp = React.createClass({
                 <div ref="feed">
                     {feed}
                 </div>
-                <button className="btn-floating"
+                <button className="btn-flat btn"
                         onClick={e => this.fetchNextReviewBatch()}>
                     <i className="material-icons">keyboard_arrow_down</i>
                 </button>

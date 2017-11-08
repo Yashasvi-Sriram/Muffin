@@ -27,18 +27,17 @@ let isReviewValid = function (name, rating, review) {
 };
 
 let SearchResultWrapper = React.createClass({
-            render: function () {
-                return (
-                    <tr>
-                        <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
-                    </tr>
-                );
-            }
-            });
+    render: function () {
+        return (
+            <tr>
+                <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
+            </tr>
+        );
+    }
+});
 
 window.GiveReviewApp = React.createClass({
-
-	getInitialState: function () {
+    getInitialState: function () {
         return {
             results: [],
             offset: 0,
@@ -48,11 +47,11 @@ window.GiveReviewApp = React.createClass({
         return {
             contextPath: '',
             url: '/review/create',
-           	limit: 3,
-            
+            limit: 3,
+
         }
     },
-     _resetOffset: function () {
+    _resetOffset: function () {
         this.state.offset = 0;
     },
     _incrementOffset: function (fetchedDataLength) {
@@ -140,10 +139,10 @@ window.GiveReviewApp = React.createClass({
         }
     },
     selectMovie: function (text) {
-                    this.refs.name.value = text;
-					$(this.refs.results).hide();
-                    
-                },
+        this.refs.name.value = text;
+        $(this.refs.results).hide();
+
+    },
     addMovieReview: function () {
         // validation
         if (!isReviewValid(this.refs.name.value, this.refs.rating.value, this.refs.textReview.value)) {
@@ -175,14 +174,14 @@ window.GiveReviewApp = React.createClass({
         });
     },
     render: function () {
-    
-    	let results = this.state.results.map(movie => {
+
+        let results = this.state.results.map(movie => {
             return <SearchResultWrapper
                 key={movie.id}
                 id={movie.id}
                 name={movie.name}
                 onItemClick={this.selectMovie}
-               
+
             />;
         });
         return (
@@ -200,7 +199,8 @@ window.GiveReviewApp = React.createClass({
                         </textarea>
                 </div>
                 <div className="input-field col s6">
-                    <input type="text" ref="name" placeholder="Name of the movie" onKeyDown={this.onRegexInputKeyDown} defaultValue=""/>
+                    <input type="text" ref="name" placeholder="Name of the movie" onKeyDown={this.onRegexInputKeyDown}
+                           defaultValue=""/>
                 </div>
                 <div className="input-field col s6">
                     <button onClick={this.addMovieReview}
@@ -209,21 +209,21 @@ window.GiveReviewApp = React.createClass({
                     </button>
                 </div>
                 <div ref="results">
-                            <button className="btn btn-flat"
-                                    onClick={e => this.fetchPreviousBatch(this.refs.name.value)}><i
-                                className="material-icons">keyboard_arrow_left</i></button>
-                            <button className="btn btn-flat"
-                                    onClick={e => this.fetchNextBatch(this.refs.name.value)}><i
-                                className="material-icons">keyboard_arrow_right</i></button>
-                            <span>Or use PageUp | PageDown to navigate</span>
-                            <table className="white">
-                                <tbody>{results}</tbody>
-                            </table>
-                        </div>
+                    <button className="btn btn-flat"
+                            onClick={e => this.fetchPreviousBatch(this.refs.name.value)}><i
+                        className="material-icons">keyboard_arrow_left</i></button>
+                    <button className="btn btn-flat"
+                            onClick={e => this.fetchNextBatch(this.refs.name.value)}><i
+                        className="material-icons">keyboard_arrow_right</i></button>
+                    <span>Or use PageUp | PageDown to navigate</span>
+                    <table className="white">
+                        <tbody>{results}</tbody>
+                    </table>
+                </div>
             </div>
         );
     },
-     componentDidMount: function () {
-                $(this.refs.results).hide();
-            },
+    componentDidMount: function () {
+        $(this.refs.results).hide();
+    },
 });

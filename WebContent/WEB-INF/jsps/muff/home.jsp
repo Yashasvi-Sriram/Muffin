@@ -23,7 +23,7 @@
             }
 
             #infinite-feed-app .review {
-                border-radius: 15px!important;
+                border-radius: 15px !important;
             }
         </style>
     </jsp:attribute>
@@ -44,7 +44,7 @@
                                            url="/review/create"/>, document.getElementById('give-review-app'));
             ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
                                              contextPath="${pageContext.request.contextPath}"
-                                             reviewFetchUrl="/review/fetch/muff"/>, document.getElementById('infinite-feed-app'));
+                                             reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
         </script>
         <script type="text/javascript">
             $(document).ready(function () {
