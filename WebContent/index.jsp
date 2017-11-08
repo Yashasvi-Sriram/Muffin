@@ -20,6 +20,8 @@
                 B<span class="pink-text">uff</span>
                 <span class="pink-text">In</span>c.
                 <img src="${pageContext.request.contextPath}/static/logo.ico" alt="Muffin">
+                <br/>
+                A community for <span class="pink-text">m</span>ovie b<span class="pink-text">uffs</span>
             </div>
             <div class="collection">
                 <a href="${pageContext.request.contextPath}/muff/login" class="collection-item">
