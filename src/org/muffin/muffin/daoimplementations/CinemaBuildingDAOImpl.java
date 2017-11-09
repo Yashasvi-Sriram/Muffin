@@ -6,6 +6,8 @@ import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -62,6 +64,25 @@ public class CinemaBuildingDAOImpl implements CinemaBuildingDAO {
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
+        }
+    }
+
+    @Override
+    public List<CinemaBuilding> getByOwner(int ownerId) {
+        List<CinemaBuilding> cinemaBuildingsList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM cinema_building WHERE cinema_building.owner_id = ?")) {
+            preparedStmt.setInt(1, ownerId);
+            ResultSet result = preparedStmt.executeQuery();
+            while (result.next()) {
+
+                CinemaBuilding cinemaBuilding = new CinemaBuilding(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4), result.getString(5), result.getString(6), result.getString(7), result.getString(8));
+                cinemaBuildingsList.add(cinemaBuilding);
+            }
+            return cinemaBuildingsList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
         }
     }
 }

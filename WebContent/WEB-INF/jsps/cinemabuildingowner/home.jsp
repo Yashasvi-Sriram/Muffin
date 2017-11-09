@@ -36,6 +36,10 @@
                 outline: none;
                 box-shadow: none !important;
             }
+
+            a {
+                font-size: 20px
+            }
         </style>
     </jsp:attribute>
     <jsp:body>
@@ -104,9 +108,11 @@
                             let json = JSON.parse(r);
                             if (json.status === -1) {
                                 Materialize.toast(json.error, 2000);
+
                             }
                             else {
                                 Materialize.toast("Cinema Building Added Successfully", 2000);
+                                $(self.refs.createBuildingForm).find('input').val('');
                             }
                         },
                         error: function (data) {
@@ -116,7 +122,8 @@
                 },
                 render: function () {
                     return (
-                            <div>
+                            <div className="create-building-form"
+                                 ref="createBuildingForm">
                                 <input type="text" ref="name"
                                        name="name" placeholder="Cinema Building Name" defaultValue=""/>
                                 <input type="text" ref="streetName"
@@ -141,7 +148,8 @@
 
             ReactDOM.render(<CreateCinemaBuilding/>, document.getElementById('create-cinema-building'));
         </script>
-
+        <a href="${pageContext.request.contextPath}/cinemabuildingowner/buildinglist">See your existing buildings</a>
+        <h4>Add a new Building</h4>
         <div id="create-cinema-building"></div>
     </jsp:body>
 </m:base>

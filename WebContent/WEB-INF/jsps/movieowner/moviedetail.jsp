@@ -107,6 +107,9 @@
                 }
             });
 
+            /**
+             * @propFunctions: onDeleteClick, onItemClick
+             * */
 
             let ActorCharacterMapper = React.createClass({
                 getInitialState: function () {
@@ -399,6 +402,9 @@
             });
 
 
+            /**
+             * @propFunctions: onDeleteClick, onItemClick
+             * */
             let GenreList = React.createClass({
                 getInitialState: function () {
                     return {
