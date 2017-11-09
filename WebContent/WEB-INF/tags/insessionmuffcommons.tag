@@ -100,6 +100,13 @@
             Give Review
         </a>
     </li>
+    <li>
+        <a href="${pageContext.request.contextPath}/muff/logout"
+           title="Logout">
+            <i class="material-icons">power_settings_new</i>
+            Log out
+        </a>
+    </li>
 </ul>
 <%--Nav bar trigger--%>
 <a href="#"
