@@ -8,13 +8,13 @@
     <jsp:attribute name="title">${sessionScope.get(SessionKeys.MUFF).name} | Home</jsp:attribute>
     <jsp:attribute name="css">
         <style>
-            #search-app td {
+            #butter-search-app td {
                 padding: 10px;
                 font-size: large;
                 cursor: pointer;
             }
 
-            #search-app input {
+            #butter-search-app input {
                 font-size: large !important;
             }
 
@@ -39,7 +39,7 @@
                                              contextPath="${pageContext.request.contextPath}"
                                              muffSearchUrl="/muff/search"
                                              movieSearchUrl="/movie/search"
-                                             actorSearchUrl="/actor/search"/>, document.getElementById('search-app'));
+                                             actorSearchUrl="/actor/search"/>, document.getElementById('butter-search-app'));
             ReactDOM.render(<GiveReviewApp contextPath="${pageContext.request.contextPath}"
                                            url="/review/create"/>, document.getElementById('give-review-app'));
             ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
@@ -79,7 +79,7 @@
         <%--Butter Search Modal--%>
         <div id="butter-search-modal" class="modal modal-fixed-footer">
             <div class="modal-content">
-                <div id="search-app"></div>
+                <div id="butter-search-app"></div>
             </div>
             <div class="modal-footer">
                 <a href="#" class="modal-action modal-close waves-effect btn-flat">

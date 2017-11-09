@@ -29,9 +29,8 @@ let isReviewValid = function (name, rating, review) {
 let SearchResultWrapper = React.createClass({
     render: function () {
         return (
-            <tr>
-                <td onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</td>
-            </tr>
+            <a href="#" className="collection-item"
+               onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</a>
         );
     }
 });
@@ -47,8 +46,7 @@ window.GiveReviewApp = React.createClass({
         return {
             contextPath: '',
             url: '/review/create',
-            limit: 3,
-
+            limit: 10,
         }
     },
     _resetOffset: function () {
@@ -126,14 +124,6 @@ window.GiveReviewApp = React.createClass({
             case 27:
                 $(this.refs.results).hide();
                 break;
-            // Page Up key
-            case 33:
-                this.fetchPreviousBatch(this.refs.name.value);
-                break;
-            // Page Down key
-            case 34:
-                this.fetchNextBatch(this.refs.name.value);
-                break;
             default:
                 break;
         }
@@ -166,6 +156,7 @@ window.GiveReviewApp = React.createClass({
                 else {
                     Materialize.toast("Review Added Successfully", 2000);
                     $(self.refs.form).find('input, textarea').val('');
+                    $(self.refs.form).find('input[type=range]').val(0);
                 }
             },
             error: function (data) {
@@ -181,44 +172,47 @@ window.GiveReviewApp = React.createClass({
                 id={movie.id}
                 name={movie.name}
                 onItemClick={this.selectMovie}
-
             />;
         });
         return (
             <div ref="form" className="row">
-                <div className="input-field col s12">
-                    <p className="range-field">
-                        <span>Rating</span>
-                        <input type="range" min="0" max="10" ref="rating" step="0.1"
-                               defaultValue="0"/>
-                    </p>
-                </div>
-                <div className="input-field col s12">
-                        <textarea ref="textReview" placeholder="Your comment" defaultValue=""
-                                  className="materialize-textarea">
-                        </textarea>
-                </div>
+
                 <div className="input-field col s6">
                     <input type="text" ref="name" placeholder="Name of the movie" onKeyDown={this.onRegexInputKeyDown}
                            defaultValue=""/>
                 </div>
                 <div className="input-field col s6">
                     <button onClick={this.addMovieReview}
-                            className="btn-flat btn">
-                        <i className="material-icons">send</i>
+                            className="btn-flat btn right">
+                        Give Review
                     </button>
                 </div>
-                <div ref="results">
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchPreviousBatch(this.refs.name.value)}><i
-                        className="material-icons">keyboard_arrow_left</i></button>
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchNextBatch(this.refs.name.value)}><i
-                        className="material-icons">keyboard_arrow_right</i></button>
-                    <span>Or use PageUp | PageDown to navigate</span>
-                    <table className="white">
-                        <tbody>{results}</tbody>
-                    </table>
+                <div className="col s12" ref="results">
+                    <div className="collection with-header">
+                        <div className="collection-header"><span className="flow-text">Movies</span>
+                            <span className="right">
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchPreviousBatch(this.refs.name.value)}><i
+                                className="material-icons">keyboard_arrow_left</i></button>
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchNextBatch(this.refs.name.value)}><i
+                                className="material-icons">keyboard_arrow_right</i></button>
+                            </span>
+                        </div>
+                        {results}
+                    </div>
+                </div>
+                <div className="input-field col s12">
+                        <textarea ref="textReview" placeholder="How is the movie?" defaultValue=""
+                                  className="materialize-textarea">
+                        </textarea>
+                </div>
+                <div className="input-field col s6">
+                    <p className="range-field">
+                        <span>Rating</span>
+                        <input type="range" min="0" max="10" ref="rating" step="0.1"
+                               defaultValue="0"/>
+                    </p>
                 </div>
             </div>
         );

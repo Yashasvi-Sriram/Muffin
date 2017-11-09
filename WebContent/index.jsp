@@ -2,7 +2,7 @@
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
     <jsp:attribute name="title">
-      Index
+      Muffin
     </jsp:attribute>
     <jsp:body>
         <script>
@@ -13,8 +13,8 @@
         <div class="parallax-container">
             <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/penguin.jpg"/></div>
         </div>
-        <div class="container" style="height: 50vh">
-            <div class="section flow-text white">
+        <div class="section container" style="height: 50vh">
+            <div class="flow-text white">
                 Welcome to
                 <span class="pink-text">M</span>ovie
                 B<span class="pink-text">uff</span>
