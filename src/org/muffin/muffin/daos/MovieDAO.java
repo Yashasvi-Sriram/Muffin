@@ -10,8 +10,6 @@ import java.util.Optional;
 public interface MovieDAO {
     public List<Movie> getByOwner(final int ownerId);
 
-    public List<Genre> getGenre(final String substring);
-
     public List<Movie> getByGenre(final int genreId);
 
     public Optional<Movie> get(final String name);
