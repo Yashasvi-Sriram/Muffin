@@ -43,12 +43,11 @@ public class Create extends MuffEnsuredSessionServlet {
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         String movieName = request.getParameter("name");
-        String ratingS = request.getParameter("rating");
         String textReview = request.getParameter("textReview");
-        float rating = ratingS.equals("") ? -1 : Float.parseFloat(ratingS);
-
+        float rating = Float.parseFloat(request.getParameter("rating"));
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
+
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
         Optional<Movie> movieOpt = movieDAO.get(movieName);
@@ -59,13 +58,7 @@ public class Create extends MuffEnsuredSessionServlet {
                 out.println(gson.toJson(ResponseWrapper.error("Error! You can give only a single review for this movie")));
             } else {
                 if (reviewDAO.create(movieId, muffId, rating, textReview)) {
-                    reviewOpt = reviewDAO.get(movieId, muffId);
-                    if (reviewOpt.isPresent()) {
-                        out.println(gson.toJson(ResponseWrapper.get(reviewOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-                    } else {
-                        System.out.println("Critical error!");
-                        out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                    }
+                    out.println(gson.toJson(ResponseWrapper.get("Review is posted", ResponseWrapper.STRING_RESPONSE)));
                 } else {
                     out.println(gson.toJson(ResponseWrapper.error("Error!")));
                 }

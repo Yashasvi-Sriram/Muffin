@@ -1,4 +1,4 @@
-let isReviewValid = function (name, rating, review) {
+let isReviewValid = function (name, rating, review, ratingActive) {
     if (name === '') {
         Materialize.toast('Movie name is empty!', 3000);
         return false;
@@ -8,20 +8,21 @@ let isReviewValid = function (name, rating, review) {
         return false;
     }
 
-    if (rating === '' && review === '') {
-        Materialize.toast('Both rating and review cannot be empty!', 3000);
+    if (!ratingActive && review === '') {
+        Materialize.toast('Both stars and review cannot be empty!', 3000);
         return false;
     }
 
-
-    if (isNaN(Number(rating)) && rating !== '') {
+    if (ratingActive && isNaN(Number(rating)) && rating !== '') {
         Materialize.toast('Invalid Rating!', 3000);
         return false;
     }
-    rating = Number(rating);
-    if (rating < 0 || rating > 10) {
-        Materialize.toast('Invalid rating!', 3000);
-        return false;
+    if (ratingActive) {
+        rating = Number(rating);
+        if (rating < 0 || rating > 10) {
+            Materialize.toast('Invalid rating!', 3000);
+            return false;
+        }
     }
     return true;
 };
@@ -135,7 +136,7 @@ window.GiveReviewApp = React.createClass({
     },
     addMovieReview: function () {
         // validation
-        if (!isReviewValid(this.refs.name.value, this.refs.rating.value, this.refs.textReview.value)) {
+        if (!isReviewValid(this.refs.name.value, this.refs.rating.value, this.refs.textReview.value, $(this.refs.ratingSwitch).prop('checked'))) {
             return;
         }
         let self = this;
@@ -145,7 +146,7 @@ window.GiveReviewApp = React.createClass({
             type: 'POST',
             data: {
                 name: this.refs.name.value,
-                rating: this.refs.rating.value,
+                rating: $(self.refs.ratingSwitch).prop('checked') ? this.refs.rating.value : '-1',
                 textReview: this.refs.textReview.value
             },
             success: function (r) {
@@ -154,9 +155,11 @@ window.GiveReviewApp = React.createClass({
                     Materialize.toast(json.error, 2000);
                 }
                 else {
-                    Materialize.toast("Review Added Successfully", 2000);
+                    let data = json.data;
+                    Materialize.toast(data, 2000);
                     $(self.refs.form).find('input, textarea').val('');
                     $(self.refs.form).find('input[type=range]').val(0);
+                    $(self.refs.ratingSwitch).prop('checked', false);
                 }
             },
             error: function (data) {
@@ -202,15 +205,35 @@ window.GiveReviewApp = React.createClass({
                     </div>
                 </div>
                 <div className="input-field col s12">
-                        <textarea ref="textReview" placeholder="How is the movie?" defaultValue=""
+                        <textarea ref="textReview" placeholder="What do you feel about the movie?" defaultValue=""
                                   className="materialize-textarea">
                         </textarea>
                 </div>
+                {/*onClick={e => $(this.refs.rating).prop('disabled', false)}*/}
+                <div className="col s12">
+                    <div className="switch">
+                        <label>
+                            Want to give a stared rating?
+                            <input ref="ratingSwitch" type="checkbox" onChange={e => {
+                                let ratingActive = $(this.refs.ratingSwitch).prop('checked');
+                                if (ratingActive) {
+                                    $(this.refs.rating).prop('disabled', false);
+                                } else {
+                                    $(this.refs.rating).val(0);
+                                    $(this.refs.rating).prop('disabled', true);
+                                }
+                            }}/>
+                            <span className="lever">
+                        </span>
+                        </label>
+                    </div>
+                </div>
                 <div className="input-field col s6">
                     <p className="range-field">
-                        <span>Rating</span>
+                        <span>Stars</span>
                         <input type="range" min="0" max="10" ref="rating" step="0.1"
-                               defaultValue="0"/>
+                               defaultValue="0" disabled={true}/>
+
                     </p>
                 </div>
             </div>

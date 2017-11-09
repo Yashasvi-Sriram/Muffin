@@ -11,7 +11,7 @@
                 <script type="text/babel">
                     ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
                                                      contextPath="${pageContext.request.contextPath}"
-                                                     reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
+                                                     reviewFetchUrl="/review/fetch/muff"/>, document.getElementById('infinite-feed-app'));
                 </script>
                 <%--Infinite Feed App--%>
                 <div class="container">
