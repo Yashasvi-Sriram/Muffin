@@ -1,10 +1,10 @@
 let MuffButterSearchResult = React.createClass({
     render: function () {
         return (
-            <tr>
-                <td>{this.props.name}</td>
-                <td className="pink-text">{this.props.handle}</td>
-            </tr>
+            <a href="#" className="collection-item">
+                <div>{this.props.name}</div>
+                <div className="pink-text">{this.props.handle}</div>
+            </a>
         );
     }
 });
@@ -12,9 +12,9 @@ let MuffButterSearchResult = React.createClass({
 let MovieButterSearchResult = React.createClass({
     render: function () {
         return (
-            <tr>
-                <td>{this.props.name}</td>
-            </tr>
+            <a href="#" className="collection-item">
+                <div>{this.props.name}</div>
+            </a>
         );
     }
 });
@@ -22,9 +22,9 @@ let MovieButterSearchResult = React.createClass({
 let ActorButterSearchResult = React.createClass({
     render: function () {
         return (
-            <tr>
-                <td>{this.props.name}</td>
-            </tr>
+            <a href="#" className="collection-item">
+                <div>{this.props.name}</div>
+            </a>
         );
     }
 });
@@ -175,14 +175,6 @@ window.ButterSearchApp = React.createClass({
             case 27:
                 $(this.refs.results).hide();
                 break;
-            // Page Up key
-            case 33:
-                this.fetchPreviousBatch(this.refs.pattern.value);
-                break;
-            // Page Down key
-            case 34:
-                this.fetchNextBatch(this.refs.pattern.value);
-                break;
             default:
                 break;
         }
@@ -244,21 +236,24 @@ window.ButterSearchApp = React.createClass({
                                onClick={this.onDomainSelect}/>
                         <label htmlFor="actor-domain-select">Actors</label>
                     </div>
-                </div>
-                <input onKeyDown={this.onRegexInputKeyDown}
-                       ref="pattern"
-                       placeholder="Search" type="text"/>
-                <div ref="results">
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
-                        className="material-icons">keyboard_arrow_left</i></button>
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
-                        className="material-icons">keyboard_arrow_right</i></button>
-                    <span>Or use PageUp | PageDown to navigate</span>
-                    <table>
-                        <tbody>{results}</tbody>
-                    </table>
+                    <input onKeyDown={this.onRegexInputKeyDown}
+                           ref="pattern"
+                           placeholder="Search" type="text" className="col s12"/>
+                    <div className="col s12" ref="results">
+                        <div className="collection with-header">
+                            <div className="collection-header"><span className="flow-text">Results</span>
+                                <span className="right">
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_left</i></button>
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_right</i></button>
+                            </span>
+                            </div>
+                            {results}
+                        </div>
+                    </div>
                 </div>
             </div>
         );

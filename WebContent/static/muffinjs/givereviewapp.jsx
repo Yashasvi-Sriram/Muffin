@@ -176,7 +176,6 @@ window.GiveReviewApp = React.createClass({
         });
         return (
             <div ref="form" className="row">
-
                 <div className="input-field col s6">
                     <input type="text" ref="name" placeholder="Name of the movie" onKeyDown={this.onRegexInputKeyDown}
                            defaultValue=""/>
