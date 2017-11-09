@@ -34,7 +34,6 @@ INSERT INTO genre(name) VALUES ('Horror');
 INSERT INTO genre(name) VALUES ('Family');
 INSERT INTO genre(name) VALUES ('Kids');
 
---
 -- INSERT INTO follows (id1, id2) VALUES (1, 2);
 -- INSERT INTO follows (id1, id2) VALUES (2, 3);
 -- INSERT INTO follows (id1, id2) VALUES (3, 1);

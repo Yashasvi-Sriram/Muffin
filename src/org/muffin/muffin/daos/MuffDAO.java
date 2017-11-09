@@ -19,7 +19,11 @@ public interface MuffDAO {
 
     public List<Muff> search(final String searchKey, final int offset, final int limit);
 
-    public List<Muff> userfollows(final int id);
+    public List<Muff> getFollowees(final int muffId);
 
-    public boolean follow(final int uid1, final int uid2);
+    public List<Muff> getFollowers(final int muffId);
+
+    public Optional<Boolean> toggleFollow(final int muffId, final int followeeId);
+
+    public Optional<Boolean> doesFollow(final int muffId, final int followeeId);
 }

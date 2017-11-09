@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
+DROP TABLE IF EXISTS comment_on_post;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
@@ -278,6 +279,19 @@ CREATE TABLE post (
   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE comment_on_post (
+  id        SERIAL,
+  muff_id   INT       NOT NULL,
+  post_id   INT       NOT NULL,
+  text      TEXT      NOT NULL,
+  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES post (id)
   ON DELETE CASCADE
 );
 
