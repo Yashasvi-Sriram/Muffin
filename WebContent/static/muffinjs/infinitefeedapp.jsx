@@ -64,7 +64,7 @@ window.InfiniteFeedApp = React.createClass({
                     self._incrementReviewOffset(reviews.length);
                     // no results
                     if (reviews.length === 0) {
-                        Materialize.toast('End of your Review feed!', 2000);
+                        Materialize.toast('End of your feed!', 2000);
                         return;
                     }
                     // add results
@@ -107,10 +107,14 @@ window.InfiniteFeedApp = React.createClass({
                 <div ref="feed">
                     {feed}
                 </div>
-                <button className="btn-flat btn"
-                        onClick={e => this.fetchNextReviewBatch()}>
-                    <i className="material-icons">keyboard_arrow_down</i>
-                </button>
+                <div className="card hoverable"
+                     onClick={e => this.fetchNextReviewBatch()}>
+                    <div className="card-content">
+                        <div className="card-title">
+                            LOAD MORE ...
+                        </div>
+                    </div>
+                </div>
             </div>
         );
     },

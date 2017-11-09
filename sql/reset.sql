@@ -18,6 +18,7 @@ DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
+DROP TABLE IF EXISTS comment_on_post;
 DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
@@ -260,7 +261,7 @@ CREATE TABLE review (
   id        SERIAL,
   muff_id   INT           NOT NULL,
   movie_id  INT           NOT NULL,
-  rating    NUMERIC(3, 1) NOT NULL CHECK ((rating >= 0.0 AND rating <= 10.0) OR rating = -1.0), -- Ex: 07.42 / 10.00
+  rating    NUMERIC(3, 1) NOT NULL CHECK ((rating >= 0.0 AND rating <= 10.0) OR rating = -1.0), -- Ex: 07.4 / 10.0
   text      TEXT          NOT NULL,
   timestamp TIMESTAMP     NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
@@ -268,7 +269,8 @@ CREATE TABLE review (
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
   FOREIGN KEY (movie_id) REFERENCES movie (id)
-  ON DELETE CASCADE
+  ON DELETE CASCADE,
+  CHECK (NOT (rating = -1.0 AND text = ''))
 );
 
 CREATE TABLE post (
@@ -278,6 +280,19 @@ CREATE TABLE post (
   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE comment_on_post (
+  id        SERIAL,
+  muff_id   INT       NOT NULL,
+  post_id   INT       NOT NULL,
+  text      TEXT      NOT NULL,
+  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (post_id) REFERENCES post (id)
   ON DELETE CASCADE
 );
 

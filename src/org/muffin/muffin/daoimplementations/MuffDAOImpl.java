@@ -126,11 +126,11 @@ public class MuffDAOImpl implements MuffDAO {
     }
 
     @Override
-    public List<Muff> userfollows(int id) {
+    public List<Muff> getFollowees(int muffId) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE name follows.id1 = ?  AND follows.id2 = muff.id")) {
-            preparedStmt.setInt(1, id);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE follows.id1 = ?  AND follows.id2 = muff.id")) {
+            preparedStmt.setInt(1, muffId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Muff muff = new Muff(resultSet.getInt(1),
@@ -148,17 +148,67 @@ public class MuffDAOImpl implements MuffDAO {
     }
 
     @Override
-    public boolean follow(int uid1, int uid2) {
+    public List<Muff> getFollowers(int muffId) {
+        List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO follows(id1,id2) VALUES (?,?)")) {
-            preparedStmt.setInt(1, uid1);
-            preparedStmt.setInt(2, uid2);
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
-
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE follows.id1 = muff.id  AND follows.id2 = ?")) {
+            preparedStmt.setInt(1, muffId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                Muff muff = new Muff(resultSet.getInt(1),
+                        resultSet.getString(2),
+                        resultSet.getString(3),
+                        resultSet.getInt(4),
+                        resultSet.getTimestamp(5).toLocalDateTime());
+                muffs.add(muff);
+            }
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+
+        }
+        return muffs;
+    }
+
+    @Override
+    public Optional<Boolean> toggleFollow(int muffId, int followeeId) {
+        // One db connection opens and closes here
+        Optional<Boolean> doesFollow = doesFollow(muffId, followeeId);
+        if (doesFollow.isPresent()) {
+            try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+                 PreparedStatement insert = conn.prepareStatement("INSERT INTO follows(id1, id2) VALUES (?,?)");
+                 PreparedStatement delete = conn.prepareStatement("DELETE FROM follows WHERE (id1, id2) = (?,?)")) {
+                if (doesFollow.get()) {
+                    insert.setInt(1, muffId);
+                    insert.setInt(2, followeeId);
+                    int result = insert.executeUpdate();
+                    return result == 1 ? Optional.of(true) : Optional.empty();
+                } else {
+                    delete.setInt(1, muffId);
+                    delete.setInt(2, followeeId);
+                    int result = delete.executeUpdate();
+                    return result == 1 ? Optional.of(false) : Optional.empty();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
         }
     }
+
+    @Override
+    public Optional<Boolean> doesFollow(int muffId, int followeeId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT count(*) FROM follows WHERE follows.id1 = ? AND follows.id2 = ?")) {
+            preparedStmt.setInt(1, muffId);
+            preparedStmt.setInt(2, followeeId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            return Optional.of(resultSet.next());
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
 }
