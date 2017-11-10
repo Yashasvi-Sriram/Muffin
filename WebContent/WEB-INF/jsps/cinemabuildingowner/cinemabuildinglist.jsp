@@ -42,7 +42,9 @@
              * @propFunctions: onDeleteClick
              * */
             let CinemaBuildingItem = React.createClass({
+
                 render: function () {
+                    let url = "${pageContext.request.contextPath}/cinemabuildingowner/theatredetail?cinemaBuildingId=" + this.props.id;
                     return (
                             <tr title={this.props.name}>
                                 <td className="flow-text">{truncate(this.props.name, 25)}</td>
@@ -51,7 +53,15 @@
                                 <td className="flow-text">{truncate(this.props.state, 25)}</td>
                                 <td className="flow-text">{truncate(this.props.country, 25)}</td>
                                 <td>
+                                    <a href={url} type="submit" name="cinemaBuildingId" value={this.props.id}
+                                       className="btn-floating waves-effect waves-light blue">
+                                        <i className="material-icons">info</i></a>
+                                </td>
+                                <td>
                                     <a href="#"
+                                       onClick={(e) => {
+                                           this.props.onDeleteClick(this.props.id)
+                                       }}
 
                                        className="btn-floating waves-effect waves-light red">
                                         <i className="material-icons">remove</i>
@@ -84,6 +94,35 @@
                     }
                 },
 
+                deleteBuilding: function (id) {
+                    let self = this;
+                    $.ajax({
+                        url: '${pageContext.request.contextPath}/cinemabuilding/delete',
+                        type: 'GET',
+                        data: {id: id},
+                        success: function (r) {
+                            let json = JSON.parse(r);
+                            if (json.status === -1) {
+                                Materialize.toast(json.error, 2000);
+                            }
+                            else {
+                                self.setState((prevState, props) => {
+                                    let delIndex = -1;
+                                    prevState.cinemabuildings.forEach((cinemabuilding, i) => {
+                                        if (cinemabuilding.id === id) {
+                                            delIndex = i;
+                                        }
+                                    });
+                                    prevState.cinemabuildings.splice(delIndex, 1);
+                                    return prevState;
+                                });
+                            }
+                        },
+                        error: function (data) {
+                            Materialize.toast('Server Error', 2000);
+                        }
+                    });
+                },
 
                 render: function () {
                     return (
@@ -112,6 +151,7 @@
                                                                    zip={m.zip}
                                                                    streetName={m.streetName}
                                                                    ownerId={m.ownerId}
+                                                                   onDeleteClick={this.deleteBuilding}
                                         />;
                                     })
                                 }
@@ -124,5 +164,7 @@
             ReactDOM.render(<CinemaBuildingList/>, document.getElementById('app'));
         </script>
         <div id="app" class="container"></div>
+        <br>
+        <a href="${pageContext.request.contextPath}/cinemabuildingowner/home">Go to Home Page</a>
     </jsp:body>
 </m:base>

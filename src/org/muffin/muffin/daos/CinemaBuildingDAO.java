@@ -15,4 +15,6 @@ public interface CinemaBuildingDAO {
     public Optional<CinemaBuilding> get(final String name, final String streetName, final String city, final String state, final String country, final String zip);
 
     public List<CinemaBuilding> getByOwner(final int ownerId);
+
+    public boolean delete(final int cinemaBuildingId, int ownerId);
 }

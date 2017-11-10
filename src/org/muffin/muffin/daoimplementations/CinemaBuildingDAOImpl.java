@@ -85,5 +85,19 @@ public class CinemaBuildingDAOImpl implements CinemaBuildingDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public boolean delete(int cinemaBuildingId, int ownerId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM cinema_building WHERE id = ? AND owner_id = ?;")) {
+            preparedStmt.setInt(1, cinemaBuildingId);
+            preparedStmt.setInt(2, ownerId);
+            int result = preparedStmt.executeUpdate();
+            return result == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }
 
