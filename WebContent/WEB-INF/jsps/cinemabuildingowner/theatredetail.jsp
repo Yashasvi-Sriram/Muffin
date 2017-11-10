@@ -216,5 +216,18 @@
             ReactDOM.render(<TheatreEditor/>, document.getElementById('app'));
         </script>
         <div id="app" class="container"></div>
+        <div class="row">
+            <div class="col s2">
+            </div>
+            <div class="col s4">
+                <a href="${pageContext.request.contextPath}/cinemabuildingowner/home">Go to Home Page</a>
+            </div>
+            <div class="col s4">
+                <a href="${pageContext.request.contextPath}/cinemabuildingowner/buildinglist">See your existing
+                    buildings</a>
+            </div>
+            <div class="col s2">
+            </div>
+        </div>
     </jsp:body>
 </m:base>
