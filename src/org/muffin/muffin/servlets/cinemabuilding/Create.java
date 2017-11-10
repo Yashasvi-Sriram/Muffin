@@ -1,9 +1,8 @@
 package org.muffin.muffin.servlets.cinemabuilding;
 
-import org.muffin.muffin.beans.CinemaBuilding;
-import org.muffin.muffin.beans.CinemaBuildingOwner;
-import org.muffin.muffin.beans.Movie;
-import org.muffin.muffin.beans.MovieOwner;
+import org.muffin.muffin.beans.*;
+import org.muffin.muffin.daoimplementations.ValidRegionDAOImpl;
+import org.muffin.muffin.daos.ValidRegionDAO;
 import org.muffin.muffin.responses.ResponseWrapper;
 import org.muffin.muffin.servlets.CinemaBuildingOwnerEnsuredSessionServlet;
 import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
@@ -33,6 +32,7 @@ import java.util.Optional;
 @WebServlet("/cinemabuilding/create")
 public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
     CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
+    ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
@@ -46,16 +46,21 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
         CinemaBuildingOwner cinemaBuildingOwner = (CinemaBuildingOwner) session.getAttribute(SessionKeys.CINEMA_BUILDING_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        if (cinemaBuildingDAO.create(cinemaBuildingOwner.getId(), name, streetName, city, state, country, zip)) {
-            Optional<CinemaBuilding> cinemaBuildingOpt = cinemaBuildingDAO.get(name, streetName, city, state, country, zip);
-            if (cinemaBuildingOpt.isPresent()) {
-                out.println(gson.toJson(ResponseWrapper.get(cinemaBuildingOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
+        Optional<ValidRegion> validRegionOpt = validRegionDAO.get(city, state, country);
+        if (validRegionOpt.isPresent()) {
+            if (cinemaBuildingDAO.create(cinemaBuildingOwner.getId(), name, streetName, city, state, country, zip)) {
+                Optional<CinemaBuilding> cinemaBuildingOpt = cinemaBuildingDAO.get(name, streetName, city, state, country, zip);
+                if (cinemaBuildingOpt.isPresent()) {
+                    out.println(gson.toJson(ResponseWrapper.get(cinemaBuildingOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
+                } else {
+                    System.out.println("Critical error!");
+                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
+                }
             } else {
-                System.out.println("Critical error!");
-                out.println(gson.toJson(ResponseWrapper.error("Error!")));
+                out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Building has to be different from all the existing ones")));
             }
         } else {
-            out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Building has to be different from all the existing ones or Proper Region Fields has to be entered")));
+            out.println(gson.toJson(ResponseWrapper.error("Error! Hint: Enter Valid Region(City,State,Country)")));
         }
         out.close();
     }

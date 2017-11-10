@@ -169,10 +169,12 @@ CREATE TABLE cinema_building_owner_password (
 );
 
 CREATE TABLE valid_region (
+  id 	  SERIAL,
   city    VARCHAR(50) NOT NULL,
   state   VARCHAR(50) NOT NULL,
   country VARCHAR(50) NOT NULL,
-  PRIMARY KEY (city, state, country)
+  PRIMARY KEY (id),
+  UNIQUE(city,state,country)
 );
 
 CREATE TABLE cinema_building (
