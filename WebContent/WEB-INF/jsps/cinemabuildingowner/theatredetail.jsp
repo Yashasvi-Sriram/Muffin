@@ -50,7 +50,7 @@
 
 
             /**
-             * @propFunctions: onDeleteClick, onEditClick
+             * @propFunctions: onDeleteClick
              * */
             let TheatreItem = React.createClass({
                 getInitialState: function () {
@@ -63,14 +63,13 @@
 
 
                     return (
-                            <tr title={this.props.screenNo}
-                                onDoubleClick={() => this.setState(() => {
-                                    return {inReadMode: false}
-                                })}>
+                            <tr title={this.props.screenNo}>
+
 
                                 <td>{this.props.screenNo}</td>
 
-
+                                <td>
+                                </td>
                                 <td>
                                     <a href="#"
                                        onClick={(e) => {
@@ -80,76 +79,13 @@
                                         <i className="material-icons">remove</i>
                                     </a>
                                 </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: false}
-                                           }
-                                       )
-                                       }}
-                                       className="btn-floating waves-effect waves-light yellow darken-4">
-                                        <i className="material-icons">edit</i>
-                                    </a>
-                                </td>
+
                             </tr>
                     );
                 },
-                writeModeRender: function () {
-                    return (
-                            <tr title={this.props.name}
-                                onDoubleClick={() =>
-                                    this.setState(() => {
-                                        return {inReadMode: true}
-                                    })
-                                }>
 
-                                <td>
-                                    <input type="number"
-                                           ref="screenNo"
-                                           name="screenNo"
-                                           placeholder="Screen Number"
-                                           defaultValue={this.props.screenNo}/>
-
-
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
-                                           this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: true}
-                                           }
-                                       )
-                                           ;
-                                       }}
-                                       className="btn-floating waves-effect waves-light yellow darken-4">
-                                        <i className="material-icons">send</i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: true}
-                                           }
-                                       )
-                                       }}
-                                       className="btn-floating waves-effect waves-light black">
-                                        <i className="material-icons">cancel</i>
-                                    </a>
-                                </td>
-                            </tr>
-                    );
-                },
                 render: function () {
-                    return this.state.inReadMode ? this.readModeRender() : this.writeModeRender();
+                    return this.readModeRender();
                 }
             });
 
@@ -201,42 +137,6 @@
                         }
                     });
                 },
-                <%--editTheatre: function (id, name, durationInMinutes) {--%>
-                <%--let self = this;--%>
-                <%--// validation--%>
-                <%--if (!isMovieValid(name, durationInMinutes)) {--%>
-                <%--return;--%>
-                <%--}--%>
-                <%--// ajax call--%>
-                <%--$.ajax({--%>
-                <%--url: '${pageContext.request.contextPath}/movie/update',--%>
-                <%--type: 'GET',--%>
-                <%--data: {id: id, name: name, durationInMinutes: durationInMinutes},--%>
-                <%--success: function (r) {--%>
-                <%--let json = JSON.parse(r);--%>
-                <%--if (json.status === -1) {--%>
-                <%--Materialize.toast(json.error, 2000);--%>
-                <%--}--%>
-                <%--else {--%>
-                <%--let data = json.data;--%>
-                <%--self.setState((prevState, props) => {--%>
-                <%--let updateIndex = -1;--%>
-                <%--prevState.movies.forEach((movie, i) => {--%>
-                <%--if (movie.id === id) {--%>
-                <%--updateIndex = i;--%>
-                <%--}--%>
-                <%--});--%>
-                <%--prevState.movies.splice(updateIndex, 1, data);--%>
-                <%--return prevState;--%>
-                <%--});--%>
-                <%--self.forceUpdate();--%>
-                <%--}--%>
-                <%--},--%>
-                <%--error: function (data) {--%>
-                <%--Materialize.toast('Server Error', 2000);--%>
-                <%--}--%>
-                <%--});--%>
-                <%--},--%>
                 deleteTheatre: function (id) {
                     let self = this;
                     $.ajax({
@@ -304,7 +204,7 @@
                                                             id={m.id}
                                                             screenNo={m.screenNo}
                                                             onDeleteClick={this.deleteTheatre}
-                                                            onEditClick={this.editTheatre}/>;
+                                        />;
                                     })
                                 }
                                 </tbody>
