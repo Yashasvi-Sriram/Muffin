@@ -1,6 +1,5 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.Actor;
 import org.muffin.muffin.beans.Muff;
 import org.muffin.muffin.daos.MuffDAO;
 import org.muffin.muffin.db.DBConfig;
@@ -17,23 +16,29 @@ public class MuffDAOImpl implements MuffDAO {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?);");
              PreparedStatement getMuffId = conn.prepareStatement("SELECT id FROM muff WHERE handle = ?;");
-             PreparedStatement createMuffPassword = conn.prepareStatement("INSERT INTO muff_password(id, password) VALUES (?, ?);");) {
+             PreparedStatement createMuffPassword = conn.prepareStatement("INSERT INTO muff_password(id, password) VALUES (?, ?);");
+             PreparedStatement createMuffSelfFollow = conn.prepareStatement("INSERT INTO follows(id1, id2) VALUES (?, ?);");) {
             // createMuff
             createMuff.setString(1, handle);
             createMuff.setString(2, name);
-            int result = createMuff.executeUpdate();
-            if (result != 1) {
+            if (createMuff.executeUpdate() != 1) {
                 return false;
             }
             // getCreatedMuff
             getMuffId.setString(1, handle);
-            ResultSet rs = getMuffId.executeQuery();
-            if (rs.next()) {
-                int id = rs.getInt(1);
-                createMuffPassword.setInt(1, id);
+            ResultSet muffIdRS = getMuffId.executeQuery();
+            if (muffIdRS.next()) {
+                // create Muff password
+                int muffId = muffIdRS.getInt(1);
+                createMuffPassword.setInt(1, muffId);
                 createMuffPassword.setString(2, password);
-                result = createMuffPassword.executeUpdate();
-                return result == 1;
+                if (createMuffPassword.executeUpdate() != 1) {
+                    return false;
+                }
+                // create muff self follow
+                createMuffSelfFollow.setInt(1, muffId);
+                createMuffSelfFollow.setInt(2, muffId);
+                return createMuffSelfFollow.executeUpdate() == 1;
             } else {
                 return false;
             }
@@ -170,23 +175,23 @@ public class MuffDAOImpl implements MuffDAO {
     }
 
     @Override
-    public Optional<Boolean> toggleFollow(int muffId, int followeeId) {
+    public Optional<Boolean> toggleFollows(int muffId, int followeeId) {
         // One db connection opens and closes here
-        Optional<Boolean> doesFollow = doesFollow(muffId, followeeId);
+        Optional<Boolean> doesFollow = doesFollows(muffId, followeeId);
         if (doesFollow.isPresent()) {
             try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
                  PreparedStatement insert = conn.prepareStatement("INSERT INTO follows(id1, id2) VALUES (?,?)");
                  PreparedStatement delete = conn.prepareStatement("DELETE FROM follows WHERE (id1, id2) = (?,?)")) {
                 if (doesFollow.get()) {
-                    insert.setInt(1, muffId);
-                    insert.setInt(2, followeeId);
-                    int result = insert.executeUpdate();
-                    return result == 1 ? Optional.of(true) : Optional.empty();
-                } else {
                     delete.setInt(1, muffId);
                     delete.setInt(2, followeeId);
                     int result = delete.executeUpdate();
                     return result == 1 ? Optional.of(false) : Optional.empty();
+                } else {
+                    insert.setInt(1, muffId);
+                    insert.setInt(2, followeeId);
+                    int result = insert.executeUpdate();
+                    return result == 1 ? Optional.of(true) : Optional.empty();
                 }
             } catch (SQLException e) {
                 e.printStackTrace();
@@ -198,13 +203,14 @@ public class MuffDAOImpl implements MuffDAO {
     }
 
     @Override
-    public Optional<Boolean> doesFollow(int muffId, int followeeId) {
+    public Optional<Boolean> doesFollows(int muffId, int followeeId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT count(*) FROM follows WHERE follows.id1 = ? AND follows.id2 = ?")) {
             preparedStmt.setInt(1, muffId);
             preparedStmt.setInt(2, followeeId);
             ResultSet resultSet = preparedStmt.executeQuery();
-            return Optional.of(resultSet.next());
+            resultSet.next();
+            return Optional.of(resultSet.getInt(1) > 0);
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();

@@ -41,6 +41,7 @@ window.GiveReviewApp = React.createClass({
             contextPath: '',
             url: '/review/give',
             limit: 10,
+            movieSearchUrl: '/movie/search',
         }
     },
     _resetOffset: function () {
@@ -67,7 +68,7 @@ window.GiveReviewApp = React.createClass({
         }
     },
     fetchNextBatch: function (pattern) {
-        let url = this.props.contextPath + '/movie/search';
+        let url = this.props.contextPath + this.props.movieSearchUrl;
         let self = this;
         $.ajax({
             url: url,

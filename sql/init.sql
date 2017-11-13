@@ -26,6 +26,15 @@ INSERT INTO muff_password (id, password) VALUES (6, '.');
 INSERT INTO muff_password (id, password) VALUES (7, '.');
 INSERT INTO muff_password (id, password) VALUES (8, '.');
 
+INSERT INTO follows (id1, id2) VALUES (1, 1);
+INSERT INTO follows (id1, id2) VALUES (2, 2);
+INSERT INTO follows (id1, id2) VALUES (3, 3);
+INSERT INTO follows (id1, id2) VALUES (4, 4);
+INSERT INTO follows (id1, id2) VALUES (5, 5);
+INSERT INTO follows (id1, id2) VALUES (6, 6);
+INSERT INTO follows (id1, id2) VALUES (7, 7);
+INSERT INTO follows (id1, id2) VALUES (8, 8);
+
 INSERT INTO genre (name) VALUES ('Drama');
 INSERT INTO genre (name) VALUES ('Action');
 INSERT INTO genre (name) VALUES ('Romance');
