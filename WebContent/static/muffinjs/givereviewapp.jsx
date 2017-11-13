@@ -20,7 +20,7 @@ let isReviewValid = function (name, rating, review) {
     return true;
 };
 
-let SearchResultWrapper = React.createClass({
+let MovieSearchResult = React.createClass({
     render: function () {
         return (
             <a href="#" className="collection-item"
@@ -32,14 +32,14 @@ let SearchResultWrapper = React.createClass({
 window.GiveReviewApp = React.createClass({
     getInitialState: function () {
         return {
-            results: [],
+            movieSearchResults: [],
             offset: 0,
         }
     },
     getDefaultProps: function () {
         return {
             contextPath: '',
-            url: '/review/create',
+            url: '/review/give',
             limit: 10,
         }
     },
@@ -81,16 +81,16 @@ window.GiveReviewApp = React.createClass({
                 else {
                     let data = json.data;
                     self._incrementOffset(data.length);
-                    // no results
+                    // no movieSearchResults
                     if (data.length === 0) {
                         Materialize.toast('End of search!', 2000);
                         return;
                     }
-                    // add results
+                    // add movieSearchResults
                     self.setState(ps => {
-                        return {results: data};
+                        return {movieSearchResults: data};
                     });
-                    $(self.refs.results).show();
+                    $(self.refs.movieSearchResults).show();
                 }
             },
             error: function (data) {
@@ -111,12 +111,12 @@ window.GiveReviewApp = React.createClass({
             case 13:
                 let self = this;
                 this._resetOffset();
-                self.setState({results: []});
+                self.setState({movieSearchResults: []});
                 this.fetchNextBatch(e.target.value);
                 break;
             // Escape key
             case 27:
-                $(this.refs.results).hide();
+                $(this.refs.movieSearchResults).hide();
                 break;
             default:
                 break;
@@ -124,7 +124,7 @@ window.GiveReviewApp = React.createClass({
     },
     selectMovie: function (text) {
         this.refs.name.value = text;
-        $(this.refs.results).hide();
+        $(this.refs.movieSearchResults).hide();
 
     },
     addMovieReview: function () {
@@ -160,9 +160,8 @@ window.GiveReviewApp = React.createClass({
         });
     },
     render: function () {
-
-        let results = this.state.results.map(movie => {
-            return <SearchResultWrapper
+        let movieSearchResults = this.state.movieSearchResults.map(movie => {
+            return <MovieSearchResult
                 key={movie.id}
                 id={movie.id}
                 name={movie.name}
@@ -181,7 +180,7 @@ window.GiveReviewApp = React.createClass({
                         Give Review
                     </button>
                 </div>
-                <div className="col s12" ref="results">
+                <div className="col s12" ref="movieSearchResults">
                     <div className="collection with-header">
                         <div className="collection-header"><span className="flow-text">Movies</span>
                             <span className="right">
@@ -193,7 +192,7 @@ window.GiveReviewApp = React.createClass({
                                 className="material-icons">keyboard_arrow_right</i></button>
                             </span>
                         </div>
-                        {results}
+                        {movieSearchResults}
                     </div>
                 </div>
                 <div className="input-field col s8">
@@ -212,6 +211,6 @@ window.GiveReviewApp = React.createClass({
         );
     },
     componentDidMount: function () {
-        $(this.refs.results).hide();
+        $(this.refs.movieSearchResults).hide();
     },
 });

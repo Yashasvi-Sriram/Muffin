@@ -6,7 +6,7 @@
     1. all in one feed
     1. dynamic parallaxing
 1. movie page
-1. muff page
+1. muff profile
 1. actor page
 1. suggestions
 1. booking

@@ -16,7 +16,7 @@
                                      movieSearchUrl="/movie/search"
                                      actorSearchUrl="/actor/search"/>, document.getElementById('butter-search-app'));
     ReactDOM.render(<GiveReviewApp contextPath="${pageContext.request.contextPath}"
-                                   url="/review/create"/>, document.getElementById('give-review-app'));
+                                   url="/review/give"/>, document.getElementById('give-review-app'));
 </script>
 <script type="text/javascript">
     $(document).ready(function () {

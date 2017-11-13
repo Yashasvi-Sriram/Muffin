@@ -15,6 +15,7 @@ INSERT INTO muff (handle, name) VALUES ('@Iamben', 'ben');
 INSERT INTO muff (handle, name) VALUES ('@Gwen', 'Gwen');
 INSERT INTO muff (handle, name) VALUES ('@Kevin', 'kevin');
 INSERT INTO muff (handle, name) VALUES ('@sheldon', 'Sheldon');
+INSERT INTO muff (handle, name) VALUES ('m', 'm&ms');
 
 INSERT INTO muff_password (id, password) VALUES (1, '.');
 INSERT INTO muff_password (id, password) VALUES (2, '.');
@@ -23,6 +24,7 @@ INSERT INTO muff_password (id, password) VALUES (4, '.');
 INSERT INTO muff_password (id, password) VALUES (5, '.');
 INSERT INTO muff_password (id, password) VALUES (6, '.');
 INSERT INTO muff_password (id, password) VALUES (7, '.');
+INSERT INTO muff_password (id, password) VALUES (8, '.');
 
 INSERT INTO genre (name) VALUES ('Drama');
 INSERT INTO genre (name) VALUES ('Action');

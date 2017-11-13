@@ -1,6 +1,5 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.Muff;
 import org.muffin.muffin.beans.Review;
 import org.muffin.muffin.daos.ReviewDAO;
@@ -8,7 +7,6 @@ import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
@@ -69,7 +67,7 @@ public class ReviewDAOImpl implements ReviewDAO {
             preparedStmt.setInt(2, offset);
             preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
-            resultsetconverter(reviews, result);
+            resultSetConverter(reviews, result);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -87,7 +85,7 @@ public class ReviewDAOImpl implements ReviewDAO {
             preparedStmt.setInt(2, offset);
             preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
-            resultsetconverter(reviews, result);
+            resultSetConverter(reviews, result);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -103,7 +101,7 @@ public class ReviewDAOImpl implements ReviewDAO {
             preparedStmt.setInt(2, offset);
             preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
-            resultsetconverter(reviews, result);
+            resultSetConverter(reviews, result);
         } catch (SQLException e) {
             e.printStackTrace();
         }
@@ -111,12 +109,12 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public boolean update(int id, int muffId, float rating, String text) {
+    public boolean update(int movieId, int muffId, float rating, String text) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ? AND text = ? WHERE id = ? AND muff_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE review SET rating = ?, text = ?, timestamp = CURRENT_TIMESTAMP WHERE movie_id = ? AND muff_id = ?")) {
             preparedStmt.setFloat(1, rating);
             preparedStmt.setString(2, text);
-            preparedStmt.setInt(3, id);
+            preparedStmt.setInt(3, movieId);
             preparedStmt.setInt(4, muffId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
@@ -127,10 +125,10 @@ public class ReviewDAOImpl implements ReviewDAO {
     }
 
     @Override
-    public boolean delete(int id, int muffId) {
+    public boolean delete(int movieId, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE id = ? AND muff_id = ?")) {
-            preparedStmt.setInt(1, id);
+             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE movie_id = ? AND muff_id = ?")) {
+            preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, muffId);
             int result = preparedStmt.executeUpdate();
             return result == 1;
@@ -140,7 +138,7 @@ public class ReviewDAOImpl implements ReviewDAO {
         return false;
     }
 
-    public void resultsetconverter(List<Review> reviews, ResultSet result) {
+    private void resultSetConverter(List<Review> reviews, ResultSet result) {
         try {
             while (result.next()) {
                 Review review = new Review(

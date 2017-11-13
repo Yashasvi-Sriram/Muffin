@@ -30,8 +30,8 @@ import java.util.Optional;
  * doGetWithSession:  same as Post
  * doPostWithSession: Adds a review posted by the user, returns review object on success
  */
-@WebServlet("/review/create")
-public class Create extends MuffEnsuredSessionServlet {
+@WebServlet("/review/give")
+public class Give extends MuffEnsuredSessionServlet {
     private MovieDAO movieDAO = new MovieDAOImpl();
     private ReviewDAO reviewDAO = new ReviewDAOImpl();
 
@@ -55,7 +55,11 @@ public class Create extends MuffEnsuredSessionServlet {
             int movieId = movieOpt.get().getId();
             Optional<Review> reviewOpt = reviewDAO.get(movieId, muffId);
             if (reviewOpt.isPresent()) {
-                out.println(gson.toJson(ResponseWrapper.error("Error! You can give only a single review for this movie")));
+                if (reviewDAO.update(movieId, muffId, rating, textReview)) {
+                    out.println(gson.toJson(ResponseWrapper.get("Review is updated", ResponseWrapper.STRING_RESPONSE)));
+                } else {
+                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
+                }
             } else {
                 if (reviewDAO.create(movieId, muffId, rating, textReview)) {
                     out.println(gson.toJson(ResponseWrapper.get("Review is posted", ResponseWrapper.STRING_RESPONSE)));
