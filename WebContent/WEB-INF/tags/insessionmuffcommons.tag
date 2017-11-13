@@ -1,4 +1,7 @@
 <%@tag description="Basic template with javascript headers" pageEncoding="UTF-8" %>
+<%@attribute name="contextPath" fragment="true" required="true" %>
+<%@attribute name="inSessionMuffId" fragment="true" required="true" %>
+
 <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 <style>
     #butter-search-app input {
@@ -6,16 +9,16 @@
     }
 </style>
 <script type="text/babel"
-        src="${pageContext.request.contextPath}/static/muffinjs/buttersearchapp.jsx"></script>
+        src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/buttersearchapp.jsx"></script>
 <script type="text/babel"
-        src="${pageContext.request.contextPath}/static/muffinjs/givereviewapp.jsx"></script>
+        src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/givereviewapp.jsx"></script>
 <script type="text/babel">
     ReactDOM.render(<ButterSearchApp limit={5}
-                                     contextPath="${pageContext.request.contextPath}"
+                                     contextPath="<jsp:invoke fragment="contextPath"/>"
                                      muffSearchUrl="/muff/search"
                                      movieSearchUrl="/movie/search"
                                      actorSearchUrl="/actor/search"/>, document.getElementById('butter-search-app'));
-    ReactDOM.render(<GiveReviewApp contextPath="${pageContext.request.contextPath}"
+    ReactDOM.render(<GiveReviewApp contextPath="<jsp:invoke fragment="contextPath"/>"
                                    url="/review/give"/>, document.getElementById('give-review-app'));
 </script>
 <script type="text/javascript">
@@ -30,22 +33,12 @@
         $('.modal').modal();
     });
 </script>
-<%--Give Review Modal--%>
-<div id="give-review-modal" class="modal modal-fixed-footer">
-    <div class="modal-content">
-        <div id="give-review-app"></div>
-    </div>
-    <div class="modal-footer">
-        <button class="modal-action modal-close waves-effect btn-flat">
-            <i class="material-icons">close</i></button>
-    </div>
-</div>
-<%--Give Review Modal Shortcut--%>
-<a href="#give-review-modal"
-   title="Give Review"
-   class="btn-floating btn-large waves-effect waves-light green modal-trigger"
-   style="position:fixed;bottom:100px; right: 20px">
-    <i class="material-icons">add</i>
+<%--Home Shortcut--%>
+<a href="<jsp:invoke fragment="contextPath"/>/muff/home"
+   title="Home"
+   class="btn-floating btn-large waves-effect waves-light red"
+   style="position:fixed;bottom: 260px; right: 20px">
+    <i class="material-icons">home</i>
 </a>
 
 <%--Butter Search Modal--%>
@@ -67,11 +60,29 @@
     <i class="material-icons">search</i>
 </a>
 
+<%--Give Review Modal--%>
+<div id="give-review-modal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <div id="give-review-app"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-action modal-close waves-effect btn-flat">
+            <i class="material-icons">close</i></button>
+    </div>
+</div>
+<%--Give Review Modal Shortcut--%>
+<a href="#give-review-modal"
+   title="Give Review"
+   class="btn-floating btn-large waves-effect waves-light green modal-trigger"
+   style="position:fixed;bottom:100px; right: 20px">
+    <i class="material-icons">add</i>
+</a>
+
 <%--Nav bar--%>
 <ul id="nav-bar" class="side-nav">
     <li>
         <div class="user-view brown" style="margin: 0">
-            <img src="${pageContext.request.contextPath}/static/images/logo.png" alt="Muffi(co)n">
+            <img src="<jsp:invoke fragment="contextPath"/>/static/images/logo.png" alt="Muffi(co)n">
             <span class="white-text"
                   style="font-size: 50px; font-family: 'Lobster', cursive;">
                 M<span class="grey-text">ovie</span>
@@ -83,10 +94,17 @@
         <div class="divider" style="margin: 0"></div>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/muff/home"
+        <a href="<jsp:invoke fragment="contextPath"/>/muff/home"
            title="Home">
             <i class="material-icons">home</i>
             Home
+        </a>
+    </li>
+    <li>
+        <a href="<jsp:invoke fragment="contextPath"/>/muff/profile?muffId=<jsp:invoke fragment="inSessionMuffId"/>"
+           title="My Profile">
+            <i class="material-icons">face</i>
+            My Profile
         </a>
     </li>
     <li><a class="modal-trigger"
@@ -103,7 +121,7 @@
         </a>
     </li>
     <li>
-        <a href="${pageContext.request.contextPath}/muff/logout"
+        <a href="<jsp:invoke fragment="contextPath"/>/muff/logout"
            title="Logout">
             <i class="material-icons">power_settings_new</i>
             Log out

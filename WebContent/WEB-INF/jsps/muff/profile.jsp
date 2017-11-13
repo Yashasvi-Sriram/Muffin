@@ -16,6 +16,8 @@
     </jsp:attribute>
     <jsp:body>
         <m:insessionmuffcommons>
+            <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
+            <jsp:attribute name="inSessionMuffId">${sessionScope.get(SessionKeys.MUFF).getId()}</jsp:attribute>
             <jsp:body>
                 <script type="text/babel"
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>

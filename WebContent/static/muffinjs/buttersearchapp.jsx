@@ -1,7 +1,12 @@
 let MuffButterSearchResult = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
     render: function () {
         return (
-            <a href="#" className="collection-item">
+            <a href={this.props.contextPath + '/muff/profile?muffId=' + this.props.id} className="collection-item">
                 <div>{this.props.name}</div>
                 <div className="pink-text">{this.props.handle}</div>
             </a>
@@ -10,6 +15,11 @@ let MuffButterSearchResult = React.createClass({
 });
 
 let MovieButterSearchResult = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
     render: function () {
         return (
             <a href="#" className="collection-item">
@@ -20,6 +30,11 @@ let MovieButterSearchResult = React.createClass({
 });
 
 let ActorButterSearchResult = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
     render: function () {
         return (
             <a href="#" className="collection-item">
@@ -191,6 +206,7 @@ window.ButterSearchApp = React.createClass({
                     return <MuffButterSearchResult
                         key={muff.id}
                         id={muff.id}
+                        contextPath={this.state.contextPath}
                         name={muff.name}
                         handle={muff.handle}
                         level={muff.level}
@@ -203,6 +219,7 @@ window.ButterSearchApp = React.createClass({
                         key={muff.id}
                         id={muff.id}
                         name={muff.name}
+                        contextPath={this.state.contextPath}
                     />;
                 });
                 break;
@@ -212,6 +229,7 @@ window.ButterSearchApp = React.createClass({
                         key={muff.id}
                         id={muff.id}
                         name={muff.name}
+                        contextPath={this.state.contextPath}
                     />;
                 });
                 break;

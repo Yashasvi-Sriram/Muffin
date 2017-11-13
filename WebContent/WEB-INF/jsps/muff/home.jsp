@@ -16,13 +16,15 @@
     </jsp:attribute>
     <jsp:body>
         <m:insessionmuffcommons>
+            <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
+            <jsp:attribute name="inSessionMuffId">${sessionScope.get(SessionKeys.MUFF).getId()}</jsp:attribute>
             <jsp:body>
                 <script type="text/babel"
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
                 <script type="text/babel">
                     ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
                                                      contextPath="${pageContext.request.contextPath}"
-                                                     reviewFetchUrl="/review/fetch/muff"/>, document.getElementById('infinite-feed-app'));
+                                                     reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
                 </script>
                 <%--Infinite Feed App--%>
                 <div class="container">
