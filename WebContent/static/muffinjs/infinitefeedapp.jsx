@@ -7,8 +7,9 @@ let Review = React.createClass({
                     <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
                     <br/>
                     <div className="red-text">{this.props.rating}</div>
-                    <textarea disabled="disabled" className="flow-text" defaultValue={this.props.text}>
-                    </textarea>
+                    <div className="flow-text">
+                        {this.props.text}
+                    </div>
                 </div>
             </div>
         );

@@ -3,6 +3,17 @@
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
     <jsp:attribute name="title">${sessionScope.get(SessionKeys.MUFF).name} | Home</jsp:attribute>
+    <jsp:attribute name="css">
+        <style>
+            #infinite-feed-app {
+                margin-bottom: 50vh;
+            }
+
+            #infinite-feed-app .review {
+                background-color: whitesmoke;
+            }
+        </style>
+    </jsp:attribute>
     <jsp:body>
         <m:insessionmuffcommons>
             <jsp:body>
