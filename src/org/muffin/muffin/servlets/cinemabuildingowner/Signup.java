@@ -23,7 +23,7 @@ import java.util.Optional;
  */
 @WebServlet("/cinemabuildingowner/signup")
 public class Signup extends HttpServlet {
-    CinemaBuildingOwnerDAO cinemaBuildingOwnerDAO = new CinemaBuildingOwnerDAOImpl();
+    private CinemaBuildingOwnerDAO cinemaBuildingOwnerDAO = new CinemaBuildingOwnerDAOImpl();
 
     private boolean isValid(String s) {
         return s != null && s.length() != 0 && s.length() <= 50;

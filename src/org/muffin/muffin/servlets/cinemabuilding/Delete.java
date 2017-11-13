@@ -32,7 +32,7 @@ import java.util.Optional;
  */
 @WebServlet("/cinemabuilding/delete")
 public class Delete extends CinemaBuildingOwnerEnsuredSessionServlet {
-    CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
+    private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

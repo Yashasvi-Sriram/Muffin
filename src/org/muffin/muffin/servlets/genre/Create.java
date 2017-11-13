@@ -33,8 +33,8 @@ import java.util.Optional;
  */
 @WebServlet("/genre/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
-    GenreDAO genreDAO = new GenreDAOImpl();
-    MovieDAO movieDAO = new MovieDAOImpl();
+    private GenreDAO genreDAO = new GenreDAOImpl();
+    private MovieDAO movieDAO = new MovieDAOImpl();
 
 
     @Override

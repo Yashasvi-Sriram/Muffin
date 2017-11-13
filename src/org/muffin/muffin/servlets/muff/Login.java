@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 @WebServlet("/muff/login")
 public class Login extends HttpServlet {
-    MuffDAO muffDAO = new MuffDAOImpl();
+    private MuffDAO muffDAO = new MuffDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

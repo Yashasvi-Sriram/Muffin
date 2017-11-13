@@ -26,7 +26,7 @@ import com.google.gson.GsonBuilder;
  */
 @WebServlet("/actor/search")
 public class Search extends EnsuredSessionServlet {
-    ActorDAO actorDAO = new ActorDAOImpl();
+    private ActorDAO actorDAO = new ActorDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

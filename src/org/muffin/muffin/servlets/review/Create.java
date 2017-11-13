@@ -32,8 +32,8 @@ import java.util.Optional;
  */
 @WebServlet("/review/create")
 public class Create extends MuffEnsuredSessionServlet {
-    MovieDAO movieDAO = new MovieDAOImpl();
-    ReviewDAO reviewDAO = new ReviewDAOImpl();
+    private MovieDAO movieDAO = new MovieDAOImpl();
+    private ReviewDAO reviewDAO = new ReviewDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

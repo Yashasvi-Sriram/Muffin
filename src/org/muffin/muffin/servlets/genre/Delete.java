@@ -27,9 +27,7 @@ import java.util.Optional;
  */
 @WebServlet("/genre/delete")
 public class Delete extends MovieOwnerEnsuredSessionServlet {
-    GenreDAO genreDAO = new GenreDAOImpl();
-    MovieDAO movieDAO = new MovieDAOImpl();
-
+    private MovieDAO movieDAO = new MovieDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

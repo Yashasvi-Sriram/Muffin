@@ -22,7 +22,7 @@ import java.util.List;
  */
 @WebServlet("/muff/search")
 public class Search extends MuffEnsuredSessionServlet {
-    MuffDAO muffDAO = new MuffDAOImpl();
+    private MuffDAO muffDAO = new MuffDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

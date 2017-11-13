@@ -30,8 +30,8 @@ import org.muffin.muffin.servlets.SessionKeys;
  */
 @WebServlet("/movieowner/moviedetail")
 public class MovieDetail extends MovieOwnerEnsuredSessionServlet {
-    CharacterDAO characterDAO = new CharacterDAOImpl();
-    GenreDAO genreDAO = new GenreDAOImpl();
+    private CharacterDAO characterDAO = new CharacterDAOImpl();
+    private GenreDAO genreDAO = new GenreDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

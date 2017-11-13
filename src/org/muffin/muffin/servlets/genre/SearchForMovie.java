@@ -34,8 +34,7 @@ import java.util.Optional;
  */
 @WebServlet("/genre/searchformovie")
 public class SearchForMovie extends MovieOwnerEnsuredSessionServlet {
-    GenreDAO genreDAO = new GenreDAOImpl();
-
+    private GenreDAO genreDAO = new GenreDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

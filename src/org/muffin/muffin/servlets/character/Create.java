@@ -30,8 +30,8 @@ import java.util.Optional;
  */
 @WebServlet("/character/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
-    ActorDAO actorDAO = new ActorDAOImpl();
-    CharacterDAO characterDAO = new CharacterDAOImpl();
+    private ActorDAO actorDAO = new ActorDAOImpl();
+    private CharacterDAO characterDAO = new CharacterDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

@@ -22,7 +22,7 @@ import java.util.List;
  */
 @WebServlet("/cinemabuildingowner/theatredetail")
 public class TheatreDetail extends CinemaBuildingOwnerEnsuredSessionServlet {
-    TheatreDAO theatreDAO = new TheatreDAOImpl();
+    private TheatreDAO theatreDAO = new TheatreDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

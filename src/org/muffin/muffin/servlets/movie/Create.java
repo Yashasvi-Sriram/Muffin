@@ -27,7 +27,7 @@ import java.util.Optional;
  */
 @WebServlet("/movie/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
-    MovieDAO movieDAO = new MovieDAOImpl();
+    private MovieDAO movieDAO = new MovieDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

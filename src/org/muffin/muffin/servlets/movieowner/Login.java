@@ -20,7 +20,7 @@ import java.util.Optional;
  */
 @WebServlet("/movieowner/login")
 public class Login extends HttpServlet {
-    MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
+    private MovieOwnerDAO movieOwnerDAO = new MovieOwnerDAOImpl();
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

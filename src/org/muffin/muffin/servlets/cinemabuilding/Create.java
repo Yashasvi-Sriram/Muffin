@@ -31,8 +31,8 @@ import java.util.Optional;
  */
 @WebServlet("/cinemabuilding/create")
 public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
-    CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
-    ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
+    private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
+    private ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

@@ -23,7 +23,7 @@ import java.util.List;
  */
 @WebServlet("/validregion/search")
 public class Search extends EnsuredSessionServlet {
-    ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
+    private ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

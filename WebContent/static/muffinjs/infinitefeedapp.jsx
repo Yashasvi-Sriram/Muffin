@@ -7,9 +7,7 @@ let Review = React.createClass({
                     <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
                     <br/>
                     <div className="red-text">{this.props.rating}</div>
-                    <div className="flow-text">
-                        {this.props.text}
-                    </div>
+                    <div className="flow-text">{this.props.text}</div>
                 </div>
             </div>
         );
@@ -65,7 +63,7 @@ window.InfiniteFeedApp = React.createClass({
                     self._incrementReviewOffset(reviews.length);
                     // no results
                     if (reviews.length === 0) {
-                        Materialize.toast('End of your feed!', 2000);
+                        Materialize.toast('End of feed!', 2000);
                         return;
                     }
                     // add results

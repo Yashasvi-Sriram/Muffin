@@ -23,7 +23,7 @@ import java.io.PrintWriter;
  */
 @WebServlet("/character/delete")
 public class Delete extends MovieOwnerEnsuredSessionServlet {
-    CharacterDAO characterDAO = new CharacterDAOImpl();
+    private CharacterDAO characterDAO = new CharacterDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {

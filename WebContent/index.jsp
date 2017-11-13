@@ -11,7 +11,7 @@
             });
         </script>
         <div class="parallax-container">
-            <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/penguin.jpg"/></div>
+            <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/penguin.jpg" alt="Muffin"/></div>
         </div>
         <div class="section container" style="height: 50vh">
             <div class="flow-text white">

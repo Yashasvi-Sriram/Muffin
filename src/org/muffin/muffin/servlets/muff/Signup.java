@@ -21,7 +21,7 @@ import java.util.Optional;
  */
 @WebServlet("/muff/signup")
 public class Signup extends HttpServlet {
-    MuffDAO muffDAO = new MuffDAOImpl();
+    private MuffDAO muffDAO = new MuffDAOImpl();
 
     private boolean isValid(String s) {
         return s != null && s.length() != 0 && s.length() <= 50;

@@ -22,7 +22,7 @@ import java.util.List;
  */
 @WebServlet("/review/fetch/followers")
 public class FetchByFollowers extends EnsuredSessionServlet {
-    ReviewDAO reviewDAO = new ReviewDAOImpl();
+    private ReviewDAO reviewDAO = new ReviewDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
