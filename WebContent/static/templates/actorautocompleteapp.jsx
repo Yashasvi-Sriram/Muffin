@@ -115,7 +115,7 @@ window.BaseSearchApp = React.createClass({
                 key={actor.id}
                 id={actor.id}
                 name={actor.name}
-               
+
             />;
         });
         return (

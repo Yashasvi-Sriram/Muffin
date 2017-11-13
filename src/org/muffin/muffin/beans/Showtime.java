@@ -11,5 +11,6 @@ import java.time.LocalDateTime;
 public class Showtime {
     @NonNull
     private LocalDateTime startTime;
+    @NonNull
     private LocalDateTime endTime;
 }

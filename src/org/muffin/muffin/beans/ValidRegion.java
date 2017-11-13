@@ -15,5 +15,4 @@ public class ValidRegion {
     private String state;
     @NonNull
     private String country;
-
 }

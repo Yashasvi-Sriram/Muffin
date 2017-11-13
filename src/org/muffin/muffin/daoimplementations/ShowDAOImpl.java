@@ -11,10 +11,14 @@ import java.util.Optional;
 import java.util.StringTokenizer;
 
 public class ShowDAOImpl implements ShowDAO {
+    private String toTSRange(Showtime showtime) {
+        return "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
+    }
+
     @Override
     public boolean create(int movieId, int theatreId, int cinemaBuildingOwnerId, Showtime showtime) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement verifyStmt = conn.prepareStatement("SELECT theatre.id from theatre,cinema_building where theatre.id = ? and cinema_building_id = cinema_building.id and owner_id = ?");
+             PreparedStatement verifyStmt = conn.prepareStatement("SELECT theatre.id FROM theatre,cinema_building WHERE theatre.id = ? AND cinema_building_id = cinema_building.id AND owner_id = ?");
              PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO show(theatre_id,movie_id,during) VALUES (?,?,?);")) {
             verifyStmt.setInt(1, theatreId);
             verifyStmt.setInt(2, cinemaBuildingOwnerId);
@@ -22,8 +26,7 @@ public class ShowDAOImpl implements ShowDAO {
             if (resultSet.next()) {
                 insertStmt.setInt(1, theatreId);
                 insertStmt.setInt(2, movieId);
-                String tsrange = "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
-                insertStmt.setString(3, tsrange);
+                insertStmt.setString(3, toTSRange(showtime));
                 int result = insertStmt.executeUpdate();
                 return result == 1;
             } else return false;
@@ -36,20 +39,19 @@ public class ShowDAOImpl implements ShowDAO {
     @Override
     public Optional<Show> get(int movieId, int theatreId, Showtime showtime) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during from show where theatre_id = ?  and movie_id = ? and during = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE theatre_id = ?  AND movie_id = ? AND during = ?")) {
             preparedStmt.setInt(1, theatreId);
             preparedStmt.setInt(2, movieId);
-            String tsrange = "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
-            preparedStmt.setString(3, tsrange);
+            preparedStmt.setString(3, toTSRange(showtime));
             ResultSet resultSet = preparedStmt.executeQuery();
             if (resultSet.next()) {
-                StringTokenizer tokens = new StringTokenizer(resultSet.getString(4),",");
+                StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
                 LocalDateTime startTime = LocalDateTime.parse(tokens.nextToken().substring(1));
                 String helper = tokens.nextToken();
-                helper = helper.substring(0,helper.length()-1);
+                helper = helper.substring(0, helper.length() - 1);
                 LocalDateTime endTime = LocalDateTime.parse(helper);
-                Showtime showtime1 = new Showtime(startTime,endTime);
-                Show show = new Show(resultSet.getInt(1),resultSet.getInt(2),resultSet.getInt(3),showtime1);
+                Showtime showtime1 = new Showtime(startTime, endTime);
+                Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), resultSet.getInt(3), showtime1);
                 return Optional.of(show);
             }
             return Optional.empty();
@@ -63,13 +65,13 @@ public class ShowDAOImpl implements ShowDAO {
     @Override
     public boolean delete(int showId, int cinemaBuildingOwnerId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement verifyStmt = conn.prepareStatement("SELECT show.id from show,theatre,cinema_building where show.id = ? and show.theatre_id = thetre.id and cinema_building_id = cinema_building.id and owner_id = ?");
+             PreparedStatement verifyStmt = conn.prepareStatement("SELECT show.id FROM show,theatre,cinema_building WHERE show.id = ? AND show.theatre_id = thetre.id AND cinema_building_id = cinema_building.id AND owner_id = ?");
              PreparedStatement deleteStmt = conn.prepareStatement("DELETE FROM show WHERE id = ?")) {
-            verifyStmt.setInt(1,showId);
-            verifyStmt.setInt(2,cinemaBuildingOwnerId);
+            verifyStmt.setInt(1, showId);
+            verifyStmt.setInt(2, cinemaBuildingOwnerId);
             ResultSet resultSet = verifyStmt.executeQuery();
-            if (resultSet.next()){
-                deleteStmt.setInt(1,showId);
+            if (resultSet.next()) {
+                deleteStmt.setInt(1, showId);
                 int result = deleteStmt.executeUpdate();
                 return result == 1;
             }

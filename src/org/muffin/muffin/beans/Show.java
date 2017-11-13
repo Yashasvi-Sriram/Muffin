@@ -9,9 +9,10 @@ import java.sql.Timestamp;
 @EqualsAndHashCode
 @Getter
 @AllArgsConstructor
-public class Show{
+public class Show {
     private int id;
     private int theatre_id;
     private int movie_id;
+    @NonNull
     private Showtime showtime;
 }

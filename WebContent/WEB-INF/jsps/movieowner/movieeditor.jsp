@@ -101,11 +101,10 @@
                                     <a href="#"
                                        onClick={(e) => {
                                            this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: false}
-                                           }
-                                       )
+                                                   => {
+                                                   return {inReadMode: false}
+                                               }
+                                           )
                                        }}
                                        className="btn-floating waves-effect waves-light yellow darken-4">
                                         <i className="material-icons">edit</i>
@@ -145,11 +144,10 @@
                                        onClick={(e) => {
                                            this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
                                            this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: true}
-                                           }
-                                       )
+                                                   => {
+                                                   return {inReadMode: true}
+                                               }
+                                           )
                                            ;
                                        }}
                                        className="btn-floating waves-effect waves-light yellow darken-4">
@@ -160,11 +158,10 @@
                                     <a href="#"
                                        onClick={(e) => {
                                            this.setState(()
-                                       =>
-                                           {
-                                               return {inReadMode: true}
-                                           }
-                                       )
+                                                   => {
+                                                   return {inReadMode: true}
+                                               }
+                                           )
                                        }}
                                        className="btn-floating waves-effect waves-light black">
                                         <i className="material-icons">cancel</i>

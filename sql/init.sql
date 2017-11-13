@@ -24,15 +24,15 @@ INSERT INTO muff_password (id, password) VALUES (5, '.');
 INSERT INTO muff_password (id, password) VALUES (6, '.');
 INSERT INTO muff_password (id, password) VALUES (7, '.');
 
-INSERT INTO genre(name) VALUES ('Drama');
-INSERT INTO genre(name) VALUES ('Action');
-INSERT INTO genre(name) VALUES ('Romance');
-INSERT INTO genre(name) VALUES ('Comedy');
-INSERT INTO genre(name) VALUES ('Thriller');
-INSERT INTO genre(name) VALUES ('Animation');
-INSERT INTO genre(name) VALUES ('Horror');
-INSERT INTO genre(name) VALUES ('Family');
-INSERT INTO genre(name) VALUES ('Kids');
+INSERT INTO genre (name) VALUES ('Drama');
+INSERT INTO genre (name) VALUES ('Action');
+INSERT INTO genre (name) VALUES ('Romance');
+INSERT INTO genre (name) VALUES ('Comedy');
+INSERT INTO genre (name) VALUES ('Thriller');
+INSERT INTO genre (name) VALUES ('Animation');
+INSERT INTO genre (name) VALUES ('Horror');
+INSERT INTO genre (name) VALUES ('Family');
+INSERT INTO genre (name) VALUES ('Kids');
 
 -- INSERT INTO follows (id1, id2) VALUES (1, 2);
 -- INSERT INTO follows (id1, id2) VALUES (2, 3);
@@ -48,15 +48,15 @@ INSERT INTO movie (name, owner_id, duration) VALUES ('Birdman', 1, 140);
 INSERT INTO movie (name, owner_id, duration) VALUES ('Ironman 2', 1, 140);
 INSERT INTO movie (name, owner_id, duration) VALUES ('Avengers 2.5', 1, 160);
 
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (1,1);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (1,2);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (2,3);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (3,4);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (4,1);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (5,1);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (6,8);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (7,5);
-INSERT INTO movie_genre(movie_id,genre_id) VALUES (7,6);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 1);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 2);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (2, 3);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (3, 4);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (4, 1);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (5, 1);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (6, 8);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (7, 5);
+INSERT INTO movie_genre (movie_id, genre_id) VALUES (7, 6);
 
 
 INSERT INTO actor (name) VALUES ('Robert Downey');
@@ -71,7 +71,6 @@ INSERT INTO actor (name) VALUES ('Jason Momoa');
 INSERT INTO actor (name) VALUES ('Jason Segal');
 INSERT INTO actor (name) VALUES ('Henry Cavill');
 INSERT INTO actor (name) VALUES ('Chris Prat');
-
 
 
 INSERT INTO character (name, movie_id, actor_id, movie_owner_id) VALUES ('Tony Stark', 7, 1, 1);

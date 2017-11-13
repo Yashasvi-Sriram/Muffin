@@ -11,6 +11,5 @@ public class Theatre {
     private int id;
     private int cinemaBuildingId;
     private int screenNo;
-
 }
 
