@@ -1,7 +1,6 @@
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS muff_likes_actor;
 DROP TABLE IF EXISTS movie_genre_r;
-DROP TABLE IF EXISTS genre;
 -- DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
@@ -15,12 +14,13 @@ DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
-DROP TABLE IF EXISTS recommendation;
+DROP TABLE IF EXISTS seek_response;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
 DROP TABLE IF EXISTS seek_genre_r;
 DROP TABLE IF EXISTS seek;
+DROP TABLE IF EXISTS genre;
 -- DROP TABLE IF EXISTS comment_on_post;
 -- DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
@@ -287,7 +287,7 @@ CREATE TABLE seek (
   ON DELETE CASCADE
 );
 
-CREATE TABLE recommendation (
+CREATE TABLE seek_response (
   id        SERIAL,
   muff_id   INT       NOT NULL,
   seek_id   INT       NOT NULL,

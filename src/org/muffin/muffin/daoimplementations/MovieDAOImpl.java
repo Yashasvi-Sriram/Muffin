@@ -37,7 +37,7 @@ public class MovieDAOImpl implements MovieDAO {
     public List<Movie> getByGenre(int genreId) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* FROM movie,movie_genre WHERE movie.id = movie_genre.movieId AND genreId = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.* FROM movie,movie_genre_r WHERE movie.id = movie_genre_r.movieId AND genreId = ?")) {
             preparedStmt.setInt(1, genreId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
@@ -125,8 +125,8 @@ public class MovieDAOImpl implements MovieDAO {
     @Override
     public boolean updateGenre(int movieId, int ownerId, int genreId, int flag) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre(movie_id,genre_id) SELECT id,? FROM movie WHERE id = ? AND owner_id = ?");
-             PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre WHERE genre_id = ? AND movie_id = ? AND EXISTS (SELECT * FROM movie WHERE id = ? AND owner_id = ?)")) {
+             PreparedStatement preparedStmt1 = conn.prepareStatement("INSERT INTO movie_genre_r(movie_id,genre_id) SELECT id,? FROM movie WHERE id = ? AND owner_id = ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("DELETE FROM movie_genre_r WHERE genre_id = ? AND movie_id = ? AND EXISTS (SELECT * FROM movie WHERE id = ? AND owner_id = ?)")) {
             if (flag == 1) {
                 preparedStmt1.setInt(1, genreId);
                 preparedStmt1.setInt(2, movieId);
