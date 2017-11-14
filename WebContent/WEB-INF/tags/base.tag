@@ -18,6 +18,7 @@
     <script src="${pageContext.request.contextPath}/static/reactjs/react.js"></script>
     <script src="${pageContext.request.contextPath}/static/reactjs/react-dom.js"></script>
     <script src="${pageContext.request.contextPath}/static/reactjs/babel.js"></script>
+    <script src="${pageContext.request.contextPath}/static/momentjs/moment.js"></script>
     <%--Extra Headers--%>
     <jsp:invoke fragment="extraHeaders"/>
     <title>

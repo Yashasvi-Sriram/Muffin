@@ -1,3 +1,10 @@
+let getTimestamp = function (localDateTime) {
+    let p = moment();
+    p.year(localDateTime.date.year).month(localDateTime.date.month - 1).date(localDateTime.date.day);
+    p.hour(localDateTime.time.hour).minute(localDateTime.time.minute).second(localDateTime.time.second);
+    return p.fromNow();
+};
+
 let Review = React.createClass({
     render: function () {
         return (
@@ -5,6 +12,7 @@ let Review = React.createClass({
                 <div className="card-content">
                     <h4>{this.props.movieName}</h4>
                     <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
+                    <div className="blue-text">{getTimestamp(this.props.addedOn)}</div>
                     <br/>
                     <div className="red-text">{this.props.rating}</div>
                     <div className="flow-text">{this.props.text}</div>
@@ -93,6 +101,7 @@ window.InfiniteFeedApp = React.createClass({
                         id={feedItem.data.id}
                         rating={feedItem.data.rating}
                         text={feedItem.data.text}
+                        addedOn={feedItem.data.addedOn}
                         movieName={feedItem.data.movieName}
                         muff={feedItem.data.muff}/>;
                     break;
