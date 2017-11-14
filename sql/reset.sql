@@ -1,6 +1,6 @@
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS muff_likes_actor;
-DROP TABLE IF EXISTS movie_genre;
+DROP TABLE IF EXISTS movie_genre_r;
 DROP TABLE IF EXISTS genre;
 -- DROP TABLE IF EXISTS muff_likes_character;
 DROP TABLE IF EXISTS character;
@@ -9,17 +9,20 @@ DROP TABLE IF EXISTS booked_show_seats;
 DROP TABLE IF EXISTS booking;
 DROP TABLE IF EXISTS show;
 DROP EXTENSION IF EXISTS btree_gist;
-DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS follows;
-DROP TABLE IF EXISTS movie_owner_password;
-DROP TABLE IF EXISTS movie_owner;
 DROP TABLE IF EXISTS seat;
 DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
-DROP TABLE IF EXISTS comment_on_post;
-DROP TABLE IF EXISTS post;
+DROP TABLE IF EXISTS recommendation;
+DROP TABLE IF EXISTS movie;
+DROP TABLE IF EXISTS movie_owner_password;
+DROP TABLE IF EXISTS movie_owner;
+DROP TABLE IF EXISTS seek_genre_r;
+DROP TABLE IF EXISTS seek;
+-- DROP TABLE IF EXISTS comment_on_post;
+-- DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 DROP TABLE IF EXISTS valid_region;
@@ -274,7 +277,7 @@ CREATE TABLE review (
   ON DELETE CASCADE
 );
 
-CREATE TABLE post (
+CREATE TABLE seek (
   id        SERIAL,
   muff_id   INT       NOT NULL,
   text      TEXT      NOT NULL,
@@ -284,18 +287,45 @@ CREATE TABLE post (
   ON DELETE CASCADE
 );
 
-CREATE TABLE comment_on_post (
+CREATE TABLE recommendation (
   id        SERIAL,
   muff_id   INT       NOT NULL,
-  post_id   INT       NOT NULL,
+  seek_id   INT       NOT NULL,
+  movie_id  INT       NOT NULL,
   text      TEXT      NOT NULL,
   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
+  UNIQUE (muff_id, seek_id, movie_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
-  FOREIGN KEY (post_id) REFERENCES post (id)
+  FOREIGN KEY (seek_id) REFERENCES seek (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );
+
+-- CREATE TABLE post (
+--   id        SERIAL,
+--   muff_id   INT       NOT NULL,
+--   text      TEXT      NOT NULL,
+--   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   PRIMARY KEY (id),
+--   FOREIGN KEY (muff_id) REFERENCES muff (id)
+--   ON DELETE CASCADE
+-- );
+--
+-- CREATE TABLE comment_on_post (
+--   id        SERIAL,
+--   muff_id   INT       NOT NULL,
+--   post_id   INT       NOT NULL,
+--   text      TEXT      NOT NULL,
+--   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+--   PRIMARY KEY (id),
+--   FOREIGN KEY (muff_id) REFERENCES muff (id)
+--   ON DELETE CASCADE,
+--   FOREIGN KEY (post_id) REFERENCES post (id)
+--   ON DELETE CASCADE
+-- );
 
 CREATE TABLE booking (
   id      SERIAL,
@@ -332,11 +362,21 @@ CREATE TABLE genre (
   PRIMARY KEY (id)
 );
 
-CREATE TABLE movie_genre (
+CREATE TABLE movie_genre_r (
   movie_id INT,
   genre_id INT,
   PRIMARY KEY (movie_id, genre_id),
   FOREIGN KEY (movie_id) REFERENCES movie (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (genre_id) REFERENCES genre (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE seek_genre_r (
+  seek_id  INT NOT NULL,
+  genre_id INT NOT NULL,
+  PRIMARY KEY (seek_id, genre_id),
+  FOREIGN KEY (seek_id) REFERENCES seek (id)
   ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES genre (id)
   ON DELETE CASCADE

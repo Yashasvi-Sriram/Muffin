@@ -59,15 +59,15 @@ INSERT INTO movie (name, owner_id, duration) VALUES ('Birdman', 1, 140);
 INSERT INTO movie (name, owner_id, duration) VALUES ('Ironman 2', 1, 140);
 INSERT INTO movie (name, owner_id, duration) VALUES ('Avengers 2.5', 1, 160);
 
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 1);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (1, 2);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (2, 3);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (3, 4);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (4, 1);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (5, 1);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (6, 8);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (7, 5);
-INSERT INTO movie_genre (movie_id, genre_id) VALUES (7, 6);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (1, 1);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (1, 2);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (2, 3);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (3, 4);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (4, 1);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (5, 1);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (6, 8);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (7, 5);
+INSERT INTO movie_genre_r (movie_id, genre_id) VALUES (7, 6);
 
 
 INSERT INTO actor (name) VALUES ('Robert Downey');
