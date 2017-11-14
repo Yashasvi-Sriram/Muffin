@@ -8,7 +8,7 @@
         <m:insessioncinemabuildingownercommons>
             <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
             <jsp:attribute
-                    name="inSessionMuffId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
+                    name="inSessionCinemaBuildingOwnerId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
             <jsp:body>
                 <script type="text/babel">
                     let truncate = function (string, maxLength) {
@@ -206,6 +206,5 @@
                 </div>
             </jsp:body>
         </m:insessioncinemabuildingownercommons>
-
     </jsp:body>
 </m:base>

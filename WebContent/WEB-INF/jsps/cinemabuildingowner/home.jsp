@@ -8,7 +8,7 @@
         <m:insessioncinemabuildingownercommons>
             <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
             <jsp:attribute
-                    name="inSessionMuffId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
+                    name="inSessionCinemaBuildingOwnerId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
             <jsp:body>
                 <div class="container" style="min-height: 100vh">
                     <h1>Hello, ${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getName()}</h1>

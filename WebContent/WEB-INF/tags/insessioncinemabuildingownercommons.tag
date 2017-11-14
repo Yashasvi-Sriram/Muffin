@@ -1,6 +1,6 @@
 <%@tag description="Basic template with javascript headers" pageEncoding="UTF-8" %>
 <%@attribute name="contextPath" fragment="true" required="true" %>
-<%@attribute name="inSessionMuffId" fragment="true" required="true" %>
+<%@attribute name="inSessionCinemaBuildingOwnerId" fragment="true" required="true" %>
 <link href="https://fonts.googleapis.com/css?family=Lobster" rel="stylesheet">
 
 <script type="text/babel">
