@@ -2,14 +2,13 @@ package org.muffin.muffin.daoimplementations;
 
 
 import org.muffin.muffin.beans.Actor;
+import org.muffin.muffin.beans.Genre;
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.daos.ActorDAO;
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class ActorDAOImpl implements ActorDAO {
     @Override
@@ -62,5 +61,22 @@ public class ActorDAOImpl implements ActorDAO {
             e.printStackTrace();
             return Optional.empty();
         }
+    }
+
+    @Override
+    public Map<Genre, Integer> getGenreMovieHistogram(int actorId) {
+        Map<Genre, Integer> stats = new HashMap<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id, genre.name, COUNT(movie_genre_r.movie_id) FROM genre, movie_genre_r,character WHERE character.actor_id = ? AND character.movie_id = movie_genre_r.movie_id AND movie_genre_r.genre_id = genre.id GROUP BY genre.id, genre.name")) {
+            preparedStmt.setInt(1, actorId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                Genre genre = new Genre(resultSet.getInt(1), resultSet.getString(2));
+                stats.put(genre, resultSet.getInt(3));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return stats;
     }
 }

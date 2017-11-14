@@ -5,6 +5,7 @@ import org.muffin.muffin.beans.Genre;
 import org.muffin.muffin.beans.Movie;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 public interface MovieDAO {
@@ -23,4 +24,8 @@ public interface MovieDAO {
     public boolean updateGenre(final int movieId, final int ownerId, final int genre, final int flag);
 
     public boolean delete(final int movieId, int ownerId);
+
+    public float getAverageRating(int movieId);
+
+    public Map<Integer, Integer> getRatingHistogram(int movieId);
 }

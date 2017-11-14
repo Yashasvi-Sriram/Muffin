@@ -7,10 +7,7 @@ import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 public class MovieDAOImpl implements MovieDAO {
     @Override
@@ -31,7 +28,6 @@ public class MovieDAOImpl implements MovieDAO {
             return Collections.emptyList();
         }
     }
-
 
     @Override
     public List<Movie> getByGenre(int genreId) {
@@ -160,6 +156,42 @@ public class MovieDAOImpl implements MovieDAO {
             e.printStackTrace();
             return false;
         }
+    }
+
+    @Override
+    public float getAverageRating(int movieId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT avg(rating) FROM review WHERE movie_id = ?")) {
+            preparedStatement.setInt(1, movieId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getFloat(1);
+            }
+            return -1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -2;
+    }
+
+    @Override
+    public Map<Integer, Integer> getRatingHistogram(int movieId) {
+        Map<Integer, Integer> stats = new HashMap<>();
+        int[] histogram = new int[11];
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT rating FROM review WHERE movie_id = ?")) {
+            preparedStatement.setInt(1, movieId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            while (resultSet.next()) {
+                histogram[(int) Math.floor(resultSet.getFloat(1))]++;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        for (int i = 0; i < 11; i++) {
+            stats.put(i, histogram[i]);
+        }
+        return stats;
     }
 
     private List<Genre> getGenreList(int movieId, Connection conn) {
