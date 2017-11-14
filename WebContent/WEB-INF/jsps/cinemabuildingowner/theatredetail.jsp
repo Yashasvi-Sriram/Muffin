@@ -1,8 +1,9 @@
+<%@page import="org.muffin.muffin.servlets.SessionKeys" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="jstl" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">Movie Editor</jsp:attribute>
+    <jsp:attribute name="title">${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</jsp:attribute>
     <jsp:attribute name="css">
         <style>
             input {
@@ -93,7 +94,7 @@
                 getInitialState: function () {
 
                     return {
-                        cinemaBuildingId: ${requestScope.cinemaBuildingId},
+                        cinemaBuildingId: ${requestScope.cinemaBuilding.getId()},
                         theatres: [
                             <jstl:forEach items="${requestScope.theatreList}" var="theatre">
                             {
@@ -215,7 +216,10 @@
 
             ReactDOM.render(<TheatreEditor/>, document.getElementById('app'));
         </script>
-        <div id="app" class="container"></div>
+        <div class="container">
+            <h1>${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</h1>
+            <div id="app"></div>
+        </div>
         <div class="row">
             <div class="col s2">
             </div>

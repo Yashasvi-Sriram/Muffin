@@ -1,8 +1,9 @@
+<%@page import="org.muffin.muffin.servlets.SessionKeys" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="jstl" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">Movie Editor</jsp:attribute>
+    <jsp:attribute name="title">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).name}'s Cinemas</jsp:attribute>
     <jsp:attribute name="css">
         <style>
             input {
@@ -37,7 +38,6 @@
                 return label;
             };
 
-
             /**
              * @propFunctions: onDeleteClick
              * */
@@ -47,14 +47,15 @@
                     let url = "${pageContext.request.contextPath}/cinemabuildingowner/theatredetail?cinemaBuildingId=" + this.props.id;
                     return (
                             <tr title={this.props.name}>
-                                <td className="flow-text">{truncate(this.props.name, 25)}</td>
-                                <td className="flow-text">{truncate(this.props.streetName, 25)}</td>
-                                <td className="flow-text">{truncate(this.props.city, 25)}</td>
-                                <td className="flow-text">{truncate(this.props.state, 25)}</td>
-                                <td className="flow-text">{truncate(this.props.country, 25)}</td>
+                                <td>{truncate(this.props.name, 25)}</td>
+                                <td>{truncate(this.props.streetName, 25)}</td>
+                                <td>{truncate(this.props.city, 25)}</td>
+                                <td>{truncate(this.props.state, 25)}</td>
+                                <td>{truncate(this.props.country, 25)}</td>
                                 <td>
-                                    <a href={url} type="submit" name="cinemaBuildingId" value={this.props.id}
-                                       className="btn-floating waves-effect waves-light blue">
+                                    <a href={url} type="submit" value={this.props.id}
+                                       title="Theatres inside"
+                                       className="btn-floating waves-effect waves-light orange">
                                         <i className="material-icons">info</i></a>
                                 </td>
                                 <td>
@@ -62,7 +63,7 @@
                                        onClick={(e) => {
                                            this.props.onDeleteClick(this.props.id)
                                        }}
-
+                                       title="Remove"
                                        className="btn-floating waves-effect waves-light red">
                                         <i className="material-icons">remove</i>
                                     </a>
@@ -134,8 +135,6 @@
                                     <th>City</th>
                                     <th>State</th>
                                     <th>Country</th>
-
-
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -163,8 +162,12 @@
 
             ReactDOM.render(<CinemaBuildingList/>, document.getElementById('app'));
         </script>
-        <div id="app" class="container"></div>
-        <br>
-        <a href="${pageContext.request.contextPath}/cinemabuildingowner/home">Go to Home Page</a>
+
+        <div class="container">
+            <h1>${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).name}'s Cinemas</h1>
+            <div class="divider"></div>
+            <div id="app"></div>
+            <a href="${pageContext.request.contextPath}/cinemabuildingowner/home">Go to Home Page</a>
+        </div>
     </jsp:body>
 </m:base>

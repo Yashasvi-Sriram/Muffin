@@ -5,7 +5,7 @@
     <jsp:body>
         <m:usersignup>
             <jsp:attribute name="message">${requestScope.get("message")}</jsp:attribute>
-            <jsp:attribute name="bgColor">teal</jsp:attribute>
+            <jsp:attribute name="bgColor">purple</jsp:attribute>
             <jsp:attribute name="action">${requestScope.get("action")}</jsp:attribute>
             <jsp:attribute name="nameValue">${requestScope.get("name")}</jsp:attribute>
             <jsp:attribute name="handleValue">${requestScope.get("handle")}</jsp:attribute>

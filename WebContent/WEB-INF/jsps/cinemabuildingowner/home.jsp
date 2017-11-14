@@ -85,9 +85,8 @@
             let Region = React.createClass({
                 render: function () {
                     return (
-                            <tr>
-                                <td onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>{this.props.city}({this.props.state},{this.props.country})</td>
-                            </tr>
+                            <div className="collection-item"
+                                 onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>{this.props.city}({this.props.state},{this.props.country})</div>
                     );
                 }
             });
@@ -252,37 +251,18 @@
                     return (
                             <div className="create-building-form"
                                  ref="createBuildingForm">
-
-                                <div className="row">
-                                    <div className="col s6">
+                                <h4>Add Cinema</h4>
+                                <div className="row" style={{margin: '0px'}}>
+                                    <div className="col s8">
                                         <input type="text" ref="name"
                                                name="name" placeholder="Cinema Building Name" defaultValue=""/>
-
-
                                         <input type="text" ref="streetName"
                                                name="streetName" placeholder="Street Name" defaultValue=""/>
-
-
-                                        <input type="text" ref="city"
-                                               name="city" placeholder="City" defaultValue=""/>
-
-                                        <input type="text" ref="state"
-                                               name="state" placeholder="State" defaultValue=""/>
-                                        <input type="text" ref="country"
-                                               name="country" placeholder="Country" defaultValue=""/>
-                                        <input type="text" ref="zip"
-                                               name="zip" placeholder="Zip" defaultValue=""/>
-                                        <button onClick={this.createNewBuilding}
-                                                className="btn-floating waves-effect waves-light green">
-                                            <i className="material-icons">add</i>
-                                        </button>
-                                    </div>
-                                    <div className="col s2">
-                                    </div>
-                                    <div className="col s4">
-                                        <input onKeyDown={this.onRegexInputKeyDown}
-                                               ref="pattern"
-                                               placeholder="Search For Valid Regions" type="text"/>
+                                        <blockquote>
+                                            <input onKeyDown={this.onRegexInputKeyDown}
+                                                   ref="pattern"
+                                                   placeholder="Search For Valid Regions" type="text"/>
+                                        </blockquote>
                                         <div ref="results">
                                             <div className="collection with-header">
                                                 <div className="collection-header"><span
@@ -296,11 +276,23 @@
                                                             className="material-icons">keyboard_arrow_right</i></button>
                                                     </span>
                                                 </div>
-                                                <table className="white highlight bordered">
-                                                    <tbody>{results}</tbody>
-                                                </table>
+                                                {results}
                                             </div>
                                         </div>
+                                        <input type="text" ref="city"
+                                               name="city" placeholder="City" defaultValue=""/>
+                                        <input type="text" ref="state"
+                                               name="state" placeholder="State" defaultValue=""/>
+                                        <input type="text" ref="country"
+                                               name="country" placeholder="Country" defaultValue=""/>
+                                        <input type="text" ref="zip"
+                                               name="zip" placeholder="Zip" defaultValue=""/>
+                                    </div>
+                                    <div className="col s4">
+                                        <button onClick={this.createNewBuilding}
+                                                className="btn btn-flat waves-effect waves-light pink white-text">
+                                            Create Building
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -310,13 +302,37 @@
                     $(this.refs.results).hide();
                 },
             });
-
-
-            ReactDOM.render(<CreateCinemaBuilding/>,
-                document.getElementById('create-cinema-building'));
+            ReactDOM.render(<CreateCinemaBuilding/>, document.getElementById('create-cinema-building'));
         </script>
-        <a href="${pageContext.request.contextPath}/cinemabuildingowner/buildinglist">See your existing buildings</a>
-        <h4>Add a new Building</h4>
-        <div id="create-cinema-building"></div>
+        <script type="text/javascript">
+            $(document).ready(function () {
+                $('.modal').modal();
+            });
+        </script>
+        <%--Create Building Modal--%>
+        <div id="create-building-modal" class="modal modal-fixed-footer">
+            <div class="modal-content">
+                <div id="create-cinema-building"></div>
+            </div>
+            <div class="modal-footer">
+                <a href="#" class="modal-action modal-close waves-effect btn-flat">
+                    <i class="material-icons">close</i>
+                </a>
+            </div>
+        </div>
+        <%--Create Building Modal Shortcut--%>
+        <a href="#create-building-modal"
+           title="Create Building"
+           class="btn-floating btn-large waves-effect waves-light green modal-trigger"
+           style="position:fixed;bottom: 20px; right: 20px">
+            <i class="material-icons">add</i>
+        </a>
+
+        <div class="container">
+            <h1>Hello, ${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).name}</h1>
+            <div class="collection">
+                <a href="${pageContext.request.contextPath}/cinemabuildingowner/buildinglist" class="collection-item">Your Cinemas</a>
+            </div>
+        </div>
     </jsp:body>
 </m:base>

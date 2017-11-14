@@ -22,8 +22,24 @@ import org.muffin.muffin.db.DBConfig;
 public class CinemaBuildingDAOImpl implements CinemaBuildingDAO {
 
     @Override
-    public boolean create(int ownerId, String name, String streetName, String city, String state, String country,
-                          String zip) {
+    public Optional<CinemaBuilding> get(int cinemaBuildingId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, street_name, city, state, country, zip  FROM cinema_building WHERE id = ?")) {
+            preparedStmt.setInt(1, cinemaBuildingId);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                CinemaBuilding cinemaBuilding = new CinemaBuilding(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4), result.getString(5), result.getString(6), result.getString(7), result.getString(8));
+                return Optional.of(cinemaBuilding);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public boolean create(int ownerId, String name, String streetName, String city, String state, String country, String zip) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO cinema_building(owner_id,name,street_name,city,state,country,zip) VALUES (?,?,?,?,?,?,?);")) {
             preparedStmt.setInt(1, ownerId);
@@ -43,10 +59,9 @@ public class CinemaBuildingDAOImpl implements CinemaBuildingDAO {
     }
 
     @Override
-    public Optional<CinemaBuilding> get(String name, String streetName, String city, String state, String country,
-                                        String zip) {
+    public Optional<CinemaBuilding> get(String name, String streetName, String city, String state, String country, String zip) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, street_name, city, state, country, zip  FROM cinema_building WHERE name = ? and street_name = ? and city = ? and state = ? and country = ? and zip = ? ")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, street_name, city, state, country, zip  FROM cinema_building WHERE name = ? AND street_name = ? AND city = ? AND state = ? AND country = ? AND zip = ? ")) {
             preparedStmt.setString(1, name);
             preparedStmt.setString(2, streetName);
             preparedStmt.setString(3, city);
