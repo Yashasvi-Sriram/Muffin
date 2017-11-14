@@ -164,7 +164,7 @@ public class MovieDAOImpl implements MovieDAO {
 
     private List<Genre> getGenreList(int movieId, Connection conn) {
         List<Genre> genres = new ArrayList<>();
-        try (PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre WHERE movie_id = ? AND genre.id = genre_id")) {
+        try (PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setInt(1, movieId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
