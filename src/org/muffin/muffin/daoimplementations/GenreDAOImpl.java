@@ -20,32 +20,26 @@ import org.muffin.muffin.db.DBConfig;
 
 public class GenreDAOImpl implements GenreDAO {
     @Override
-    public List<Genre> getGenre(String searchKey, final int offset, final int limit) {
+    public List<Genre> getAll() {
         List<Genre> genres = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name ILIKE ? ORDER BY name OFFSET ? LIMIT ?")) {
-            preparedStmt.setString(1, "%" + searchKey + "%");
-            preparedStmt.setInt(2, offset);
-            preparedStmt.setInt(3, limit);
-
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre;")) {
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Genre genre = new Genre(resultSet.getInt(1), resultSet.getString(2));
                 genres.add(genre);
             }
-
-        } catch (SQLException e1) {
-            e1.printStackTrace();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
-
-
         return genres;
     }
 
-    public List<Genre> getGenreForMovie(String searchKey, int movieId, final int offset, final int limit) {
+    @Override
+    public List<Genre> searchGenresForMovie(String searchKey, int movieId, int offset, int limit) {
         List<Genre> genres = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name ILIKE ? and id not in (select genre_id from movie_genre where movie_id = ?) ORDER BY name OFFSET ? LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM genre WHERE name ILIKE ? AND id NOT IN (SELECT genre_id FROM movie_genre_r WHERE movie_id = ?) ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + searchKey + "%");
             preparedStmt.setInt(2, movieId);
             preparedStmt.setInt(3, offset);
@@ -55,12 +49,9 @@ public class GenreDAOImpl implements GenreDAO {
                 Genre genre = new Genre(resultSet.getInt(1), resultSet.getString(2));
                 genres.add(genre);
             }
-
         } catch (SQLException e1) {
             e1.printStackTrace();
         }
-
-
         return genres;
     }
 
@@ -70,20 +61,17 @@ public class GenreDAOImpl implements GenreDAO {
         List<Genre> genres = new ArrayList<>();
 
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id,genre.name FROM genre,movie_genre WHERE  movie_genre.genre_id = genre.id and movie_genre.movie_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id,genre.name FROM genre,movie_genre_r WHERE  movie_genre_r.genre_id = genre.id AND movie_genre_r.movie_id = ?")) {
             preparedStmt.setInt(1, movieId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 Genre genre = new Genre(resultSet.getInt(1), resultSet.getString(2));
                 genres.add(genre);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
         return genres;
-
     }
 
     @Override

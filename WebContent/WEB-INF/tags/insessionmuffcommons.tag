@@ -12,6 +12,8 @@
         src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/buttersearchapp.jsx"></script>
 <script type="text/babel"
         src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/givereviewapp.jsx"></script>
+<script type="text/babel"
+        src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/seekentertainmentapp.jsx"></script>
 <script type="text/babel">
     ReactDOM.render(<ButterSearchApp limit={5}
                                      contextPath="<jsp:invoke fragment="contextPath"/>"
@@ -20,6 +22,10 @@
                                      actorSearchUrl="/actor/search"/>, document.getElementById('butter-search-app'));
     ReactDOM.render(<GiveReviewApp contextPath="<jsp:invoke fragment="contextPath"/>"
                                    url="/review/give"/>, document.getElementById('give-review-app'));
+    ReactDOM.render(<SeekEntertainmentApp
+            contextPath="<jsp:invoke fragment="contextPath"/>"
+            url='/seek/create'
+            genreFetchUrl='/genre/fetch/all'/>, document.getElementById('seek-entertainment-app'));
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -70,12 +76,23 @@
             <i class="material-icons">close</i></button>
     </div>
 </div>
-<%--Give Review Modal Shortcut--%>
-<a href="#give-review-modal"
-   title="Give Review"
+
+<%--Seek Entertainment Modal--%>
+<div id="seek-entertainment-modal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <div id="seek-entertainment-app"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-action modal-close waves-effect btn-flat">
+            <i class="material-icons">close</i></button>
+    </div>
+</div>
+<%--Seek Entertainment Modal Shortcut--%>
+<a href="#seek-entertainment-modal"
+   title="Seek Entertainment"
    class="btn-floating btn-large waves-effect waves-light green modal-trigger"
    style="position:fixed;bottom:100px; right: 20px">
-    <i class="material-icons">add</i>
+    <i class="material-icons">local_movies</i>
 </a>
 
 <%--Nav bar--%>
@@ -118,6 +135,14 @@
            title="Give Review">
             <i class="material-icons">add</i>
             Give Review
+        </a>
+    </li>
+    <li>
+        <a class="modal-trigger"
+           href="#seek-entertainment-modal"
+           title="Seek Entertainment">
+            <i class="material-icons">local_movies</i>
+            Seek Entertainment
         </a>
     </li>
     <li>

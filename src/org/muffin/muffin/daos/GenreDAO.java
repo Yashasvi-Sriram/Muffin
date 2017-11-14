@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 public interface GenreDAO {
-    public List<Genre> getGenre(final String searchKey, final int offset, final int limit);
+    public List<Genre> getAll();
 
-    public List<Genre> getGenreForMovie(final String searchKey, final int movieId, final int offset, final int limit);
+    public List<Genre> searchGenresForMovie(final String searchKey, final int movieId, final int offset, final int limit);
 
     public List<Genre> getByMovie(final int movieId);
 
