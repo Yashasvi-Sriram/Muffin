@@ -27,8 +27,10 @@
                                                      reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
                 </script>
                 <%--Infinite Feed App--%>
-                <div class="container">
-                    <div id="infinite-feed-app"></div>
+                <div class="row">
+                    <div class="col s4 offset-s4">
+                        <div id="infinite-feed-app"></div>
+                    </div>
                 </div>
             </jsp:body>
         </m:insessionmuffcommons>

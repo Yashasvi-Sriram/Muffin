@@ -36,7 +36,7 @@
                 </script>
                 <%--Infinite Feed App--%>
                 <div class="row">
-                    <div class="col s6 offset-s3">
+                    <div class="col s4 offset-s4">
                         <div id="infinite-feed-app"></div>
                     </div>
                 </div>

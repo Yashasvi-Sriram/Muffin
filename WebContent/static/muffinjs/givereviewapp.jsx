@@ -23,8 +23,8 @@ let isReviewValid = function (name, rating, review) {
 let MovieSearchResult = React.createClass({
     render: function () {
         return (
-            <a href="#" className="collection-item"
-               onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</a>
+            <div className="collection-item"
+               onClick={e => this.props.onItemClick(this.props.name)}>{this.props.name}</div>
         );
     }
 });
