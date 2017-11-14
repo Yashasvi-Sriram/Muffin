@@ -1,6 +1,7 @@
-package org.muffin.muffin.servlets.muff;
+package org.muffin.muffin.servlets.cinemabuildingowner;
 
-import org.muffin.muffin.servlets.MuffEnsuredSessionServlet;
+import org.muffin.muffin.servlets.CinemaBuildingOwnerEnsuredSessionServlet;
+import org.muffin.muffin.servlets.MovieOwnerEnsuredSessionServlet;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -13,8 +14,8 @@ import java.io.IOException;
  * doGetWithSession:  invalidates session and renders index page
  * doPostWithSession: same as get
  */
-@WebServlet("/muff/logout")
-public class Logout extends MuffEnsuredSessionServlet {
+@WebServlet("/cinemabuildingowner/logout")
+public class Logout extends CinemaBuildingOwnerEnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         session.invalidate();

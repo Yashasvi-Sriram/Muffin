@@ -26,335 +26,342 @@
         </style>
     </jsp:attribute>
     <jsp:body>
-        <script type="text/babel">
-            let truncate = function (string, maxLength) {
-                let label;
-                if (string.length > maxLength) {
-                    label = string.substring(0, maxLength) + '...';
-                }
-                else {
-                    label = string;
-                }
-                return label;
-            };
-            const DUR_MAX = 500;
-            let isMovieValid = function (name, durationInMinutes) {
-                if (name === '') {
-                    Materialize.toast('Movie name is empty!', 3000);
-                    return false;
-                }
-                if (name.length > 50) {
-                    Materialize.toast('Movie name must be less than 50 characters!', 3000);
-                    return false;
-                }
+        <m:insessionmovieownercommons>
+            <jsp:attribute
+                    name="inSessionMovieOwnerId">${sessionScope.get(SessionKeys.MOVIE_OWNER).getId()}</jsp:attribute>
+            <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
+            <jsp:body>
+                <script type="text/babel">
+                    let truncate = function (string, maxLength) {
+                        let label;
+                        if (string.length > maxLength) {
+                            label = string.substring(0, maxLength) + '...';
+                        }
+                        else {
+                            label = string;
+                        }
+                        return label;
+                    };
+                    const DUR_MAX = 500;
+                    let isMovieValid = function (name, durationInMinutes) {
+                        if (name === '') {
+                            Materialize.toast('Movie name is empty!', 3000);
+                            return false;
+                        }
+                        if (name.length > 50) {
+                            Materialize.toast('Movie name must be less than 50 characters!', 3000);
+                            return false;
+                        }
 
-                if (durationInMinutes === ''
-                    || isNaN(Number(durationInMinutes))) {
-                    Materialize.toast('Invalid duration!', 3000);
-                    return false;
-                }
-                durationInMinutes = Number(durationInMinutes);
-                if (durationInMinutes <= 0 || durationInMinutes > DUR_MAX) {
-                    Materialize.toast('Invalid duration!', 3000);
-                    return false;
-                }
-                return true;
-            };
+                        if (durationInMinutes === ''
+                            || isNaN(Number(durationInMinutes))) {
+                            Materialize.toast('Invalid duration!', 3000);
+                            return false;
+                        }
+                        durationInMinutes = Number(durationInMinutes);
+                        if (durationInMinutes <= 0 || durationInMinutes > DUR_MAX) {
+                            Materialize.toast('Invalid duration!', 3000);
+                            return false;
+                        }
+                        return true;
+                    };
 
-            /**
-             * @propFunctions: onDeleteClick, onEditClick
-             * */
-            let MovieItem = React.createClass({
-                getInitialState: function () {
+                    /**
+                     * @propFunctions: onDeleteClick, onEditClick
+                     * */
+                    let MovieItem = React.createClass({
+                        getInitialState: function () {
 
-                    return {
-                        inReadMode: true,
-                    }
-                },
-                readModeRender: function () {
-                    let url = "${pageContext.request.contextPath}/movieowner/moviedetail?movieId=" + this.props.id;
+                            return {
+                                inReadMode: true,
+                            }
+                        },
+                        readModeRender: function () {
+                            let url = "${pageContext.request.contextPath}/movieowner/moviedetail?movieId=" + this.props.id;
 
-                    return (
-                            <tr title={this.props.name}
-                                onDoubleClick={() => this.setState(() => {
-                                    return {inReadMode: false}
-                                })}>
-                                <td>{truncate(this.props.name, 20)}</td>
-                                <td>{this.props.durationInMinutes}</td>
+                            return (
+                                    <tr title={this.props.name}
+                                        onDoubleClick={() => this.setState(() => {
+                                            return {inReadMode: false}
+                                        })}>
+                                        <td>{truncate(this.props.name, 20)}</td>
+                                        <td>{this.props.durationInMinutes}</td>
 
-                                <td>
-                                    <a href={url} type="submit" name="movieId" value={this.props.id}
-                                       className="btn-floating waves-effect waves-light blue">
-                                        <i className="material-icons">info</i></a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.props.onDeleteClick(this.props.id)
-                                       }}
-                                       className="btn-floating waves-effect waves-light red">
-                                        <i className="material-icons">remove</i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.setState(()
-                                                   => {
-                                                   return {inReadMode: false}
-                                               }
-                                           )
-                                       }}
-                                       className="btn-floating waves-effect waves-light yellow darken-4">
-                                        <i className="material-icons">edit</i>
-                                    </a>
-                                </td>
-                            </tr>
-                    );
-                },
-                writeModeRender: function () {
-                    return (
-                            <tr title={this.props.name}
-                                onDoubleClick={() =>
-                                    this.setState(() => {
-                                        return {inReadMode: true}
-                                    })
-                                }>
-                                <td className="flow-text">
-                                    <input type="text"
-                                           ref="name"
-                                           name="name"
-                                           placeholder="Name"
-                                           defaultValue={this.props.name}/>
-                                </td>
-                                <td>
-                                    <input type="number"
-                                           ref="durationInMinutes"
-                                           name="durationInMinutes"
-                                           placeholder="Duration (In Minutes)"
-                                           defaultValue={this.props.durationInMinutes}/>
+                                        <td>
+                                            <a href={url} type="submit" name="movieId" value={this.props.id}
+                                               className="btn-floating waves-effect waves-light blue">
+                                                <i className="material-icons">info</i></a>
+                                        </td>
+                                        <td>
+                                            <a href="#"
+                                               onClick={(e) => {
+                                                   this.props.onDeleteClick(this.props.id)
+                                               }}
+                                               className="btn-floating waves-effect waves-light red">
+                                                <i className="material-icons">remove</i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="#"
+                                               onClick={(e) => {
+                                                   this.setState(()
+                                                           => {
+                                                           return {inReadMode: false}
+                                                       }
+                                                   )
+                                               }}
+                                               className="btn-floating waves-effect waves-light yellow darken-4">
+                                                <i className="material-icons">edit</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                            );
+                        },
+                        writeModeRender: function () {
+                            return (
+                                    <tr title={this.props.name}
+                                        onDoubleClick={() =>
+                                            this.setState(() => {
+                                                return {inReadMode: true}
+                                            })
+                                        }>
+                                        <td className="flow-text">
+                                            <input type="text"
+                                                   ref="name"
+                                                   name="name"
+                                                   placeholder="Name"
+                                                   defaultValue={this.props.name}/>
+                                        </td>
+                                        <td>
+                                            <input type="number"
+                                                   ref="durationInMinutes"
+                                                   name="durationInMinutes"
+                                                   placeholder="Duration (In Minutes)"
+                                                   defaultValue={this.props.durationInMinutes}/>
 
 
-                                </td>
-                                <td>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
-                                           this.setState(()
-                                                   => {
-                                                   return {inReadMode: true}
-                                               }
-                                           )
-                                           ;
-                                       }}
-                                       className="btn-floating waves-effect waves-light yellow darken-4">
-                                        <i className="material-icons">send</i>
-                                    </a>
-                                </td>
-                                <td>
-                                    <a href="#"
-                                       onClick={(e) => {
-                                           this.setState(()
-                                                   => {
-                                                   return {inReadMode: true}
-                                               }
-                                           )
-                                       }}
-                                       className="btn-floating waves-effect waves-light black">
-                                        <i className="material-icons">cancel</i>
-                                    </a>
-                                </td>
-                            </tr>
-                    );
-                },
-                render: function () {
-                    return this.state.inReadMode ? this.readModeRender() : this.writeModeRender();
-                }
-            });
+                                        </td>
+                                        <td>
+                                        </td>
+                                        <td>
+                                            <a href="#"
+                                               onClick={(e) => {
+                                                   this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
+                                                   this.setState(()
+                                                           => {
+                                                           return {inReadMode: true}
+                                                       }
+                                                   )
+                                                   ;
+                                               }}
+                                               className="btn-floating waves-effect waves-light yellow darken-4">
+                                                <i className="material-icons">send</i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href="#"
+                                               onClick={(e) => {
+                                                   this.setState(()
+                                                           => {
+                                                           return {inReadMode: true}
+                                                       }
+                                                   )
+                                               }}
+                                               className="btn-floating waves-effect waves-light black">
+                                                <i className="material-icons">cancel</i>
+                                            </a>
+                                        </td>
+                                    </tr>
+                            );
+                        },
+                        render: function () {
+                            return this.state.inReadMode ? this.readModeRender() : this.writeModeRender();
+                        }
+                    });
 
-            let MovieEditor = React.createClass({
-                getInitialState: function () {
-                    return {
-                        movies: [
-                            <jstl:forEach items="${requestScope.movieList}" var="movie">
-                            {
-                                id: ${movie.id},
-                                name: '${movie.name}',
-                                movieOwnerId: '${movie.movieOwnerId}',
-                                durationInMinutes: ${movie.durationInMinutes},
-                                genres: [
-                                    <jstl:forEach items="${movie.genres}" var="genre">
+                    let MovieEditor = React.createClass({
+                        getInitialState: function () {
+                            return {
+                                movies: [
+                                    <jstl:forEach items="${requestScope.movieList}" var="movie">
                                     {
-                                        genreid: ${genre.id},
-                                        name: '${genre.name}',
+                                        id: ${movie.id},
+                                        name: '${movie.name}',
+                                        movieOwnerId: '${movie.movieOwnerId}',
+                                        durationInMinutes: ${movie.durationInMinutes},
+                                        genres: [
+                                            <jstl:forEach items="${movie.genres}" var="genre">
+                                            {
+                                                genreid: ${genre.id},
+                                                name: '${genre.name}',
+                                            },
+                                            </jstl:forEach>
+                                        ],
                                     },
                                     </jstl:forEach>
                                 ],
-                            },
-                            </jstl:forEach>
-                        ],
-                    }
-                },
-                createMovie: function () {
-                    let self = this;
-                    // validation
-                    if (!isMovieValid(this.refs.name.value, this.refs.durationInMinutes.value)) {
-                        return;
-                    }
-                    // ajax call
-                    let newMovieSerialized = $(this.refs.createMovieForm).find('input').serialize();
-                    $.ajax({
-                        url: '${pageContext.request.contextPath}/movie/create',
-                        type: 'GET',
-                        data: newMovieSerialized,
-                        success: function (r) {
-                            let json = JSON.parse(r);
-                            if (json.status === -1) {
-                                Materialize.toast(json.error, 2000);
-                            }
-                            else {
-                                let data = json.data;
-                                self.setState((prevState, props) => {
-                                    prevState.movies.push(data);
-                                    return prevState;
-                                });
-                                $(self.refs.createMovieForm).find('input').val('');
                             }
                         },
-                        error: function (data) {
-                            Materialize.toast('Server Error', 2000);
-                        }
-                    });
-                },
-                editMovie: function (id, name, durationInMinutes) {
-                    let self = this;
-                    // validation
-                    if (!isMovieValid(name, durationInMinutes)) {
-                        return;
-                    }
-                    // ajax call
-                    $.ajax({
-                        url: '${pageContext.request.contextPath}/movie/update',
-                        type: 'GET',
-                        data: {id: id, name: name, durationInMinutes: durationInMinutes},
-                        success: function (r) {
-                            let json = JSON.parse(r);
-                            if (json.status === -1) {
-                                Materialize.toast(json.error, 2000);
+                        createMovie: function () {
+                            let self = this;
+                            // validation
+                            if (!isMovieValid(this.refs.name.value, this.refs.durationInMinutes.value)) {
+                                return;
                             }
-                            else {
-                                let data = json.data;
-                                self.setState((prevState, props) => {
-                                    let updateIndex = -1;
-                                    prevState.movies.forEach((movie, i) => {
-                                        if (movie.id === id) {
-                                            updateIndex = i;
-                                        }
-                                    });
-                                    prevState.movies.splice(updateIndex, 1, data);
-                                    return prevState;
-                                });
-                                self.forceUpdate();
-                            }
-                        },
-                        error: function (data) {
-                            Materialize.toast('Server Error', 2000);
-                        }
-                    });
-                },
-                deleteMovie: function (id) {
-                    let self = this;
-                    $.ajax({
-                        url: '${pageContext.request.contextPath}/movie/delete',
-                        type: 'GET',
-                        data: {id: id},
-                        success: function (r) {
-                            let json = JSON.parse(r);
-                            if (json.status === -1) {
-                                Materialize.toast(json.error, 2000);
-                            }
-                            else {
-                                self.setState((prevState, props) => {
-                                    let delIndex = -1;
-                                    prevState.movies.forEach((movie, i) => {
-                                        if (movie.id === id) {
-                                            delIndex = i;
-                                        }
-                                    });
-                                    prevState.movies.splice(delIndex, 1);
-                                    return prevState;
-                                });
-                            }
-                        },
-                        error: function (data) {
-                            Materialize.toast('Server Error', 2000);
-                        }
-                    });
-                },
-                render: function () {
-                    return (
-                            <table className="highlight centered striped">
-                                <thead>
-                                <tr>
-                                    <th><h5>Name</h5></th>
-                                    <th><h5>Duration (In minutes)</h5></th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                <tr className="create-movie-form"
-                                    ref="createMovieForm">
-                                    <td>
-                                        <input type="text"
-                                               ref="name"
-                                               name="name"
-                                               placeholder="Name"
-                                               defaultValue=""/>
-                                    </td>
-                                    <td>
-                                        <input type="number"
-                                               ref="durationInMinutes"
-                                               name="durationInMinutes"
-                                               placeholder="Duration (In Minutes)"
-                                               defaultValue=""/>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                    </td>
-                                    <td>
-                                        <button onClick={this.createMovie}
-                                                className="btn-floating waves-effect waves-light green">
-                                            <i className="material-icons">add</i>
-                                        </button>
-                                    </td>
-                                </tr>
-                                <tr>
-                                    <td className="flow-text">No. movies made = {this.state.movies.length}</td>
-                                </tr>
-                                {
-                                    this.state.movies.map(m => {
-                                        return <MovieItem key={m.id}
-                                                          id={m.id}
-                                                          name={m.name}
-                                                          durationInMinutes={m.durationInMinutes}
-                                                          genres={m.genres}
-                                                          onDeleteClick={this.deleteMovie}
-                                                          onEditClick={this.editMovie}/>;
-                                    })
+                            // ajax call
+                            let newMovieSerialized = $(this.refs.createMovieForm).find('input').serialize();
+                            $.ajax({
+                                url: '${pageContext.request.contextPath}/movie/create',
+                                type: 'GET',
+                                data: newMovieSerialized,
+                                success: function (r) {
+                                    let json = JSON.parse(r);
+                                    if (json.status === -1) {
+                                        Materialize.toast(json.error, 2000);
+                                    }
+                                    else {
+                                        let data = json.data;
+                                        self.setState((prevState, props) => {
+                                            prevState.movies.push(data);
+                                            return prevState;
+                                        });
+                                        $(self.refs.createMovieForm).find('input').val('');
+                                    }
+                                },
+                                error: function (data) {
+                                    Materialize.toast('Server Error', 2000);
                                 }
-                                </tbody>
-                            </table>
-                    );
-                }
-            });
+                            });
+                        },
+                        editMovie: function (id, name, durationInMinutes) {
+                            let self = this;
+                            // validation
+                            if (!isMovieValid(name, durationInMinutes)) {
+                                return;
+                            }
+                            // ajax call
+                            $.ajax({
+                                url: '${pageContext.request.contextPath}/movie/update',
+                                type: 'GET',
+                                data: {id: id, name: name, durationInMinutes: durationInMinutes},
+                                success: function (r) {
+                                    let json = JSON.parse(r);
+                                    if (json.status === -1) {
+                                        Materialize.toast(json.error, 2000);
+                                    }
+                                    else {
+                                        let data = json.data;
+                                        self.setState((prevState, props) => {
+                                            let updateIndex = -1;
+                                            prevState.movies.forEach((movie, i) => {
+                                                if (movie.id === id) {
+                                                    updateIndex = i;
+                                                }
+                                            });
+                                            prevState.movies.splice(updateIndex, 1, data);
+                                            return prevState;
+                                        });
+                                        self.forceUpdate();
+                                    }
+                                },
+                                error: function (data) {
+                                    Materialize.toast('Server Error', 2000);
+                                }
+                            });
+                        },
+                        deleteMovie: function (id) {
+                            let self = this;
+                            $.ajax({
+                                url: '${pageContext.request.contextPath}/movie/delete',
+                                type: 'GET',
+                                data: {id: id},
+                                success: function (r) {
+                                    let json = JSON.parse(r);
+                                    if (json.status === -1) {
+                                        Materialize.toast(json.error, 2000);
+                                    }
+                                    else {
+                                        self.setState((prevState, props) => {
+                                            let delIndex = -1;
+                                            prevState.movies.forEach((movie, i) => {
+                                                if (movie.id === id) {
+                                                    delIndex = i;
+                                                }
+                                            });
+                                            prevState.movies.splice(delIndex, 1);
+                                            return prevState;
+                                        });
+                                    }
+                                },
+                                error: function (data) {
+                                    Materialize.toast('Server Error', 2000);
+                                }
+                            });
+                        },
+                        render: function () {
+                            return (
+                                    <table className="highlight centered striped">
+                                        <thead>
+                                        <tr>
+                                            <th><h5>Name</h5></th>
+                                            <th><h5>Duration (In minutes)</h5></th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        <tr className="create-movie-form"
+                                            ref="createMovieForm">
+                                            <td>
+                                                <input type="text"
+                                                       ref="name"
+                                                       name="name"
+                                                       placeholder="Name"
+                                                       defaultValue=""/>
+                                            </td>
+                                            <td>
+                                                <input type="number"
+                                                       ref="durationInMinutes"
+                                                       name="durationInMinutes"
+                                                       placeholder="Duration (In Minutes)"
+                                                       defaultValue=""/>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                            </td>
+                                            <td>
+                                                <button onClick={this.createMovie}
+                                                        className="btn-floating waves-effect waves-light green">
+                                                    <i className="material-icons">add</i>
+                                                </button>
+                                            </td>
+                                        </tr>
+                                        <tr>
+                                            <td className="flow-text">No. movies made = {this.state.movies.length}</td>
+                                        </tr>
+                                        {
+                                            this.state.movies.map(m => {
+                                                return <MovieItem key={m.id}
+                                                                  id={m.id}
+                                                                  name={m.name}
+                                                                  durationInMinutes={m.durationInMinutes}
+                                                                  genres={m.genres}
+                                                                  onDeleteClick={this.deleteMovie}
+                                                                  onEditClick={this.editMovie}/>;
+                                            })
+                                        }
+                                        </tbody>
+                                    </table>
+                            );
+                        }
+                    });
 
-            ReactDOM.render(<MovieEditor/>, document.getElementById('app'));
-        </script>
-        <div class="container">
-            <h2>${sessionScope.get(SessionKeys.MOVIE_OWNER).getName()}'s movies</h2>
-            <div id="app"></div>
-        </div>
+                    ReactDOM.render(<MovieEditor/>, document.getElementById('app'));
+                </script>
+                <div class="container" style="min-height: 100vh">
+                    <h2>${sessionScope.get(SessionKeys.MOVIE_OWNER).getName()}'s movies</h2>
+                    <div id="app"></div>
+                </div>
+            </jsp:body>
+        </m:insessionmovieownercommons>
     </jsp:body>
 </m:base>
