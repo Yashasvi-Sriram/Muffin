@@ -1,3 +1,4 @@
+<%@page import="org.muffin.muffin.servlets.SessionKeys" %>
 <%@page contentType="text/html" pageEncoding="UTF-8" %>
 <%@taglib prefix="jstl" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
@@ -60,7 +61,6 @@
                 return true;
             };
 
-
             /**
              * @propFunctions: onDeleteClick, onEditClick
              * */
@@ -79,9 +79,8 @@
                                 onDoubleClick={() => this.setState(() => {
                                     return {inReadMode: false}
                                 })}>
-                                <td className="flow-text">{truncate(this.props.name, 20)}</td>
+                                <td>{truncate(this.props.name, 20)}</td>
                                 <td>{this.props.durationInMinutes}</td>
-
 
                                 <td>
                                     <a href={url} type="submit" name="movieId" value={this.props.id}
@@ -177,7 +176,6 @@
 
             let MovieEditor = React.createClass({
                 getInitialState: function () {
-
                     return {
                         movies: [
                             <jstl:forEach items="${requestScope.movieList}" var="movie">
@@ -300,9 +298,8 @@
                             <table className="highlight centered striped">
                                 <thead>
                                 <tr>
-                                    <th>Name</th>
-                                    <th>Duration (In minutes)</th>
-
+                                    <th><h5>Name</h5></th>
+                                    <th><h5>Duration (In minutes)</h5></th>
                                 </tr>
                                 </thead>
                                 <tbody>
@@ -322,8 +319,6 @@
                                                placeholder="Duration (In Minutes)"
                                                defaultValue=""/>
                                     </td>
-
-
                                     <td>
                                     </td>
                                     <td>
@@ -334,6 +329,9 @@
                                             <i className="material-icons">add</i>
                                         </button>
                                     </td>
+                                </tr>
+                                <tr>
+                                    <td className="flow-text">No. movies made = {this.state.movies.length}</td>
                                 </tr>
                                 {
                                     this.state.movies.map(m => {
@@ -354,6 +352,9 @@
 
             ReactDOM.render(<MovieEditor/>, document.getElementById('app'));
         </script>
-        <div id="app" class="container"></div>
+        <div class="container">
+            <h2>${sessionScope.get(SessionKeys.MOVIE_OWNER).getName()}'s movies</h2>
+            <div id="app"></div>
+        </div>
     </jsp:body>
 </m:base>

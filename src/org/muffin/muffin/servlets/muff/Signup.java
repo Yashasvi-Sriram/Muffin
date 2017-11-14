@@ -39,9 +39,9 @@ public class Signup extends HttpServlet {
         String name = request.getParameter("name");
         String password = request.getParameter("password");
         if (!(isValid(handle) && isValid(name) && isValid(password))) {
-            request.setAttribute("message", "Error! Please fill all the fields!");
+            request.setAttribute("message", "Error! Hint: Please fill all the fields!");
         } else if (!muffDAO.create(handle, name, password)) {
-            request.setAttribute("message", "Error! Handle already exists!");
+            request.setAttribute("message", "Error! Hint: Handle already exists!");
         } else {
             response.sendRedirect(request.getContextPath() + "/muff/login");
             return;

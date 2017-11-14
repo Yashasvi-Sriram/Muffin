@@ -89,8 +89,8 @@
                 render: function () {
                     return (
                             <tr title={this.props.name}>
-                                <td className="flow-text">{truncate(this.props.actor.name, 25)}</td>
-                                <td className="flow-text">{truncate(this.props.name, 25)}</td>
+                                <td>{truncate(this.props.actor.name, 25)}</td>
+                                <td>{truncate(this.props.name, 25)}</td>
                                 <td>
                                 </td>
                                 <td>
@@ -114,7 +114,7 @@
             let ActorCharacterMapper = React.createClass({
                 getInitialState: function () {
                     return {
-                        movieId: ${requestScope.movieId},
+                        movieId: ${requestScope.movie.getId()},
                         characters: [
                             <jstl:forEach items="${requestScope.characterList}" var="character">
                             {
@@ -382,7 +382,7 @@
                 render: function () {
                     return (
                             <tr title={this.props.name}>
-                                <td className="flow-text">{truncate(this.props.name, 25)}</td>
+                                <td>{truncate(this.props.name, 25)}</td>
                                 <td>
                                 </td>
                                 <td>
@@ -408,7 +408,7 @@
             let GenreList = React.createClass({
                 getInitialState: function () {
                     return {
-                        movieId: ${requestScope.movieId},
+                        movieId: ${requestScope.movie.getId()},
                         genres: [
                             <jstl:forEach items="${requestScope.genreList}" var="genre">
                             {
@@ -648,7 +648,6 @@
                                     <thead>
                                     <tr>
                                         <th>Genre Name</th>
-
                                     </tr>
                                     </thead>
                                     <tbody>{genres}</tbody>
@@ -665,12 +664,21 @@
             ReactDOM.render(<GenreList/>, document.getElementById('genreApp'));
         </script>
         <div class="container">
-            <h3>List of Actors and Characters</h3>
-            <div id="characterApp"></div>
-            <h3>List of Genres</h3>
-            <div id="genreApp"></div>
-            <br>
-            <a href="${pageContext.request.contextPath}/movieowner/movieeditor">Go to Movies</a>
+            <div class="row">
+                <div class="col s12">
+                    <h2 class="blue-text">${requestScope.movie.getName()}</h2>
+                    <div class="divider"></div>
+                </div>
+                <div class="col s6">
+                    <h5>Cast</h5>
+                    <div id="characterApp"></div>
+                </div>
+                <div class="col s6">
+                    <h5>Genres</h5>
+                    <div id="genreApp"></div>
+                </div>
+            </div>
+            <a href="${pageContext.request.contextPath}/movieowner/movieeditor">Back</a>
         </div>
     </jsp:body>
 </m:base>

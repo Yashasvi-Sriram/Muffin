@@ -67,6 +67,24 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
+    public Optional<Movie> get(int movieId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, owner_id, name, duration FROM movie WHERE id = ?")) {
+            preparedStmt.setInt(1, movieId);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                List<Genre> genres = getGenreList(result.getInt(1), conn);
+                Movie movie = new Movie(result.getInt(1), result.getInt(2), result.getString(3), result.getInt(4), genres);
+                return Optional.of(movie);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Movie> search(String substring, final int offset, final int limit) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
