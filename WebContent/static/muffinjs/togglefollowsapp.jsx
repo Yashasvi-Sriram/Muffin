@@ -8,6 +8,7 @@ window.ToggleFollowsApp = React.createClass({
         return {
             followerId: 0,
             followeeId: 0,
+            followeeName: '',
             contextPath: '',
             toggleFollowsUrl: '/muff/follows/toggle',
             doesFollowsUrl: '/muff/follows/does',
@@ -74,7 +75,7 @@ window.ToggleFollowsApp = React.createClass({
             content = (
                 <div>
                     <div>You are currently
-                        following {this.props.followerId === this.props.followeeId ? 'yourself' : 'this muff'}</div>
+                        following {this.props.followerId === this.props.followeeId ? 'yourself' : this.props.followeeName}</div>
                     <button className="btn btn-flat red white-text waves-effect"
                             onClick={this.toggleFollows}>Un Follow
                     </button>
@@ -84,7 +85,7 @@ window.ToggleFollowsApp = React.createClass({
             content = (
                 <div>
                     <div>You are not
-                        following {this.props.followerId === this.props.followeeId ? 'yourself' : 'this muff'}</div>
+                        following {this.props.followerId === this.props.followeeId ? 'yourself' : this.props.followeeName}</div>
                     <button className="btn btn-flat teal white-text waves-effect"
                             onClick={this.toggleFollows}>Follow
                     </button>

@@ -30,17 +30,20 @@
                     ReactDOM.render(<ToggleFollowsApp
                             followerId={${sessionScope.get(SessionKeys.MUFF).getId()}}
                             followeeId={${requestScope.profileMuff.getId()}}
+                            followeeName={'${requestScope.profileMuff.getName()}'}
                             contextPath="${pageContext.request.contextPath}"
                             toggleFollowsUrl='/muff/follows/toggle'
                             doesFollowsUrl='/muff/follows/does'/>, document.getElementById('toggle-follows-app'));
                 </script>
                 <%--Infinite Feed App--%>
                 <div class="row">
-                    <div class="col s4 offset-s4">
+                    <div class="col s4 center-align"><h3>${requestScope.profileMuff.getName()}'s Profile</h3></div>
+                    <div class="col s4">
                         <div id="infinite-feed-app"></div>
                     </div>
                 </div>
-                <div style="position: fixed; top: 0; left: 0; width: 22vw; height: 100vh;">
+
+                <div style="position: fixed; top: 0; right: 10px; width: 26vw; height: 100vh;">
                     <div id="toggle-follows-app"></div>
                 </div>
             </jsp:body>

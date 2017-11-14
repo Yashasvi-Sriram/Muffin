@@ -37,6 +37,8 @@
         });
 
         $('.modal').modal();
+
+        $('.parallax').parallax();
     });
 </script>
 <%--Home Shortcut--%>
@@ -160,4 +162,9 @@
    style="position:fixed;bottom: 20px; right: 20px">
     <i class="material-icons">menu</i>
 </a>
+
+<div class="parallax-container">
+    <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/fireways.jpg"
+                               alt="Muffin"/></div>
+</div>
 <jsp:doBody/>

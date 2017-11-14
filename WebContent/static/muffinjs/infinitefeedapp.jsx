@@ -106,7 +106,7 @@ window.InfiniteFeedApp = React.createClass({
                 <div ref="feed">
                     {feed}
                 </div>
-                <div className="card hoverable"
+                <div className="card"
                      onClick={e => this.fetchNextReviewBatch()}>
                     <div className="card-content">
                         <div className="card-title">

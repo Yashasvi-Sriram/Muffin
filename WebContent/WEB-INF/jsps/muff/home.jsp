@@ -26,9 +26,10 @@
                                                      contextPath="${pageContext.request.contextPath}"
                                                      reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
                 </script>
-                <%--Infinite Feed App--%>
-                <div class="row">
-                    <div class="col s4 offset-s4">
+                <div class="section row">
+                    <div class="col s4 center-align"><h3>Hello, ${sessionScope.get(SessionKeys.MUFF).getName()}</h3></div>
+                    <div class="col s4 ">
+                            <%--Infinite Feed App--%>
                         <div id="infinite-feed-app"></div>
                     </div>
                 </div>
