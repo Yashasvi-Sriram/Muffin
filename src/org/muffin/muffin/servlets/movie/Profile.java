@@ -1,11 +1,14 @@
 package org.muffin.muffin.servlets.movie;
 
+import org.muffin.muffin.beans.Character;
 import org.muffin.muffin.beans.Genre;
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.Muff;
+import org.muffin.muffin.daoimplementations.CharacterDAOImpl;
 import org.muffin.muffin.daoimplementations.GenreDAOImpl;
 import org.muffin.muffin.daoimplementations.MovieDAOImpl;
 import org.muffin.muffin.daoimplementations.MuffDAOImpl;
+import org.muffin.muffin.daos.CharacterDAO;
 import org.muffin.muffin.daos.GenreDAO;
 import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.daos.MuffDAO;
@@ -31,6 +34,7 @@ import java.util.OptionalInt;
 @WebServlet("/movie/profile")
 public class Profile extends MuffEnsuredSessionServlet {
     private MovieDAO movieDAO = new MovieDAOImpl();
+    private CharacterDAO characterDAO = new CharacterDAOImpl();
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
@@ -57,10 +61,12 @@ public class Profile extends MuffEnsuredSessionServlet {
         }
         int reviewCount = reviewCountOpt.get();
         Map<Integer, Integer> ratingHistogram = movieDAO.getRatingHistogram(profileMovieId);
+        List<Character> characterList = characterDAO.getByMovie(profileMovieId);
         request.setAttribute("profileMovie", profileMovie);
         request.setAttribute("averageRating", averageRating);
         request.setAttribute("reviewCount", reviewCount);
         request.setAttribute("ratingHistogram", ratingHistogram);
+        request.setAttribute("characterList", characterList);
         request.getRequestDispatcher("/WEB-INF/jsps/movie/profile.jsp").include(request, response);
 
     }

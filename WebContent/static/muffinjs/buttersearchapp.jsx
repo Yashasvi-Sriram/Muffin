@@ -37,7 +37,7 @@ let ActorButterSearchResult = React.createClass({
     },
     render: function () {
         return (
-            <a href="#" className="collection-item">
+            <a href={this.props.contextPath + '/actor/profile?actorId=' + this.props.id} className="collection-item">
                 <div>{this.props.name}</div>
             </a>
         );

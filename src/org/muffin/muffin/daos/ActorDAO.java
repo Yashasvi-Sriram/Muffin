@@ -5,6 +5,7 @@ import org.muffin.muffin.beans.Actor;
 
 import lombok.NonNull;
 import org.muffin.muffin.beans.Genre;
+import org.muffin.muffin.beans.Movie;
 
 import java.util.List;
 import java.util.Map;
@@ -17,5 +18,11 @@ public interface ActorDAO {
 
     public Optional<Actor> get(final String name);
 
+    public Optional<Actor> get(final int id);
+
     public Map<Genre, Integer> getGenreMovieHistogram(int actorId);
+
+    public Optional<Integer> getLikeCount(int actorId);
+
+    public Map<Integer, String> getAllMovies(final int actorId);
 }
