@@ -24,7 +24,7 @@
                 <script type="text/babel"
                         src="${pageContext.request.contextPath}/static/muffinjs/togglefollowsapp.jsx"></script>
                 <script type="text/babel">
-                    ReactDOM.render(<InfiniteFeedApp id={${requestScope.profileMuff.getId()}}
+                    ReactDOM.render(<InfiniteFeedApp reviewFetchParam={${requestScope.profileMuff.getId()}}
                                                      contextPath="${pageContext.request.contextPath}"
                                                      reviewFetchUrl="/review/fetch/muff"/>, document.getElementById('infinite-feed-app'));
                     ReactDOM.render(<ToggleFollowsApp

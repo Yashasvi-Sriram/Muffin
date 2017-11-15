@@ -24,7 +24,7 @@
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
                 <script src="${pageContext.request.contextPath}/static/chartjs/Chart.min.js"></script>
                 <script type="text/babel">
-                    ReactDOM.render(<InfiniteFeedApp id={${requestScope.profileMovie.getId()}}
+                    ReactDOM.render(<InfiniteFeedApp reviewFetchParam={${requestScope.profileMovie.getId()}}
                                                      contextPath="${pageContext.request.contextPath}"
                                                      reviewFetchUrl="/review/fetch/movie"/>, document.getElementById('infinite-feed-app'));
                 </script>

@@ -140,7 +140,7 @@ window.SeekEntertainmentApp = React.createClass({
                 </div>
                 <div className="input-field col s4">
                     <button onClick={this.createSeek}
-                            className="btn-flat btn right">
+                            className="btn-flat btn right pink white-text">
                         Seek
                     </button>
                 </div>

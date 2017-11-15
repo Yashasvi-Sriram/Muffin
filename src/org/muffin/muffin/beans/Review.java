@@ -14,7 +14,7 @@ public class Review {
     @NonNull
     private String text;
     @NonNull
-    private LocalDateTime addedOn;
+    private LocalDateTime lastModified;
     private int movieId;
     @NonNull
     private String movieName;

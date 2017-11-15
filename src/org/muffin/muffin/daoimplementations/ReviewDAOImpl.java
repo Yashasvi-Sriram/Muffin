@@ -6,6 +6,7 @@ import org.muffin.muffin.daos.ReviewDAO;
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -60,23 +61,21 @@ public class ReviewDAOImpl implements ReviewDAO {
 
     @Override
     public List<Review> getByMovie(int movieId, int offset, int limit) {
-        List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id ORDER BY review.timestamp DESC OFFSET ? LIMIT ?")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, offset);
             preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
-            resultSetConverter(reviews, result);
+            return resultSetConverter(result);
         } catch (SQLException e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
-        return reviews;
     }
 
     @Override
     public List<Review> getByMuff(int muffId, int offset, int limit) {
-        List<Review> reviews = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id ORDER BY review.timestamp DESC OFFSET ? LIMIT ?")) {
             preparedStmt.setInt(1, muffId);
@@ -85,27 +84,38 @@ public class ReviewDAOImpl implements ReviewDAO {
             preparedStmt.setInt(2, offset);
             preparedStmt.setInt(3, limit);
             ResultSet result = preparedStmt.executeQuery();
-            resultSetConverter(reviews, result);
+            return resultSetConverter(result);
         } catch (SQLException e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
-        return reviews;
     }
 
     @Override
-    public List<Review> getByFollowers(int muffId, int offset, int limit) {
-        List<Review> reviews = new ArrayList<>();
+    public List<Review> getByFollowers(int muffId, int offset, int limit, Timestamp lastSeen) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.level,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 ORDER BY review.timestamp DESC OFFSET ? LIMIT ?;")) {
-            preparedStmt.setInt(1, muffId);
-            preparedStmt.setInt(2, offset);
-            preparedStmt.setInt(3, limit);
-            ResultSet result = preparedStmt.executeQuery();
-            resultSetConverter(reviews, result);
+             PreparedStatement oldTuples = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.level,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp <=  ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?;");
+             PreparedStatement newTuples = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.level,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp >  ? ORDER BY review.timestamp DESC");) {
+            ResultSet rs;
+            // new tuples are given priority
+            newTuples.setInt(1, muffId);
+            newTuples.setTimestamp(2, lastSeen);
+            rs = newTuples.executeQuery();
+            List<Review> reviews = resultSetConverter(rs);
+            // old tuples
+            if (reviews.size() < limit) {
+                oldTuples.setInt(1, muffId);
+                oldTuples.setTimestamp(2, lastSeen);
+                oldTuples.setInt(3, offset);
+                oldTuples.setInt(4, limit - reviews.size());
+                rs = oldTuples.executeQuery();
+                reviews.addAll(resultSetConverter(rs));
+            }
+            return reviews;
         } catch (SQLException e) {
             e.printStackTrace();
+            return new ArrayList<>();
         }
-        return reviews;
     }
 
     @Override
@@ -138,7 +148,8 @@ public class ReviewDAOImpl implements ReviewDAO {
         return false;
     }
 
-    private void resultSetConverter(List<Review> reviews, ResultSet result) {
+    private List<Review> resultSetConverter(ResultSet result) {
+        List<Review> reviews = new ArrayList<>();
         try {
             while (result.next()) {
                 Review review = new Review(
@@ -158,6 +169,6 @@ public class ReviewDAOImpl implements ReviewDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-
+        return reviews;
     }
 }

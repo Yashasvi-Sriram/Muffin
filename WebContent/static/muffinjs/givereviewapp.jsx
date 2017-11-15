@@ -177,7 +177,7 @@ window.GiveReviewApp = React.createClass({
                 </div>
                 <div className="input-field col s4">
                     <button onClick={this.addMovieReview}
-                            className="btn-flat btn right">
+                            className="btn-flat btn right pink white-text">
                         Give Review
                     </button>
                 </div>

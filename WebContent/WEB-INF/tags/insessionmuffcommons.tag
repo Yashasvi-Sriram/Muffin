@@ -45,7 +45,7 @@
 <a href="<jsp:invoke fragment="contextPath"/>/muff/home"
    title="Home"
    class="btn-floating btn-large waves-effect waves-light red"
-   style="position:fixed;bottom: 260px; right: 20px">
+   style="position:fixed;bottom: 340px; right: 20px">
     <i class="material-icons">home</i>
 </a>
 
@@ -64,20 +64,9 @@
 <a href="#butter-search-modal"
    title="Butter Search"
    class="btn-floating btn-large waves-effect waves-light blue modal-trigger"
-   style="position:fixed;bottom: 180px; right: 20px">
+   style="position:fixed;bottom: 260px; right: 20px">
     <i class="material-icons">search</i>
 </a>
-
-<%--Give Review Modal--%>
-<div id="give-review-modal" class="modal modal-fixed-footer">
-    <div class="modal-content">
-        <div id="give-review-app"></div>
-    </div>
-    <div class="modal-footer">
-        <button class="modal-action modal-close waves-effect btn-flat">
-            <i class="material-icons">close</i></button>
-    </div>
-</div>
 
 <%--Seek Entertainment Modal--%>
 <div id="seek-entertainment-modal" class="modal modal-fixed-footer">
@@ -93,8 +82,26 @@
 <a href="#seek-entertainment-modal"
    title="Seek Entertainment"
    class="btn-floating btn-large waves-effect waves-light green modal-trigger"
-   style="position:fixed;bottom:100px; right: 20px">
+   style="position:fixed;bottom:180px; right: 20px">
     <i class="material-icons">local_movies</i>
+</a>
+
+<%--Give Review Modal--%>
+<div id="give-review-modal" class="modal modal-fixed-footer">
+    <div class="modal-content">
+        <div id="give-review-app"></div>
+    </div>
+    <div class="modal-footer">
+        <button class="modal-action modal-close waves-effect btn-flat">
+            <i class="material-icons">close</i></button>
+    </div>
+</div>
+<%--Give Review Modal Shortcut--%>
+<a href="#give-review-modal"
+   title="Give Review"
+   class="btn-floating btn-large waves-effect waves-light pink modal-trigger"
+   style="position:fixed;bottom:100px; right: 20px">
+    <i class="material-icons">star_half</i>
 </a>
 
 <%--Nav bar--%>
@@ -135,7 +142,7 @@
         <a class="modal-trigger"
            href="#give-review-modal"
            title="Give Review">
-            <i class="material-icons">add</i>
+            <i class="material-icons">star_half</i>
             Give Review
         </a>
     </li>
