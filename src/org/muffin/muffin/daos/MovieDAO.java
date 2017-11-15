@@ -29,5 +29,7 @@ public interface MovieDAO {
 
     public float getAverageRating(int movieId);
 
+    public int getUserCount(int movieId);
+
     public Map<Integer, Integer> getRatingHistogram(int movieId);
 }

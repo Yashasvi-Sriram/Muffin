@@ -193,6 +193,25 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
+    public int getUserCount(int movieId) {
+
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT count(muff_id) FROM review WHERE movie_id = ?")) {
+            preparedStatement.setInt(1, movieId);
+            ResultSet resultSet = preparedStatement.executeQuery();
+            if (resultSet.next()) {
+                return resultSet.getInt(1);
+            }
+            return -1;
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return -2;
+
+    }
+
+    @Override
     public Map<Integer, Integer> getRatingHistogram(int movieId) {
         Map<Integer, Integer> stats = new HashMap<>();
         int[] histogram = new int[11];

@@ -22,7 +22,7 @@ let MovieButterSearchResult = React.createClass({
     },
     render: function () {
         return (
-            <a href="#" className="collection-item">
+            <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.id} className="collection-item">
                 <div>{this.props.name}</div>
             </a>
         );
