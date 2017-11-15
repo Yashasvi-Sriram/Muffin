@@ -102,11 +102,11 @@
     <li>
         <div class="user-view brown" style="margin: 0">
             <img src="<jsp:invoke fragment="contextPath"/>/static/images/logo.png" alt="Muffi(co)n">
-            <span class="white-text"
-                  style="font-size: 50px; font-family: 'Lobster', cursive;">
+            <a href="${pageContext.request.contextPath}/" class="white-text"
+               style="font-size: 50px; font-family: 'Lobster', cursive;">
                 M<span class="grey-text">ovie</span>
                 <span class="grey-text">B</span>uff
-                in<span class="grey-text">c.</span></span>
+                in<span class="grey-text">c.</span></a>
         </div>
     </li>
     <li>
