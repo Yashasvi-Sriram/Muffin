@@ -42,18 +42,9 @@ public class Profile extends MuffEnsuredSessionServlet {
             return;
         }
         Actor profileActor = profileActorOpt.get();
-
-        Optional<Integer> likeCountOpt = actorDAO.getLikeCount(profileActorId);
-        if (!profileActorOpt.isPresent()) {
-            request.setAttribute("message", "The actor with id " + profileActorId + " does not exist");
-            request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
-            return;
-        }
-
         Map<Genre, Integer> genreHistogram = actorDAO.getGenreMovieHistogram(profileActorId);
         Map<Integer, String> movieMap = actorDAO.getAllMovies(profileActorId);
         request.setAttribute("profileActor", profileActor);
-        request.setAttribute("likeCount", likeCountOpt.get());
         request.setAttribute("genreHistogram", genreHistogram);
         request.setAttribute("movieMap", movieMap);
         request.getRequestDispatcher("/WEB-INF/jsps/actor/profile.jsp").include(request, response);

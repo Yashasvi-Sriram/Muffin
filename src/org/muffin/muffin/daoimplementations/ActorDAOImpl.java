@@ -133,4 +133,47 @@ public class ActorDAOImpl implements ActorDAO {
         return movieMap;
 
     }
+
+    @Override
+    public Optional<Boolean> toggleLikes(int muffId, int actorId) {
+        // One db connection opens and closes here
+        Optional<Boolean> doesLikes = doesLikes(muffId, actorId);
+        if (doesLikes.isPresent()) {
+            try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+                 PreparedStatement insert = conn.prepareStatement("INSERT INTO muff_likes_actor(muff_id, actor_id) VALUES (?,?)");
+                 PreparedStatement delete = conn.prepareStatement("DELETE FROM muff_likes_actor WHERE (muff_id, actor_id) = (?,?)")) {
+                if (doesLikes.get()) {
+                    delete.setInt(2, actorId);
+                    delete.setInt(1, muffId);
+                    int result = delete.executeUpdate();
+                    return result == 1 ? Optional.of(false) : Optional.empty();
+                } else {
+                    insert.setInt(1, muffId);
+                    insert.setInt(2, actorId);
+                    int result = insert.executeUpdate();
+                    return result == 1 ? Optional.of(true) : Optional.empty();
+                }
+            } catch (SQLException e) {
+                e.printStackTrace();
+                return Optional.empty();
+            }
+        } else {
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Boolean> doesLikes(int muffId, int actorId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT count(*) FROM muff_likes_actor WHERE muff_likes_actor.muff_id = ? AND muff_likes_actor.actor_id = ?")) {
+            preparedStmt.setInt(2, actorId);
+            preparedStmt.setInt(1, muffId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            resultSet.next();
+            return Optional.of(resultSet.getInt(1) > 0);
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
 }

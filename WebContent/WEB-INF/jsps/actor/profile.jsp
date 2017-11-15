@@ -20,6 +20,18 @@
             <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
             <jsp:attribute name="inSessionMuffId">${sessionScope.get(SessionKeys.MUFF).getId()}</jsp:attribute>
             <jsp:body>
+                <script type="text/babel"
+                        src="${pageContext.request.contextPath}/static/muffinjs/togglelikesapp.jsx"></script>
+                <script type="text/babel">
+                    ReactDOM.render(<ToggleLikesApp
+                            muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                            actorId={${requestScope.profileActor.getId()}}
+                            actorName={'${requestScope.profileActor.getName()}'}
+                            contextPath="${pageContext.request.contextPath}"
+                            toggleLikesUrl='/actor/likes/toggle'
+                            countLikesUrl='/actor/likes/count'
+                            doesLikesUrl='/actor/likes/does'/>, document.getElementById('toggle-likes-app'));
+                </script>
                 <script src="${pageContext.request.contextPath}/static/chartjs/Chart.min.js"></script>
                 <%--Infinite Feed App--%>
                 <div class="row" style="min-height: 100vh">
@@ -28,10 +40,6 @@
                             <div class="collection-header"><h4>${requestScope.profileActor.getName()}</h4></div>
                             <div class="collection-item">Movies Acted
                                 <div class="secondary-content">${requestScope.movieMap.size()}
-                                </div>
-                            </div>
-                            <div class="collection-item">Likes
-                                <div class="secondary-content">${requestScope.likeCount}
                                 </div>
                             </div>
                             <div class="collection-item">Genre distribution</div>
@@ -91,6 +99,9 @@
 
                     </div>
 
+                </div>
+                <div style="position: fixed; top: 0; right: 10px; width: 26vw; height: 100vh;">
+                    <div id="toggle-likes-app"></div>
                 </div>
 
             </jsp:body>

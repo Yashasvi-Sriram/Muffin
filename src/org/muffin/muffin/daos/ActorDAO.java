@@ -25,4 +25,8 @@ public interface ActorDAO {
     public Optional<Integer> getLikeCount(int actorId);
 
     public Map<Integer, String> getAllMovies(final int actorId);
+
+    public Optional<Boolean> toggleLikes(final int muffId, final int actorId);
+
+    public Optional<Boolean> doesLikes(final int muffId, final int actorId);
 }
