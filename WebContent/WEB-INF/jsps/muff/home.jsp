@@ -22,7 +22,7 @@
                 <script type="text/babel"
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
                 <script type="text/babel">
-                    ReactDOM.render(<InfiniteFeedApp muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                    ReactDOM.render(<InfiniteFeedApp id={${sessionScope.get(SessionKeys.MUFF).getId()}}
                                                      contextPath="${pageContext.request.contextPath}"
                                                      reviewFetchUrl="/review/fetch/followers"/>, document.getElementById('infinite-feed-app'));
                 </script>

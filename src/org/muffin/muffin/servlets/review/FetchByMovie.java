@@ -26,7 +26,7 @@ public class FetchByMovie extends EnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        int movieId = Integer.parseInt(request.getParameter("movieId"));
+        int movieId = Integer.parseInt(request.getParameter("id"));
         int offset = Integer.parseInt(request.getParameter("offset"));
         int limit = Integer.parseInt(request.getParameter("limit"));
         List<Review> reviews = reviewDAO.getByMovie(movieId,offset,limit);

@@ -27,9 +27,9 @@ public interface MovieDAO {
 
     public boolean delete(final int movieId, int ownerId);
 
-    public float getAverageRating(int movieId);
+    public Optional<Float> getAverageRating(int movieId);
 
-    public int getUserCount(int movieId);
+    public Optional<Integer> getReviewCount(int movieId);
 
     public Map<Integer, Integer> getRatingHistogram(int movieId);
 }

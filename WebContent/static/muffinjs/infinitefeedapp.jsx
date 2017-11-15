@@ -10,7 +10,7 @@ let Review = React.createClass({
         return (
             <div className="card review hoverable">
                 <div className="card-content">
-                    <h4>{this.props.movieName}</h4>
+                    <div>{this.props.movieName}</div>
                     <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
                     <div className="blue-text">{getTimestamp(this.props.addedOn)}</div>
                     <br/>
@@ -35,7 +35,7 @@ window.InfiniteFeedApp = React.createClass({
     },
     getDefaultProps: function () {
         return {
-            muffId: 0,
+            id: 0,
             limit: 10,
             contextPath: '',
             reviewFetchUrl: '/review/fetch/followers',
@@ -57,7 +57,7 @@ window.InfiniteFeedApp = React.createClass({
             url: url,
             type: 'GET',
             data: {
-                muffId: self.props.muffId,
+                id: self.props.id,
                 offset: self.state.reviewOffset,
                 limit: self.props.limit,
             },

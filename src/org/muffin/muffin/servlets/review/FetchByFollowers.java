@@ -26,7 +26,7 @@ public class FetchByFollowers extends EnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        int muffId = Integer.parseInt(request.getParameter("muffId"));
+        int muffId = Integer.parseInt(request.getParameter("id"));
         int offset = Integer.parseInt(request.getParameter("offset"));
         int limit = Integer.parseInt(request.getParameter("limit"));
         List<Review> reviews = reviewDAO.getByFollowers(muffId, offset, limit);

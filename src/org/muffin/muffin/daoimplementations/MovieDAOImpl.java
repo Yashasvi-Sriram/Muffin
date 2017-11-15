@@ -177,56 +177,53 @@ public class MovieDAOImpl implements MovieDAO {
     }
 
     @Override
-    public float getAverageRating(int movieId) {
+    public Optional<Float> getAverageRating(int movieId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStatement = conn.prepareStatement("SELECT avg(rating) FROM review WHERE movie_id = ?")) {
             preparedStatement.setInt(1, movieId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getFloat(1);
+                return Optional.of(resultSet.getFloat(1));
             }
-            return -1;
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -2;
+        return Optional.empty();
     }
 
     @Override
-    public int getUserCount(int movieId) {
-
+    public Optional<Integer> getReviewCount(int movieId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStatement = conn.prepareStatement("SELECT count(muff_id) FROM review WHERE movie_id = ?")) {
             preparedStatement.setInt(1, movieId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
-                return resultSet.getInt(1);
+                return Optional.of(resultSet.getInt(1));
             }
-            return -1;
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return -2;
-
+        return Optional.empty();
     }
 
     @Override
     public Map<Integer, Integer> getRatingHistogram(int movieId) {
         Map<Integer, Integer> stats = new HashMap<>();
-        int[] histogram = new int[11];
+        for (int i = 0; i <= 10; i++) {
+            stats.put(i, 0);
+        }
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStatement = conn.prepareStatement("SELECT rating FROM review WHERE movie_id = ?")) {
             preparedStatement.setInt(1, movieId);
             ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                histogram[(int) Math.floor(resultSet.getFloat(1))]++;
+                float rating = resultSet.getFloat(1);
+                int roundedRating = Math.round(rating);
+                int noMuffs = stats.get(roundedRating);
+                stats.put(roundedRating, noMuffs + 1);
             }
         } catch (SQLException e) {
             e.printStackTrace();
-        }
-        for (int i = 0; i < 11; i++) {
-            stats.put(i, histogram[i]);
         }
         return stats;
     }
