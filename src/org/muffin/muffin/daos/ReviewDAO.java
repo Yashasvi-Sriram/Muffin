@@ -15,11 +15,11 @@ public interface ReviewDAO {
 
     public Optional<Review> get(final int movieId, final int muffId);
 
-    public List<Review> getByMovie(final int movieId, final int offset, final int limit);
+    public List<Review> getByMovie(final int movieId, final int offset, final int limit, final Timestamp lastSeen);
 
-    public List<Review> getByMuff(final int muffId, final int offset, final int limit);
+    public List<Review> getByMuff(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
 
-    public List<Review> getByFollowers(final int muffId, final int offset, final int limit, final Timestamp scrollEpoch);
+    public List<Review> getByFollowers(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
 
     public boolean update(final int movieId, final int muffId, final float rating, final String text);
 

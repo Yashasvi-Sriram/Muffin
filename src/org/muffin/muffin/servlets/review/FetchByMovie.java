@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.sql.Timestamp;
 import java.util.List;
 
 /**
@@ -26,10 +27,11 @@ public class FetchByMovie extends EnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
+        String lastSeen = request.getParameter("lastSeen");
         int movieId = Integer.parseInt(request.getParameter("id"));
         int offset = Integer.parseInt(request.getParameter("offset"));
         int limit = Integer.parseInt(request.getParameter("limit"));
-        List<Review> reviews = reviewDAO.getByMovie(movieId,offset,limit);
+        List<Review> reviews = reviewDAO.getByMovie(movieId, offset, limit, Timestamp.valueOf(lastSeen));
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(reviews, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();

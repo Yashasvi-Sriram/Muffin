@@ -32,10 +32,12 @@ let Review = React.createClass({
     componentDidMount: function () {
         this.refreshLastModified();
         $(this.refs.feedItem).fadeIn(1500);
+    },
+    compositionUpdate: function () {
+        this.refreshLastModified();
     }
 });
 
-// todo: handle new reviews
 // todo: handle multiple types
 // todo: clock sync
 window.InfiniteFeedApp = React.createClass({
