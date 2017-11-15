@@ -21,35 +21,28 @@
             <jsp:attribute name="inSessionMuffId">${sessionScope.get(SessionKeys.MUFF).getId()}</jsp:attribute>
             <jsp:body>
                 <script type="text/babel"
-                        src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
-                <script src="${pageContext.request.contextPath}/static/chartjs/Chart.min.js"></script>
+                        src="${pageContext.request.contextPath}/static/muffinjs/togglelikesapp.jsx"></script>
                 <script type="text/babel">
-                    ReactDOM.render(<InfiniteFeedApp reviewFetchParam={${requestScope.profileMovie.getId()}}
-                                                     contextPath="${pageContext.request.contextPath}"
-                                                     reviewFetchUrl="/review/fetch/movie"/>, document.getElementById('infinite-feed-app'));
+                    ReactDOM.render(<ToggleLikesApp
+                            muffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                            actorId={${requestScope.profileActor.getId()}}
+                            actorName={'${requestScope.profileActor.getName()}'}
+                            contextPath="${pageContext.request.contextPath}"
+                            toggleLikesUrl='/actor/likes/toggle'
+                            countLikesUrl='/actor/likes/count'
+                            doesLikesUrl='/actor/likes/does'/>, document.getElementById('toggle-likes-app'));
                 </script>
+                <script src="${pageContext.request.contextPath}/static/chartjs/Chart.min.js"></script>
                 <%--Infinite Feed App--%>
                 <div class="row" style="min-height: 100vh">
                     <div class="col s4">
                         <div class="collection with-header">
-                            <div class="collection-header"><h4>${requestScope.profileMovie.getName()}</h4></div>
-                            <div class="collection-item">
-                                <jstl:forEach items="${requestScope.profileMovie.getGenres()}" var="genre">
-                                    <span class="grey-text">${genre.getName()} </span>
-                                </jstl:forEach>
-                            </div>
-                            <div class="collection-item">Duration
-                                <div class="secondary-content">${requestScope.profileMovie.getDurationInMinutes()}
-                                    min
+                            <div class="collection-header"><h4>${requestScope.profileActor.getName()}</h4></div>
+                            <div class="collection-item">Movies Acted
+                                <div class="secondary-content">${requestScope.movieMap.size()}
                                 </div>
                             </div>
-                            <div class="collection-item">Average rating
-                                <div class="secondary-content">${requestScope.averageRating} / 10</div>
-                            </div>
-                            <div class="collection-item">Number of ratings
-                                <div class="secondary-content">${requestScope.reviewCount}</div>
-                            </div>
-                            <div class="collection-item">Rating distribution</div>
+                            <div class="collection-item">Genre distribution</div>
                             <canvas id="myChart" width="400" height="400"></canvas>
                             <script>
                                 let ctx = document.getElementById("myChart").getContext('2d');
@@ -57,14 +50,14 @@
                                     type: 'bar',
                                     data: {
                                         labels: [
-                                            <jstl:forEach items="${requestScope.ratingHistogram}" var="bin">
-                                            ${bin.key},
+                                            <jstl:forEach items="${requestScope.genreHistogram}" var="bin">
+                                            "${bin.key.getName()}",
                                             </jstl:forEach>
                                         ],
                                         datasets: [{
-                                            label: 'Number of muffs',
+                                            label: 'Number of movies',
                                             data: [
-                                                <jstl:forEach items="${requestScope.ratingHistogram}" var="bin">
+                                                <jstl:forEach items="${requestScope.genreHistogram}" var="bin">
                                                 ${bin.value},
                                                 </jstl:forEach>
                                             ],
@@ -88,16 +81,17 @@
                         </div>
                     </div>
                     <div class="col s4">
-                        <div id="infinite-feed-app"></div>
                     </div>
                     <div class="col s4">
                         <div class="collection with-header">
-                            <div class="collection-header"><h4>Cast and Characters</h4></div>
-                            <jstl:forEach items="${requestScope.characterList}" var="character">
+                            <div class="collection-header"><h4>Movies List</h4></div>
+                            <jstl:forEach items="${requestScope.movieMap}" var="movie">
                                 <div class="collection-item">
-                                    <span class="purple-text"><a
-                                            href="${pageContext.request.contextPath}/actor/profile?actorId=${character.getActor().getId()}">${character.getActor().getName()}</a></span>
-                                    <span class="secondary-content green-text">${character.getName()}</span>
+                                    <a href="${pageContext.request.contextPath}/movie/profile?movieId=${movie.key}"
+                                       class="purple-text">
+                                        <div>${movie.value}</div>
+                                    </a>
+
 
                                 </div>
                             </jstl:forEach>
@@ -105,6 +99,9 @@
 
                     </div>
 
+                </div>
+                <div style="position: fixed; top: 0; right: 10px; width: 26vw; height: 100vh;">
+                    <div id="toggle-likes-app"></div>
                 </div>
 
             </jsp:body>

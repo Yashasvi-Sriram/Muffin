@@ -2,16 +2,14 @@ package org.muffin.muffin.daoimplementations;
 
 import org.muffin.muffin.beans.Actor;
 import org.muffin.muffin.beans.Character;
+import org.muffin.muffin.beans.Genre;
 import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.daos.CharacterDAO;
 
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 
 public class CharacterDAOImpl implements CharacterDAO {
@@ -38,6 +36,32 @@ public class CharacterDAOImpl implements CharacterDAO {
             return Collections.emptyList();
         }
     }
+
+    @Override
+    public List<Character> getByMovie(int movieId) {
+
+        List<Character> characterList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT character.id, character.name, character.movie_id, actor.id, actor.name FROM character, actor WHERE character.movie_id = ? AND character.actor_id = actor.id")) {
+            preparedStmt.setInt(1, movieId);
+            ResultSet result = preparedStmt.executeQuery();
+            while (result.next()) {
+                Character character = new Character(
+                        result.getInt(1),
+                        result.getString(2),
+                        result.getInt(3),
+                        new Actor(result.getInt(4), result.getString(5))
+                );
+                characterList.add(character);
+            }
+            return characterList;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Collections.emptyList();
+        }
+
+    }
+
 
     @Override
     public boolean create(String name, int movieId, int movieOwnerId, int actorId) {
