@@ -38,11 +38,18 @@
                                     <span class="grey-text">${genre.getName()} </span>
                                 </jstl:forEach>
                             </div>
-                            <div class="collection-item">Duration : ${requestScope.profileMovie.getDurationInMinutes()}
-                                min
+                            <div class="collection-item">Duration
+                                <div class="secondary-content">${requestScope.profileMovie.getDurationInMinutes()}
+                                    min
+                                </div>
                             </div>
-                            <div class="collection-item">Average rating : ${requestScope.averageRating} / 10</div>
-                            <div class="collection-item">Number of ratings : ${requestScope.reviewCount}</div>
+                            <div class="collection-item">Average rating
+                                <div class="secondary-content">${requestScope.averageRating} / 10</div>
+                            </div>
+                            <div class="collection-item">Number of ratings
+                                <div class="secondary-content">${requestScope.reviewCount}</div>
+                            </div>
+                            <div class="collection-item">Rating distribution</div>
                             <canvas id="myChart" width="400" height="400"></canvas>
                             <script>
                                 let ctx = document.getElementById("myChart").getContext('2d');
