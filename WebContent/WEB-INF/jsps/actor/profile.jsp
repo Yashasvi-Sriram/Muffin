@@ -81,6 +81,7 @@
                         </div>
                     </div>
                     <div class="col s4">
+                        <div id="toggle-likes-app"></div>
                     </div>
                     <div class="col s4">
                         <div class="collection with-header">
@@ -91,19 +92,12 @@
                                        class="purple-text">
                                         <div>${movie.value}</div>
                                     </a>
-
-
                                 </div>
                             </jstl:forEach>
                         </div>
 
                     </div>
-
                 </div>
-                <div style="position: fixed; top: 0; right: 10px; width: 26vw; height: 100vh;">
-                    <div id="toggle-likes-app"></div>
-                </div>
-
             </jsp:body>
         </m:insessionmuffcommons>
     </jsp:body>

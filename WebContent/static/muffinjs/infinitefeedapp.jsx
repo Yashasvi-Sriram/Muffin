@@ -114,8 +114,6 @@ window.InfiniteFeedApp = React.createClass({
                             }
                         });
                         let reviewOffset = prevState.reviewOffset + noNewReviews;
-                        console.log(reviewOffset);
-                        Materialize.toast('Got some feed!', 2000);
                         return {
                             feed: feed,
                             reviewLastSeen: requestTimeStamp,
@@ -163,9 +161,7 @@ window.InfiniteFeedApp = React.createClass({
                 <div className="card"
                      onClick={e => this.fetchNextReviewBatch()}>
                     <div className="card-content">
-                        <div className="card-title">
-                            LOAD MORE ...
-                        </div>
+                        LOAD MORE ...
                     </div>
                 </div>
             </div>

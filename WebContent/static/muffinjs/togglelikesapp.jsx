@@ -122,7 +122,7 @@ window.ToggleLikesApp = React.createClass({
             );
         }
         return (
-            <div className="card brown lighten-5">
+            <div className="card">
                 <div className="card-content">
                     <div>Likes : {this.state.count}</div>
                     {content}
