@@ -12,4 +12,6 @@ public interface SeekDAO {
     public boolean delete(final int seekId);
 
     public List<Seek> getByMuff(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
+
+    public List<Seek> getByFollowers(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
 }

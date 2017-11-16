@@ -1,13 +1,4 @@
-SELECT
-  seek.id,
-  muff.id, muff.handle, muff.name, muff.level, muff.joined_on,
-  seek.text,
-  seek.timestamp
-FROM muff, seek
-WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp <= ?
-ORDER BY seek.timestamp DESC
-OFFSET ?
-LIMIT ?;
+SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;
 
 
 SELECT

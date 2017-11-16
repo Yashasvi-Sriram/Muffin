@@ -60,6 +60,14 @@ public class SeekDAOImpl implements SeekDAO {
         return get(muffId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery, getGenresQuery);
     }
 
+    @Override
+    public List<Seek> getByFollowers(int muffId, int offset, int limit, Timestamp lastSeen) {
+        String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
+        String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp DESC;";
+        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id ORDER BY seek.timestamp DESC;";
+        return get(muffId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery, getGenresQuery);
+    }
+
     private List<Seek> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery, String getGenresQuery) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement oldTuplesPS = conn.prepareStatement(oldTuplesQuery);

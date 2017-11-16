@@ -16,7 +16,7 @@
                             contextPath="${pageContext.request.contextPath}"
                             reviewFetchUrl="/review/fetch/followers"
                             seekFetchParam={${sessionScope.get(SessionKeys.MUFF).getId()}}
-                            seekFetchUrl="/seek/fetch/muff"
+                            seekFetchUrl="/seek/fetch/followers"
                     />, document.getElementById('infinite-feed-app'));
                 </script>
                 <div class="section row" style="min-height: 100vh">
