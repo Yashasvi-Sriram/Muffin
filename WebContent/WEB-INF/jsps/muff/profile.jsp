@@ -36,7 +36,7 @@
                             doesFollowsUrl='/muff/follows/does'/>, document.getElementById('toggle-follows-app'));
                 </script>
                 <%--Infinite Feed App--%>
-                <div class="row">
+                <div class="row" style="min-height: 100vh">
                     <div class="col s4 center-align"><h3>${requestScope.profileMuff.getName()}'s Profile</h3></div>
                     <div class="col s4">
                         <div id="infinite-feed-app"></div>

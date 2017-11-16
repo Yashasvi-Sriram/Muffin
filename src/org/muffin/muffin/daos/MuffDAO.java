@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface MuffDAO {
-    public boolean create(final String handle, final String name, final String password);
+    public Optional<Muff> create(final String handle, final String name, final String password);
 
     public boolean exists(final String handle, final String password);
 

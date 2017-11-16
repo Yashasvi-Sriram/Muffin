@@ -12,39 +12,36 @@ import java.util.Optional;
 public class MuffDAOImpl implements MuffDAO {
 
     @Override
-    public boolean create(String handle, String name, String password) {
+    public Optional<Muff> create(String handle, String name, String password) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?);");
-             PreparedStatement getMuffId = conn.prepareStatement("SELECT id FROM muff WHERE handle = ?;");
+             PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?) RETURNING  id, handle, name, level, joined_on;");
              PreparedStatement createMuffPassword = conn.prepareStatement("INSERT INTO muff_password(id, password) VALUES (?, ?);");
              PreparedStatement createMuffSelfFollow = conn.prepareStatement("INSERT INTO follows(id1, id2) VALUES (?, ?);");) {
             // createMuff
             createMuff.setString(1, handle);
             createMuff.setString(2, name);
-            if (createMuff.executeUpdate() != 1) {
-                return false;
-            }
-            // getCreatedMuff
-            getMuffId.setString(1, handle);
-            ResultSet muffIdRS = getMuffId.executeQuery();
-            if (muffIdRS.next()) {
+            ResultSet rs = createMuff.executeQuery();
+            if (rs.next()) {
+                Muff muff = new Muff(rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getInt(4),
+                        rs.getTimestamp(5).toLocalDateTime());
                 // create Muff password
-                int muffId = muffIdRS.getInt(1);
+                int muffId = muff.getId();
                 createMuffPassword.setInt(1, muffId);
                 createMuffPassword.setString(2, password);
-                if (createMuffPassword.executeUpdate() != 1) {
-                    return false;
-                }
                 // create muff self follow
                 createMuffSelfFollow.setInt(1, muffId);
                 createMuffSelfFollow.setInt(2, muffId);
-                return createMuffSelfFollow.executeUpdate() == 1;
-            } else {
-                return false;
+                if (createMuffPassword.executeUpdate() == 1 && createMuffSelfFollow.executeUpdate() == 1) {
+                    return Optional.of(muff);
+                }
             }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
     }
 

@@ -38,7 +38,7 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
         CinemaBuildingOwner cinemaBuildingOwner = (CinemaBuildingOwner) session.getAttribute(SessionKeys.CINEMA_BUILDING_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        if (theatreDAO.create(cinemaBuildingId, screenNo, cinemaBuildingOwner.getId())) {
+        if (theatreDAO.create(cinemaBuildingId, screenNo, cinemaBuildingOwner.getId()).isPresent()) {
             Optional<Theatre> theatreOpt = theatreDAO.get(cinemaBuildingId, screenNo);
             if (theatreOpt.isPresent()) {
                 out.println(gson.toJson(ResponseWrapper.get(theatreOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));

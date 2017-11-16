@@ -47,18 +47,13 @@ public class TheatreDAOImpl implements TheatreDAO {
 
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,cinema_building_id,screen_no FROM theatre WHERE cinema_building_id = ? and screen_no = ?");) {
-
             preparedStmt.setInt(1, cinemaBuildingId);
             preparedStmt.setInt(2, screenNo);
 
-
             ResultSet result = preparedStmt.executeQuery();
-
             if (result.next()) {
-
                 Theatre theatre = new Theatre(result.getInt(1), result.getInt(2), result.getInt(3));
                 return Optional.of(theatre);
-
             }
             return Optional.empty();
         } catch (SQLException e) {
@@ -69,21 +64,22 @@ public class TheatreDAOImpl implements TheatreDAO {
     }
 
     @Override
-    public boolean create(int cinemaBuildingId, int screenNo, int cinemaBuildingOwnerId) {
-
+    public Optional<Theatre> create(int cinemaBuildingId, int screenNo, int cinemaBuildingOwnerId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO theatre(cinema_building_id,screen_no) SELECT id,? FROM cinema_building WHERE id = ? AND owner_id = ? ;")) {
-
-            preparedStmt.setInt(2, cinemaBuildingId);
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO theatre(cinema_building_id,screen_no) SELECT id,? FROM cinema_building WHERE id = ? AND owner_id = ? RETURNING id, cinema_building_id, screen_no;")) {
             preparedStmt.setInt(1, screenNo);
+            preparedStmt.setInt(2, cinemaBuildingId);
             preparedStmt.setInt(3, cinemaBuildingOwnerId);
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
+            ResultSet rs = preparedStmt.executeQuery();
+            if (rs.next()) {
+                Theatre theatre = new Theatre(rs.getInt(1), rs.getInt(2), rs.getInt(3));
+                return Optional.of(theatre);
+            }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
-
     }
 
     @Override

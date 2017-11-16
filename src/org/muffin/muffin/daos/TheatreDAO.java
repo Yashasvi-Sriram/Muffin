@@ -10,7 +10,7 @@ import java.util.Optional;
 public interface TheatreDAO {
     public List<Theatre> getByCinemaBuilding(final int cinemaBuildingId, final int cinemaBuildingOwnerId);
 
-    public boolean create(final int cinemaBuildingId, final int screenNo, final int cinemaBuildingOwnerId);
+    public Optional<Theatre> create(final int cinemaBuildingId, final int screenNo, final int cinemaBuildingOwnerId);
 
     public Optional<Theatre> get(final int cinemaBuildingId, final int screenNo);
 
