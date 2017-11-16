@@ -110,19 +110,19 @@ public class ReviewDAOImpl implements ReviewDAO {
         return false;
     }
 
-    private List<Review> get(int muffId, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
+    private List<Review> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement oldTuples = conn.prepareStatement(oldTuplesQuery);
              PreparedStatement newTuples = conn.prepareStatement(newTuplesQuery);) {
             ResultSet rs;
             // new tuples are given priority
-            newTuples.setInt(1, muffId);
+            newTuples.setInt(1, id);
             newTuples.setTimestamp(2, lastSeen);
             rs = newTuples.executeQuery();
             List<Review> reviews = resultSetConverter(rs);
             // old tuples
             if (reviews.size() < limit) {
-                oldTuples.setInt(1, muffId);
+                oldTuples.setInt(1, id);
                 oldTuples.setTimestamp(2, lastSeen);
                 oldTuples.setInt(3, offset);
                 oldTuples.setInt(4, limit - reviews.size());

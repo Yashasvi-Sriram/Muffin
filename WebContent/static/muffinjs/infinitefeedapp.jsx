@@ -16,7 +16,8 @@ let Review = React.createClass({
     },
     render: function () {
         return (
-            <div className="card review hoverable" ref="feedItem" style={{display: 'none'}}
+            <div className="card review hoverable" ref="feedItem"
+                 style={{backgroundColor: 'whitesmoke'}}
                  onMouseEnter={e => this.refreshLastModified()}>
                 <div className="card-content">
                     <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
@@ -31,47 +32,126 @@ let Review = React.createClass({
     },
     componentDidMount: function () {
         this.refreshLastModified();
-        $(this.refs.feedItem).fadeIn(1500);
+        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     },
     compositionUpdate: function () {
         this.refreshLastModified();
+        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     }
 });
 
-// todo: handle multiple types
-// todo: clock sync
-window.InfiniteFeedApp = React.createClass({
-    TYPES: {
-        REVIEW: 0,
-    },
+let Seek = React.createClass({
     getInitialState: function () {
         return {
-            feed: [],
-            reviewLastSeen: moment().format('YYYY-MM-DD HH:mm:ss'),
-            reviewOffset: 0,
-            reviewFeedHashMap: {},
+            fromTimestamp: '',
         }
+    },
+    refreshLastModified: function () {
+        this.setState({fromTimestamp: fromNow(this.props.timestamp)});
+    },
+    render: function () {
+        return (
+            <div className="card seek hoverable" ref="feedItem"
+                 style={{backgroundColor: 'lightgreen'}}
+                 onMouseEnter={e => this.refreshLastModified()}>
+                <div className="card-content">
+                    <div>{this.props.muffId} <span className="pink-text">@</span></div>
+                    <div className="blue-text">{this.state.fromTimestamp}</div>
+                    <br/>
+                    <div className="flow-text">{this.props.text}</div>
+                </div>
+            </div>
+        );
+    },
+    componentDidMount: function () {
+        this.refreshLastModified();
+        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
+    },
+    compositionUpdate: function () {
+        this.refreshLastModified();
+        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
+    }
+});
+
+let TYPES = {
+    REVIEW: 'review',
+    SEEK: 'seek',
+};
+let POSTFIXES = {
+    STATE: {
+        OFFSET: 'Offset',
+        FEED_HASH_MAP: 'FeedHashMap',
+        LAST_SEEN: 'LastSeen',
+    },
+    PROPS: {
+        FETCH_URL: 'FetchUrl',
+        FETCH_PARAM: 'FetchParam',
+        LIMIT: 'Limit',
+    },
+};
+
+// todo: handle multiple types
+// todo: clock sync
+/**
+ * This buffering model can handle
+ * fetching newly created items, updated existing items as long as the a timestamp is maintained
+ * But it becomes inconsistent when items can be deleted, roughly speaking some items can never be fetched due to offset problems
+ * */
+window.InfiniteFeedApp = React.createClass({
+    getInitialState: function () {
+        let ts = moment().format('YYYY-MM-DD HH:mm:ss');
+        let initialState = {
+            feed: [],
+        };
+        // REVIEW
+        initialState[TYPES.REVIEW + POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[TYPES.REVIEW + POSTFIXES.STATE.OFFSET] = 0;
+        initialState[TYPES.REVIEW + POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        // SEEK
+        initialState[TYPES.SEEK + POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[TYPES.SEEK + POSTFIXES.STATE.OFFSET] = 0;
+        initialState[TYPES.SEEK + POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        return initialState;
     },
     getDefaultProps: function () {
-        return {
-            limit: 10,
+        let defaultProps = {
             contextPath: '',
-            reviewFetchUrl: '',
-            reviewFetchParam: 0,
-        }
+        };
+        // REVIEW
+        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.LIMIT] = 10;
+        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_URL] = '';
+        // SEEK
+        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.LIMIT] = 10;
+        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_URL] = '';
+        return defaultProps;
     },
-    fetchNextReviewBatch: function () {
-        let url = this.props.contextPath + this.props.reviewFetchUrl;
+    fetchNextBatch: function (type) {
         let self = this;
+
+        let url = this.props.contextPath + this.props[type + POSTFIXES.PROPS.FETCH_URL];
+
+        let limit = this.props[type + POSTFIXES.PROPS.LIMIT];
+        let param = this.props[type + POSTFIXES.PROPS.FETCH_PARAM];
+
+        let offsetKey = type + POSTFIXES.STATE.OFFSET;
+        let offset = this.state[offsetKey];
+
+        let lastSeenKey = type + POSTFIXES.STATE.LAST_SEEN;
+        let lastSeen = this.state[lastSeenKey];
+
+        let hashMapKey = type + POSTFIXES.STATE.FEED_HASH_MAP;
         let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
+
         $.ajax({
             url: url,
             type: 'GET',
             data: {
-                id: self.props.reviewFetchParam,
-                offset: self.state.reviewOffset,
-                limit: self.props.limit,
-                lastSeen: self.state.reviewLastSeen,
+                id: param,
+                offset: offset,
+                limit: limit,
+                lastSeen: lastSeen,
             },
             success: function (r) {
                 let json = JSON.parse(r);
@@ -79,47 +159,49 @@ window.InfiniteFeedApp = React.createClass({
                     Materialize.toast(json.error, 2000);
                 }
                 else {
-                    let fetchedReviews = json.data;
+                    let fetchedData = json.data;
                     // no results
-                    if (fetchedReviews.length === 0) {
+                    if (fetchedData.length === 0) {
                         Materialize.toast('End of feed!', 2000);
                         return;
                     }
                     // add results
                     self.setState(prevState => {
                         let feed = prevState.feed;
-                        let reviewFeedHashMap = prevState.reviewFeedHashMap;
-                        let noNewReviews = 0;
-                        fetchedReviews.forEach((review, i) => {
-                            // new review
-                            if (reviewFeedHashMap[review.id] === undefined) {
-                                reviewFeedHashMap[review.id] = feed.length;
+                        let _T_HashMap = prevState[hashMapKey];
+                        let noNew_T_s = 0;
+                        fetchedData.forEach((fetchedItem, i) => {
+                            // new fetchedItem
+                            if (_T_HashMap[fetchedItem.id] === undefined) {
+                                _T_HashMap[fetchedItem.id] = feed.length;
                                 feed.push({
-                                    type: self.TYPES.REVIEW,
-                                    data: review
+                                    type: type,
+                                    data: fetchedItem
                                 });
-                                noNewReviews++;
+                                noNew_T_s++;
                             }
-                            // old review
+                            // old fetchedItem
                             else {
-                                let existingReviewFeedIndex = reviewFeedHashMap[review.id];
+                                let existingFeedIndex = _T_HashMap[fetchedItem.id];
                                 // invalidate old one
-                                feed[existingReviewFeedIndex] = undefined;
+                                feed[existingFeedIndex] = undefined;
                                 // add new one at end
-                                reviewFeedHashMap[review.id] = feed.length;
+                                _T_HashMap[fetchedItem.id] = feed.length;
                                 feed.push({
-                                    type: self.TYPES.REVIEW,
-                                    data: review
+                                    type: type,
+                                    data: fetchedItem
                                 });
                             }
                         });
-                        let reviewOffset = prevState.reviewOffset + noNewReviews;
-                        return {
+                        let _T_Offset = prevState[offsetKey] + noNew_T_s;
+                        // return
+                        let retObject = {
                             feed: feed,
-                            reviewLastSeen: requestTimeStamp,
-                            reviewOffset: reviewOffset,
-                            reviewFeedHashMap: reviewFeedHashMap
                         };
+                        retObject[lastSeenKey] = requestTimeStamp;
+                        retObject[offsetKey] = _T_Offset;
+                        retObject[hashMapKey] = _T_HashMap;
+                        return retObject;
                     });
                 }
             },
@@ -127,6 +209,12 @@ window.InfiniteFeedApp = React.createClass({
                 Materialize.toast('Server Error', 2000);
             }
         });
+    },
+    fetchNextReviewBatch: function () {
+        this.fetchNextBatch(TYPES.REVIEW);
+    },
+    fetchNextSeekBatch: function () {
+        this.fetchNextBatch(TYPES.SEEK);
     },
     render: function () {
         let HTMLFeed = [];
@@ -136,10 +224,10 @@ window.InfiniteFeedApp = React.createClass({
                 continue;
             }
             switch (feedItem.type) {
-                case this.TYPES.REVIEW:
+                case TYPES.REVIEW:
                     HTMLFeed.push(
                         <Review
-                            key={feedItem.data.id}
+                            key={TYPES.REVIEW + '-' + feedItem.data.id}
                             id={feedItem.data.id}
                             rating={feedItem.data.rating}
                             text={feedItem.data.text}
@@ -148,20 +236,35 @@ window.InfiniteFeedApp = React.createClass({
                             muff={feedItem.data.muff}/>
                     );
                     break;
+                case TYPES.SEEK:
+                    HTMLFeed.push(
+                        <Seek
+                            key={TYPES.SEEK + '-' + feedItem.data.id}
+                            id={feedItem.data.id}
+                            muffId={feedItem.data.muffId}
+                            text={feedItem.data.text}
+                            timestamp={feedItem.data.timestamp}
+                            genres={feedItem.data.genres}/>
+                    );
+                    break;
                 default:
                     HTMLFeed.push(<div>Unknown Element</div>);
                     break;
             }
         }
         return (
-            <div>
+            <div style={{marginBottom: '50vh'}}>
                 <div ref="feed">
                     {HTMLFeed}
                 </div>
-                <div className="card"
-                     onClick={e => this.fetchNextReviewBatch()}>
+                <div className="card">
                     <div className="card-content">
-                        LOAD MORE ...
+                        <button className="btn btn-flat" onClick={e => this.fetchNextReviewBatch()}>
+                            LOAD MORE REVIEWS...
+                        </button>
+                        <button className="btn btn-flat" onClick={e => this.fetchNextSeekBatch()}>
+                            LOAD MORE SEEKS...
+                        </button>
                     </div>
                 </div>
             </div>
