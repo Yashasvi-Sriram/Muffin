@@ -1,7 +1,5 @@
 package org.muffin.muffin.daos;
 
-import org.muffin.muffin.beans.Movie;
-import org.muffin.muffin.beans.Review;
 import org.muffin.muffin.beans.Seek;
 
 import java.sql.Timestamp;

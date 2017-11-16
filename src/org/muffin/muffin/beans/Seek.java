@@ -11,7 +11,8 @@ import java.util.List;
 @AllArgsConstructor
 public class Seek {
     private int id;
-    private int muffId;
+    @NonNull
+    private Muff muff;
     @NonNull
     private String text;
     private LocalDateTime timestamp;

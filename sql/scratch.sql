@@ -1,6 +1,6 @@
 SELECT
   seek.id,
-  seek.muff_id,
+  muff.id, muff.handle, muff.name, muff.level, muff.joined_on,
   seek.text,
   seek.timestamp
 FROM muff, seek
@@ -10,7 +10,12 @@ OFFSET ?
 LIMIT ?;
 
 
-SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = 1 AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id ORDER BY seek.timestamp DESC;
+SELECT
+  genre.id,
+  genre.name
+FROM seek, seek_genre_r, genre
+WHERE seek.id = 1 AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id
+ORDER BY seek.timestamp DESC;
 
 SELECT seek_response.*
 FROM seek, seek_response

@@ -51,11 +51,10 @@ let Seek = React.createClass({
     },
     render: function () {
         return (
-            <div className="card seek hoverable" ref="feedItem"
-                 style={{backgroundColor: 'lightgreen'}}
+            <div className="card seek hoverable pink lighten-5" ref="feedItem"
                  onMouseEnter={e => this.refreshLastModified()}>
                 <div className="card-content">
-                    <div>{this.props.muffId} <span className="pink-text">@</span></div>
+                    <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
                     <div className="blue-text">{this.state.fromTimestamp}</div>
                     <div ref="genres">Genres: {
                         this.props.genres.map(genre => {
@@ -246,7 +245,7 @@ window.InfiniteFeedApp = React.createClass({
                         <Seek
                             key={TYPES.SEEK + '-' + feedItem.data.id}
                             id={feedItem.data.id}
-                            muffId={feedItem.data.muffId}
+                            muff={feedItem.data.muff}
                             text={feedItem.data.text}
                             timestamp={feedItem.data.timestamp}
                             genres={feedItem.data.genres}/>
