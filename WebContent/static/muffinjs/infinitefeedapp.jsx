@@ -57,6 +57,11 @@ let Seek = React.createClass({
                 <div className="card-content">
                     <div>{this.props.muffId} <span className="pink-text">@</span></div>
                     <div className="blue-text">{this.state.fromTimestamp}</div>
+                    <div ref="genres">Genres: {
+                        this.props.genres.map(genre => {
+                            return <span key={genre.id} className="teal white-text badge">{genre.name}</span>
+                        })
+                    }</div>
                     <br/>
                     <div className="flow-text">{this.props.text}</div>
                 </div>
@@ -272,5 +277,6 @@ window.InfiniteFeedApp = React.createClass({
     },
     componentDidMount: function () {
         this.fetchNextReviewBatch();
+        this.fetchNextSeekBatch();
     },
 });
