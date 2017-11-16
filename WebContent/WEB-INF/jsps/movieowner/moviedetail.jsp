@@ -99,10 +99,9 @@
                                         <td>
                                         </td>
                                         <td>
-                                            <a href="#"
-                                               onClick={(e) => {
-                                                   this.props.onDeleteClick(this.props.id)
-                                               }}
+                                            <a onClick={(e) => {
+                                                this.props.onDeleteClick(this.props.id)
+                                            }}
                                                className="btn-floating waves-effect waves-light red">
                                                 <i className="material-icons">remove</i>
                                             </a>
@@ -393,10 +392,9 @@
                                         <td>
                                         </td>
                                         <td>
-                                            <a href="#"
-                                               onClick={(e) => {
-                                                   this.props.onDeleteClick(this.props.id, this.props.movieId)
-                                               }}
+                                            <a onClick={(e) => {
+                                                this.props.onDeleteClick(this.props.id, this.props.movieId)
+                                            }}
                                                className="btn-floating waves-effect waves-light red">
                                                 <i className="material-icons">remove</i>
                                             </a>

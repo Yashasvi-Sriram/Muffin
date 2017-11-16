@@ -36,14 +36,9 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         MovieOwner movieOwner = (MovieOwner) session.getAttribute(SessionKeys.MOVIE_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        if (movieDAO.create(name, durationInMinutes, movieOwner.getId())) {
-            Optional<Movie> movieOpt = movieDAO.get(name);
-            if (movieOpt.isPresent()) {
-                out.println(gson.toJson(ResponseWrapper.get(movieOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-            } else {
-                System.out.println("Critical error!");
-                out.println(gson.toJson(ResponseWrapper.error("Error!")));
-            }
+        Optional<Movie> movieOpt = movieDAO.create(name, durationInMinutes, movieOwner.getId());
+        if (movieOpt.isPresent()) {
+            out.println(gson.toJson(ResponseWrapper.get(movieOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
         } else {
             out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Movie name has to be different from all the existing ones")));
         }

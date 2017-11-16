@@ -28,14 +28,13 @@ import java.io.PrintWriter;
 import java.util.Optional;
 
 /**
- * doGetWithSession:  tries to ad a new genre to the movie with given params, if success returns created obj, else returns error
+ * doGetWithSession:  tries to add a new genre to the movie with given params, if success returns created obj, else returns error
  * doPostWithSession: same as GET
  */
 @WebServlet("/genre/create")
 public class Create extends MovieOwnerEnsuredSessionServlet {
     private GenreDAO genreDAO = new GenreDAOImpl();
     private MovieDAO movieDAO = new MovieDAOImpl();
-
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
@@ -46,9 +45,7 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         Optional<Genre> genreOpt = genreDAO.get(genreName);
         if (genreOpt.isPresent()) {
-
             if (movieDAO.updateGenre(movieId, movieOwner.getId(), genreOpt.get().getId(), 1)) {
-
                 out.println(gson.toJson(ResponseWrapper.get(genreOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
             } else {
                 System.out.println("Critical error!");
@@ -58,8 +55,6 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
 
             out.println(gson.toJson(ResponseWrapper.error("Error! Type Correct Genre Name")));
         }
-
-
         out.close();
     }
 

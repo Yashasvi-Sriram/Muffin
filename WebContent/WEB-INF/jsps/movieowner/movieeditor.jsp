@@ -93,7 +93,7 @@
                                                 <i className="material-icons">info</i></a>
                                         </td>
                                         <td>
-                                            <a href="#"
+                                            <a
                                                onClick={(e) => {
                                                    this.props.onDeleteClick(this.props.id)
                                                }}
@@ -102,10 +102,9 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="#"
+                                            <a
                                                onClick={(e) => {
-                                                   this.setState(()
-                                                           => {
+                                                   this.setState(() => {
                                                            return {inReadMode: false}
                                                        }
                                                    )
@@ -144,11 +143,10 @@
                                         <td>
                                         </td>
                                         <td>
-                                            <a href="#"
+                                            <a
                                                onClick={(e) => {
                                                    this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
-                                                   this.setState(()
-                                                           => {
+                                                   this.setState(() => {
                                                            return {inReadMode: true}
                                                        }
                                                    )
@@ -159,10 +157,9 @@
                                             </a>
                                         </td>
                                         <td>
-                                            <a href="#"
+                                            <a
                                                onClick={(e) => {
-                                                   this.setState(()
-                                                           => {
+                                                   this.setState(() => {
                                                            return {inReadMode: true}
                                                        }
                                                    )

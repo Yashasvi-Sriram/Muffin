@@ -35,14 +35,9 @@ public class Update extends MovieOwnerEnsuredSessionServlet {
         MovieOwner movieOwner = (MovieOwner) session.getAttribute(SessionKeys.MOVIE_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        if (movieDAO.update(movieId, movieOwner.getId(), name, durationInMinutes)) {
-            Optional<Movie> movieOpt = movieDAO.get(name);
-            if (movieOpt.isPresent()) {
-                out.println(gson.toJson(ResponseWrapper.get(movieOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-            } else {
-                System.out.println("Critical error!");
-                out.println(gson.toJson(ResponseWrapper.error("Error!")));
-            }
+        Optional<Movie> movieOpt = movieDAO.update(movieId, movieOwner.getId(), name, durationInMinutes);
+        if (movieOpt.isPresent()) {
+            out.println(gson.toJson(ResponseWrapper.get(movieOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
         } else {
             out.println(gson.toJson(ResponseWrapper.error("Error! Hint: All movie names must be unique")));
         }
