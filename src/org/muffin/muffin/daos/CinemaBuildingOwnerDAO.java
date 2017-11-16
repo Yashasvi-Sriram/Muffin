@@ -9,7 +9,7 @@ import lombok.NonNull;
 
 public interface CinemaBuildingOwnerDAO {
 
-    public boolean create(final String handle, final String name, final String password);
+    public Optional<CinemaBuildingOwner> create(final String handle, final String name, final String password);
 
     public boolean exists(final String handle, final String password);
 

@@ -48,16 +48,11 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         Optional<ValidRegion> validRegionOpt = validRegionDAO.get(city, state, country);
         if (validRegionOpt.isPresent()) {
-            if (cinemaBuildingDAO.create(cinemaBuildingOwner.getId(), name, streetName, city, state, country, zip)) {
-                Optional<CinemaBuilding> cinemaBuildingOpt = cinemaBuildingDAO.get(name, streetName, city, state, country, zip);
-                if (cinemaBuildingOpt.isPresent()) {
-                    out.println(gson.toJson(ResponseWrapper.get(cinemaBuildingOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-                } else {
-                    System.out.println("Critical error!");
-                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                }
+            Optional<CinemaBuilding> cinemaBuildingOpt = cinemaBuildingDAO.create(cinemaBuildingOwner.getId(), name, streetName, city, state, country, zip);
+            if (cinemaBuildingOpt.isPresent()) {
+                out.println(gson.toJson(ResponseWrapper.get(cinemaBuildingOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
             } else {
-                out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Building has to be different from all the existing ones")));
+                out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The building has to be different from all the existing ones")));
             }
         } else {
             out.println(gson.toJson(ResponseWrapper.error("Error! Hint: Enter Valid Region(City,State,Country)")));

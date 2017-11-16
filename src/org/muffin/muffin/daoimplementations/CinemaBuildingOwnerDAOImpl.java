@@ -13,33 +13,31 @@ import java.util.Optional;
 public class CinemaBuildingOwnerDAOImpl implements CinemaBuildingOwnerDAO {
 
     @Override
-    public boolean create(String handle, String name, String password) {
+    public Optional<CinemaBuildingOwner> create(String handle, String name, String password) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement createCBO = conn.prepareStatement("INSERT INTO cinema_building_owner(handle, name) VALUES (?, ?);");
-             PreparedStatement getCBOId = conn.prepareStatement("SELECT id FROM cinema_building_owner WHERE handle = ?;");
+             PreparedStatement createCBO = conn.prepareStatement("INSERT INTO cinema_building_owner(handle, name) VALUES (?, ?) RETURNING id, handle, name, joined_on;");
              PreparedStatement createCBOPassword = conn.prepareStatement("INSERT INTO cinema_building_owner_password(id, password) VALUES (?, ?);");) {
-            // createMuff
+            // createCBO
             createCBO.setString(1, handle);
             createCBO.setString(2, name);
-            int result = createCBO.executeUpdate();
-            if (result != 1) {
-                return false;
-            }
-            // getCreatedMuff
-            getCBOId.setString(1, handle);
-            ResultSet rs = getCBOId.executeQuery();
+            ResultSet rs = createCBO.executeQuery();
             if (rs.next()) {
-                int id = rs.getInt(1);
-                createCBOPassword.setInt(1, id);
+                CinemaBuildingOwner cinemaBuildingOwner = new CinemaBuildingOwner(rs.getInt(1),
+                        rs.getString(2),
+                        rs.getString(3),
+                        rs.getTimestamp(4).toLocalDateTime());
+                // createCBO password
+                createCBOPassword.setInt(1, cinemaBuildingOwner.getId());
                 createCBOPassword.setString(2, password);
-                result = createCBOPassword.executeUpdate();
-                return result == 1;
-            } else {
-                return false;
+                if (createCBOPassword.executeUpdate() == 1) {
+
+                    return Optional.of(cinemaBuildingOwner);
+                }
             }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
     }
 
@@ -60,7 +58,6 @@ public class CinemaBuildingOwnerDAOImpl implements CinemaBuildingOwnerDAO {
 
     @Override
     public Optional<CinemaBuildingOwner> get(String handle) {
-
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, joined_on FROM cinema_building_owner WHERE handle = ?")) {
             preparedStmt.setString(1, handle);
@@ -77,7 +74,6 @@ public class CinemaBuildingOwnerDAOImpl implements CinemaBuildingOwnerDAO {
             e.printStackTrace();
             return Optional.empty();
         }
-
     }
 
 

@@ -11,3 +11,4 @@ movie page
     1. dynamic parallaxing
 1. suggestions
 1. booking
+1. begin commit for all signups

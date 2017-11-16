@@ -39,22 +39,26 @@ public class CinemaBuildingDAOImpl implements CinemaBuildingDAO {
     }
 
     @Override
-    public boolean create(int ownerId, String name, String streetName, String city, String state, String country, String zip) {
+    public Optional<CinemaBuilding> create(int ownerId, String name, String streetName, String city, String state, String country, String zip) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO cinema_building(owner_id,name,street_name,city,state,country,zip) VALUES (?,?,?,?,?,?,?);")) {
-            preparedStmt.setInt(1, ownerId);
-            preparedStmt.setString(2, name);
-            preparedStmt.setString(3, streetName);
-            preparedStmt.setString(4, city);
-            preparedStmt.setString(5, state);
-            preparedStmt.setString(6, country);
-            preparedStmt.setString(7, zip);
+             PreparedStatement createCinemaBuildingQ = conn.prepareStatement("INSERT INTO cinema_building(owner_id,name,street_name,city,state,country,zip) VALUES (?,?,?,?,?,?,?) RETURNING id, owner_id, name, street_name, city, state, country, zip;")) {
+            createCinemaBuildingQ.setInt(1, ownerId);
+            createCinemaBuildingQ.setString(2, name);
+            createCinemaBuildingQ.setString(3, streetName);
+            createCinemaBuildingQ.setString(4, city);
+            createCinemaBuildingQ.setString(5, state);
+            createCinemaBuildingQ.setString(6, country);
+            createCinemaBuildingQ.setString(7, zip);
 
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
+            ResultSet rs = createCinemaBuildingQ.executeQuery();
+            if (rs.next()) {
+                CinemaBuilding cinemaBuilding = new CinemaBuilding(rs.getInt(1), rs.getInt(2), rs.getString(3), rs.getString(4), rs.getString(5), rs.getString(6), rs.getString(7), rs.getString(8));
+                return Optional.of(cinemaBuilding);
+            }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
     }
 
