@@ -33,22 +33,24 @@ public class ActorDAOImpl implements ActorDAO {
     }
 
     @Override
-    public boolean create(String name) {
+    public Optional<Actor> create(String name) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO actor(name) VALUES (?);")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("INSERT INTO actor(name) VALUES (?) RETURNING id, name;")) {
             preparedStmt.setString(1, name);
-
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                Actor actor = new Actor(result.getInt(1), result.getString(2));
+                return Optional.of(actor);
+            }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
-            return false;
+            return Optional.empty();
         }
     }
 
     @Override
     public Optional<Actor> get(String name) {
-        // TODO Auto-generated method stub
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, name FROM actor WHERE name = ?")) {
             preparedStmt.setString(1, name);
@@ -104,7 +106,7 @@ public class ActorDAOImpl implements ActorDAO {
     public Optional<Integer> getLikeCount(int actorId) {
 
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStatement = conn.prepareStatement("SELECT count(muff_id) FROM muff_likes_actor,actor WHERE actor.id = ? and muff_likes_actor.actor_id = actor.id")) {
+             PreparedStatement preparedStatement = conn.prepareStatement("SELECT count(muff_id) FROM muff_likes_actor,actor WHERE actor.id = ? AND muff_likes_actor.actor_id = actor.id")) {
             preparedStatement.setInt(1, actorId);
             ResultSet resultSet = preparedStatement.executeQuery();
             if (resultSet.next()) {
@@ -121,7 +123,7 @@ public class ActorDAOImpl implements ActorDAO {
 
         Map<Integer, String> movieMap = new HashMap<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id,movie.name from movie,character WHERE  character.movie_id = movie.id AND character.actor_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id,movie.name FROM movie,character WHERE  character.movie_id = movie.id AND character.actor_id = ?")) {
             preparedStmt.setInt(1, actorId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {

@@ -3,7 +3,6 @@ logouts
 muff profile
 movie page
 
-1. change orderby
 1. use returning in dao implementations
 1. actor page
 1. seek response

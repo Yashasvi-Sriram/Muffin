@@ -15,7 +15,7 @@ public interface CharacterDAO {
 
     public List<Character> getByMovie(final int movieId);
 
-    public boolean create(final String name, final int movieId, final int movieOwnerId, final int actorId);
+    public Optional<Character> create(final String name, final int movieId, final int movieOwnerId, final int actorId);
 
     public Optional<Character> get(final String name, final int movieId, final int movieOwnerId, final int actorId);
 

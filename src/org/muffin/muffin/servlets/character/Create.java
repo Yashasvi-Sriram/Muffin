@@ -41,34 +41,28 @@ public class Create extends MovieOwnerEnsuredSessionServlet {
         MovieOwner movieOwner = (MovieOwner) session.getAttribute(SessionKeys.MOVIE_OWNER);
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        Optional<Actor> actorOpt = actorDAO.get(actorName);
-        int error = 0;
-        if (!actorOpt.isPresent()) {
-            if (actorDAO.create(actorName)) {
-                actorOpt = actorDAO.get(actorName);
-                if (!actorOpt.isPresent()) {
-                    error = 1;
-                    System.out.println("Critical error!");
-                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                }
+
+        // create actor if not already there
+        Optional<Actor> existingActorOpt = actorDAO.get(actorName);
+        int actorId;
+        if (existingActorOpt.isPresent()) {
+            actorId = existingActorOpt.get().getId();
+        } else {
+            Optional<Actor> newActor = actorDAO.create(actorName);
+            if (newActor.isPresent()) {
+                actorId = newActor.get().getId();
             } else {
-                error = 1;
-                out.println(gson.toJson(ResponseWrapper.error("Error! Hint: Actor names have to be unique")));
+                out.println(gson.toJson(ResponseWrapper.error("Critical Error! Cannot find or create actor!")));
+                out.close();
+                return;
             }
         }
-        if (error == 0) {
-            int actorId = actorOpt.get().getId();
-            if (characterDAO.create(characterName, movieId, movieOwner.getId(), actorId)) {
-                Optional<Character> characterOpt = characterDAO.get(characterName, movieId, movieOwner.getId(), actorId);
-                if (characterOpt.isPresent()) {
-                    out.println(gson.toJson(ResponseWrapper.get(characterOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-                } else {
-                    System.out.println("Critical error!");
-                    out.println(gson.toJson(ResponseWrapper.error("Error!")));
-                }
-            } else {
-                out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Movie name has to be different from all the existing ones")));
-            }
+        // map the actor and character
+        Optional<Character> characterOpt = characterDAO.create(characterName, movieId, movieOwner.getId(), actorId);
+        if (characterOpt.isPresent()) {
+            out.println(gson.toJson(ResponseWrapper.get(characterOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
+        } else {
+            out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The character name has to be unique in a movie")));
         }
         out.close();
     }
