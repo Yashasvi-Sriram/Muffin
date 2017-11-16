@@ -81,9 +81,6 @@
                         </div>
                     </div>
                     <div class="col s4">
-                        <div id="toggle-likes-app"></div>
-                    </div>
-                    <div class="col s4">
                         <div class="collection with-header">
                             <div class="collection-header"><h4>Movies List</h4></div>
                             <jstl:forEach items="${requestScope.movieMap}" var="movie">
@@ -96,6 +93,9 @@
                             </jstl:forEach>
                         </div>
 
+                    </div>
+                    <div class="col s4">
+                        <div id="toggle-likes-app"></div>
                     </div>
                 </div>
             </jsp:body>
