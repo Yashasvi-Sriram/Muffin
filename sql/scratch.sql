@@ -1,5 +1,22 @@
-SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;
+SELECT
+  seek.id,
+  muff.id,
+  muff.handle,
+  muff.name,
+  muff.level,
+  muff.joined_on,
+  seek.text,
+  seek.timestamp
+FROM muff, seek, follows
+WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ?
+ORDER BY seek.timestamp DESC
+OFFSET ?
+LIMIT ?;
 
+SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp > ? ORDER BY timestamp OFFSET ? LIMIT ?;
+
+SELECT *
+FROM seek_response;
 
 SELECT
   genre.id,

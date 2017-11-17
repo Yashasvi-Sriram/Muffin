@@ -96,20 +96,6 @@ public class ReviewDAOImpl implements ReviewDAO {
         return false;
     }
 
-    @Override
-    public boolean delete(int movieId, int muffId) {
-        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("DELETE FROM review WHERE movie_id = ? AND muff_id = ?")) {
-            preparedStmt.setInt(1, movieId);
-            preparedStmt.setInt(2, muffId);
-            int result = preparedStmt.executeUpdate();
-            return result == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        return false;
-    }
-
     private List<Review> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement oldTuples = conn.prepareStatement(oldTuplesQuery);

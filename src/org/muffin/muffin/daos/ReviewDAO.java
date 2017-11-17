@@ -23,6 +23,4 @@ public interface ReviewDAO {
 
     public boolean update(final int movieId, final int muffId, final float rating, final String text);
 
-    public boolean delete(final int movieId, final int muffId);
-
 }

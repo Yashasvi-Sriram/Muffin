@@ -41,18 +41,6 @@ public class SeekDAOImpl implements SeekDAO {
     }
 
     @Override
-    public boolean delete(int seekId) {
-        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement deleteSeek = conn.prepareStatement("DELETE FROM seek WHERE id = ?;")) {
-            deleteSeek.setInt(1, seekId);
-            return deleteSeek.executeUpdate() == 1;
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
-
-    @Override
     public List<Seek> getByMuff(int muffId, int offset, int limit, final Timestamp lastSeen) {
         String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
         String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp;";

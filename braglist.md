@@ -1,9 +1,9 @@
+1. Name and Logo
+1. Database design (constant and unique pk for every table)
 1. EnsuredSessionServlets
 1. ResponseWrapper
-1. constant and unique pk for every table
-1. jsp tags
-1. jsp EL
-1. smart feed
-1. name
-1. design
-1. automated suggestions
+1. Jsp tags & EL
+1. Smart feed
+1. Seek & Response
+1. Design & Aesthetics
+1. Automated suggestions
