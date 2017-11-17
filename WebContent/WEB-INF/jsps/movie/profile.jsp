@@ -24,9 +24,13 @@
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
                 <script src="${pageContext.request.contextPath}/static/chartjs/Chart.min.js"></script>
                 <script type="text/babel">
-                    ReactDOM.render(<InfiniteFeedApp reviewFetchParam={${requestScope.profileMovie.getId()}}
-                                                     contextPath="${pageContext.request.contextPath}"
-                                                     reviewFetchUrl="/review/fetch/movie"/>, document.getElementById('infinite-feed-app'));
+                    ReactDOM.render(<InfiniteFeedApp
+                            inSessionMuffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                            contextPath="${pageContext.request.contextPath}"
+                            reviewFetchParam={${requestScope.profileMovie.getId()}}
+                            reviewFetchUrl="/review/fetch/movie"
+                            seekIsEnabled={false}
+                    />, document.getElementById('infinite-feed-app'));
                 </script>
                 <%--Infinite Feed App--%>
                 <div class="row" style="min-height: 100vh">

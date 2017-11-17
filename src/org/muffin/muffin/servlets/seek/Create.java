@@ -41,7 +41,7 @@ public class Create extends MuffEnsuredSessionServlet {
         if (seekDAO.create(muff.getId(), text, genreIds)) {
             out.println(gson.toJson(ResponseWrapper.get("Seek noted! You will be served soon", ResponseWrapper.STRING_RESPONSE)));
         } else {
-            out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Movie text has to be different from all the existing ones")));
+            out.println(gson.toJson(ResponseWrapper.error("Error!")));
         }
         out.close();
     }

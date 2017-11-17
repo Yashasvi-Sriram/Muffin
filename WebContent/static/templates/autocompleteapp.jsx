@@ -1,14 +1,19 @@
-let SearchResultWrapper = React.createClass({
+let AutoCompleteResult = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
     render: function () {
         return (
-            <tr>
-                <td>{this.props.name}</td>
-            </tr>
+            <div className="collection-item">
+                <div>{this.props.name}</div>
+            </div>
         );
     }
 });
 
-window.BaseSearchApp = React.createClass({
+let AutoCompleteApp = React.createClass({
     getInitialState: function () {
         return {
             results: [],
@@ -17,22 +22,16 @@ window.BaseSearchApp = React.createClass({
     },
     getDefaultProps: function () {
         return {
-            limit: 3,
+            limit: 5,
             contextPath: '',
-            url: '',
+            searchUrl: '',
         }
     },
     _resetOffset: function () {
         this.state.offset = 0;
     },
     _incrementOffset: function (fetchedDataLength) {
-        // last batch
-        if (fetchedDataLength < this.props.limit) {
-            this.state.offset -= this.props.limit;
-            this.state.offset += fetchedDataLength;
-        }
-        // update limit
-        this.state.offset += this.props.limit;
+        this.state.offset += fetchedDataLength;
     },
     _decrementOffset: function () {
         let floorExcess = this.state.offset % this.props.limit;
@@ -46,8 +45,8 @@ window.BaseSearchApp = React.createClass({
         }
     },
     fetchNextBatch: function (pattern) {
-        let url = this.props.contextPath + this.props.url;
         let self = this;
+        let url = this.props.contextPath + this.props.searchUrl;
         $.ajax({
             url: url,
             type: 'GET',
@@ -90,50 +89,49 @@ window.BaseSearchApp = React.createClass({
             case 13:
                 let self = this;
                 this._resetOffset();
-                self.setState({results: []});
+                self.setState(ps => {
+                    return {results: []};
+                });
                 this.fetchNextBatch(e.target.value);
                 break;
             // Escape key
             case 27:
                 $(this.refs.results).hide();
                 break;
-            // Page Up key
-            case 33:
-                this.fetchPreviousBatch(this.refs.pattern.value);
-                break;
-            // Page Down key
-            case 34:
-                this.fetchNextBatch(this.refs.pattern.value);
-                break;
             default:
                 break;
         }
     },
     render: function () {
-        let results = this.state.results.map(movie => {
-            return <SearchResultWrapper
-                key={movie.id}
-                id={movie.id}
-                name={movie.name}
-
+        let results = this.state.results.map(result => {
+            return <AutoCompleteResult
+                key={result.id}
+                id={result.id}
+                name={result.name}
+                contextPath={this.state.contextPath}
             />;
         });
         return (
             <div>
-                <input onKeyDown={this.onRegexInputKeyDown}
-                       ref="pattern"
-                       placeholder="Search" type="text"/>
-                <div ref="results">
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
-                        className="material-icons">keyboard_arrow_left</i></button>
-                    <button className="btn btn-flat"
-                            onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
-                        className="material-icons">keyboard_arrow_right</i></button>
-                    <span>Or use PageUp | PageDown to navigate</span>
-                    <table className="white">
-                        <tbody>{results}</tbody>
-                    </table>
+                <div className="row">
+                    <input onKeyDown={this.onRegexInputKeyDown}
+                           ref="pattern"
+                           placeholder="Search" type="text" className="col s12"/>
+                    <div className="col s12" ref="results">
+                        <div className="collection with-header">
+                            <div className="collection-header"><span className="flow-text">Results</span>
+                                <span className="right">
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_left</i></button>
+                            <button className="btn btn-flat"
+                                    onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                className="material-icons">keyboard_arrow_right</i></button>
+                            </span>
+                            </div>
+                            {results}
+                        </div>
+                    </div>
                 </div>
             </div>
         );

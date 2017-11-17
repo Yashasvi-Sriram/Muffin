@@ -295,7 +295,7 @@ CREATE TABLE seek_response (
   text      TEXT      NOT NULL,
   timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
-  UNIQUE (muff_id, seek_id, movie_id),
+  UNIQUE (muff_id, seek_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
   FOREIGN KEY (seek_id) REFERENCES seek (id)

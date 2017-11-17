@@ -12,8 +12,9 @@
                         src="${pageContext.request.contextPath}/static/muffinjs/infinitefeedapp.jsx"></script>
                 <script type="text/babel">
                     ReactDOM.render(<InfiniteFeedApp
-                            reviewFetchParam={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                            inSessionMuffId={${sessionScope.get(SessionKeys.MUFF).getId()}}
                             contextPath="${pageContext.request.contextPath}"
+                            reviewFetchParam={${sessionScope.get(SessionKeys.MUFF).getId()}}
                             reviewFetchUrl="/review/fetch/followers"
                             seekFetchParam={${sessionScope.get(SessionKeys.MUFF).getId()}}
                             seekFetchUrl="/seek/fetch/followers"

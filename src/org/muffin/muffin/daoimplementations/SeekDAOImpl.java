@@ -10,6 +10,7 @@ import org.muffin.muffin.db.DBConfig;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 public class SeekDAOImpl implements SeekDAO {
     @Override
@@ -41,10 +42,47 @@ public class SeekDAOImpl implements SeekDAO {
     }
 
     @Override
+    public Optional<Seek> getById(int seekId) {
+        String getSeeksQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE seek.id = ? AND muff.id = seek.muff_id";
+        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id ORDER BY seek.timestamp DESC;";
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement getSeeksPS = conn.prepareStatement(getSeeksQuery);
+             PreparedStatement getGenresPS = conn.prepareStatement(getGenresQuery);
+        ) {
+            getSeeksPS.setInt(1, seekId);
+            ResultSet seekRS = getSeeksPS.executeQuery();
+            if (seekRS.next()) {
+                getGenresPS.setInt(1, seekId);
+                ResultSet genresRS = getGenresPS.executeQuery();
+                List<Genre> genres = new ArrayList<>();
+                while (genresRS.next()) {
+                    genres.add(new Genre(genresRS.getInt(1), genresRS.getString(2)));
+                }
+                return Optional.of(new Seek(
+                        seekId,
+                        new Muff(seekRS.getInt(2),
+                                seekRS.getString(3),
+                                seekRS.getString(4),
+                                seekRS.getInt(5),
+                                seekRS.getTimestamp(6).toLocalDateTime()
+                        ),
+                        seekRS.getString(7),
+                        seekRS.getTimestamp(8).toLocalDateTime(),
+                        genres
+                ));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
     public List<Seek> getByMuff(int muffId, int offset, int limit, final Timestamp lastSeen) {
         String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
-        String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp;";
-        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id ORDER BY seek.timestamp DESC;";
+        String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek WHERE muff.id = ? AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp DESC;";
+        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id;";
         return get(muffId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery, getGenresQuery);
     }
 
@@ -52,7 +90,7 @@ public class SeekDAOImpl implements SeekDAO {
     public List<Seek> getByFollowers(int muffId, int offset, int limit, Timestamp lastSeen) {
         String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
         String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp DESC;";
-        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id ORDER BY seek.timestamp DESC;";
+        String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id;";
         return get(muffId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery, getGenresQuery);
     }
 
@@ -85,10 +123,10 @@ public class SeekDAOImpl implements SeekDAO {
         }
     }
 
-    private List<Seek> resultSetConverter(ResultSet seekRs, PreparedStatement getGenresPS) throws SQLException {
+    private List<Seek> resultSetConverter(ResultSet seeksRS, PreparedStatement getGenresPS) throws SQLException {
         List<Seek> seeks = new ArrayList<>();
-        while (seekRs.next()) {
-            int seekId = seekRs.getInt(1);
+        while (seeksRS.next()) {
+            int seekId = seeksRS.getInt(1);
             getGenresPS.setInt(1, seekId);
             ResultSet genresRS = getGenresPS.executeQuery();
             List<Genre> genres = new ArrayList<>();
@@ -97,14 +135,14 @@ public class SeekDAOImpl implements SeekDAO {
             }
             seeks.add(new Seek(
                     seekId,
-                    new Muff(seekRs.getInt(2),
-                            seekRs.getString(3),
-                            seekRs.getString(4),
-                            seekRs.getInt(5),
-                            seekRs.getTimestamp(6).toLocalDateTime()
+                    new Muff(seeksRS.getInt(2),
+                            seeksRS.getString(3),
+                            seeksRS.getString(4),
+                            seeksRS.getInt(5),
+                            seeksRS.getTimestamp(6).toLocalDateTime()
                     ),
-                    seekRs.getString(7),
-                    seekRs.getTimestamp(8).toLocalDateTime(),
+                    seeksRS.getString(7),
+                    seeksRS.getTimestamp(8).toLocalDateTime(),
                     genres
             ));
         }

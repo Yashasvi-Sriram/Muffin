@@ -9,6 +9,7 @@ actor page
 1. inf feed app
     1. all in one feed
     1. dynamic parallaxing
-1. suggestions
 1. booking
+1. improve db queries, do indexing
+1. suggestions
 1. begin commit for all signups

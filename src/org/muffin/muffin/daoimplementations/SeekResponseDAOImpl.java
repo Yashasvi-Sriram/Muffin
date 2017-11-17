@@ -43,8 +43,8 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
 
     @Override
     public List<SeekResponse> getBySeek(int seekId, int offset, int limit, final Timestamp lastSeen) {
-        String oldTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp <= ? ORDER BY timestamp OFFSET ? LIMIT ?;";
-        String newTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp > ? ORDER BY timestamp;";
+        String oldTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp <= ? ORDER BY timestamp DESC OFFSET ? LIMIT ?;";
+        String newTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp > ? ORDER BY timestamp DESC;";
         return get(seekId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery);
     }
 
