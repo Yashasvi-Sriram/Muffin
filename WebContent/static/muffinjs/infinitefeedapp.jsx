@@ -5,47 +5,12 @@ let fromNow = function (localDateTime) {
     return p.fromNow();
 };
 
-let Review = React.createClass({
-    getInitialState: function () {
-        return {
-            fromLastModified: '',
-        }
-    },
-    refreshLastModified: function () {
-        this.setState({fromLastModified: fromNow(this.props.lastModified)});
-    },
-    render: function () {
-        return (
-            <div className="card review hoverable" ref="feedItem"
-                 style={{backgroundColor: 'whitesmoke'}}
-                 onMouseEnter={e => this.refreshLastModified()}>
-                <div className="card-content">
-                    <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
-                    <div>{this.props.movieName}</div>
-                    <div className="blue-text">{this.state.fromLastModified}</div>
-                    <br/>
-                    <div className="red-text">{this.props.rating}</div>
-                    <div className="flow-text">{this.props.text}</div>
-                </div>
-            </div>
-        );
-    },
-    componentDidMount: function () {
-        this.refreshLastModified();
-        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
-    },
-    compositionUpdate: function () {
-        this.refreshLastModified();
-        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
-    }
-});
-
 let SeekResponse = React.createClass({
     render: function () {
         return (
             <div className="collection-item">
-                {this.props.response.text}
-                {this.props.response.movieId}
+                {this.props.data.text}
+                {this.props.data.movieId}
             </div>
         );
     }
@@ -256,19 +221,131 @@ let Seek = React.createClass({
     getInitialState: function () {
         return {
             fromTimestamp: '',
-            responses: [],
+            seekResponseLastSeen: moment().format('YYYY-MM-DD HH:mm:ss'),
+            seekResponseOffset: 0,
+            seekResponseHashMap: {},
+            seekResponses: [],
         }
     },
-    refreshLastModified: function () {
-        this.setState({fromTimestamp: fromNow(this.props.timestamp)});
+    getDefaultProps: function () {
+        return {
+            data: {},
+            inSessionMuffId: 0,
+            contextPath: '',
+            respondedMuffIdsFetchUrl: '',
+            seekResponseFetchUrl: '',
+            seekResponseFetchParam: 0,
+            seekResponseFetchLimit: 0,
+        };
     },
-    // todo: complete this
-    oncreateseekresponse: function (seekResponse) {
+    refreshLastModified: function () {
+        this.setState({fromTimestamp: fromNow(this.props.data.timestamp)});
+    },
+    onCreateSeekResponse: function (seekResponse) {
         this.setState(ps => {
-            ps.responses.push(seekResponse);
-            return {responses: ps.responses}
+            ps.seekResponses.splice(0, 0, seekResponse);
+            return {seekResponses: ps.seekResponses}
         });
         $(this.refs.createSeekResponseAppDiv).hide();
+    },
+    fetchNextSeekResponseBatch: function (isFirstOne) {
+        let self = this;
+        let url = this.props.contextPath + this.props.seekResponseFetchUrl;
+        let limit = this.props.seekResponseFetchLimit;
+        let param = this.props.seekResponseFetchParam;
+        let offset = this.state.seekResponseOffset;
+        let lastSeen = this.state.seekResponseLastSeen;
+        let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                id: param,
+                offset: offset,
+                limit: limit,
+                lastSeen: lastSeen,
+            },
+            success: function (r) {
+                let json = JSON.parse(r);
+                if (json.status === -1) {
+                    Materialize.toast(json.error, 2000);
+                }
+                else {
+                    let fetchedData = json.data;
+                    // no results
+                    if (fetchedData.length === 0) {
+                        if (isFirstOne !== true) {
+                            Materialize.toast('That\'s it', 2000);
+                        }
+                        return;
+                    }
+                    // add results
+                    self.setState(prevState => {
+                        let seekResponses = prevState.seekResponses;
+                        let seekResponseHashMap = prevState.seekResponseHashMap;
+                        let noNewSeekResponses = 0;
+                        fetchedData.forEach((fetchedItem, i) => {
+                            // new fetchedItem
+                            if (seekResponseHashMap[fetchedItem.id] === undefined) {
+                                seekResponseHashMap[fetchedItem.id] = seekResponses.length;
+                                seekResponses.push(fetchedItem);
+                                noNewSeekResponses++;
+                            }
+                            // old fetchedItem
+                            else {
+                                let existingFeedIndex = seekResponseHashMap[fetchedItem.id];
+                                // invalidate old one
+                                seekResponses[existingFeedIndex] = undefined;
+                                // add new one at end
+                                seekResponseHashMap[fetchedItem.id] = seekResponses.length;
+                                seekResponses.push(fetchedItem);
+                            }
+                        });
+                        let seekResponseOffset = prevState.seekResponseOffset + noNewSeekResponses;
+                        // return
+                        let retObject = {
+                            seekResponse: seekResponses,
+                        };
+                        retObject.seekResponseLastSeen = requestTimeStamp;
+                        retObject.seekResponseOffset = seekResponseOffset;
+                        retObject.seekResponseHashMap = seekResponseHashMap;
+                        return retObject;
+                    });
+                }
+            },
+            error: function (data) {
+                Materialize.toast('Server Error', 2000);
+            }
+        });
+    },
+    fetchAllRespondedMuffIds: function () {
+        let self = this;
+        let seekId = this.props.data.id;
+        let url = this.props.contextPath + this.props.respondedMuffIdsFetchUrl;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                seekId: seekId,
+            },
+            success: function (r) {
+                let json = JSON.parse(r);
+                if (json.status === -1) {
+                    Materialize.toast(json.error, 2000);
+                }
+                else {
+                    let respondedMuffIds = json.data;
+                    respondedMuffIds.forEach(muffId => {
+                        if (muffId === self.props.inSessionMuffId) {
+                            $(self.refs.createSeekResponseAppDiv).fadeOut(0);
+                        }
+                    });
+                }
+            },
+            error: function (data) {
+                Materialize.toast('Server Error', 2000);
+            }
+        });
     },
     render: function () {
         return (
@@ -276,39 +353,84 @@ let Seek = React.createClass({
                 <div className="card seek hoverable pink lighten-5"
                      onMouseEnter={e => this.refreshLastModified()}>
                     <div className="card-content">
-                        <div>{this.props.muff.name} <span className="pink-text">@{this.props.muff.handle}</span></div>
+                        <div>{this.props.data.muff.name} <span
+                            className="pink-text">@{this.props.data.muff.handle}</span></div>
                         <div className="blue-text">{this.state.fromTimestamp}</div>
                         <br/>
                         <div ref="genres">Genres: {
-                            this.props.genres.map(genre => {
+                            this.props.data.genres.map(genre => {
                                 return <span key={genre.id} className="teal white-text badge">{genre.name}</span>
                             })
                         }</div>
                         <br/>
-                        <div className="flow-text">{this.props.text}</div>
+                        <div className="flow-text">{this.props.data.text}</div>
                     </div>
-                    <div className="card seek-response-creator">
+                    <div className="card" ref="createSeekResponseAppDiv">
                         <div className="card-content" style={{padding: '5px'}}>
-                            <div ref="createSeekResponseAppDiv">
-                                <CreateSeekResponseApp
-                                    contextPath=''
-                                    searchUrl='/movie/search'
-                                    createSeekResponseUrl='/seek/response/create'
-                                    seekId={this.props.id}
-                                    onCreateSeekResponse={this.oncreateseekresponse}
-                                />
-                            </div>
+                            <CreateSeekResponseApp
+                                contextPath=''
+                                searchUrl='/movie/search'
+                                createSeekResponseUrl='/seek/response/create'
+                                seekId={this.props.data.id}
+                                onCreateSeekResponse={this.onCreateSeekResponse}
+                            />
                         </div>
                     </div>
-                    <div className="collection">
-                        {this.state.responses.map(response =>
+                    <div className="collection" style={{margin: '0px'}}>
+                        {this.state.seekResponses.map(response =>
                             <SeekResponse
                                 key={response.id}
-                                id={response.id}
-                                response={response}
+                                data={response}
                             />
                         )}
                     </div>
+                    <div>
+                        <button className="btn btn-flat right-align" onClick={e => this.fetchNextSeekResponseBatch()}>
+                            <i className="material-icons">more_horiz</i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        );
+    },
+    componentDidMount: function () {
+        $(this.refs.feedItem).fadeOut(0);
+        this.refreshLastModified();
+        if (this.props.data.muff.id === this.props.inSessionMuffId) {
+            $(this.refs.createSeekResponseAppDiv).fadeOut(0);
+        }
+        this.fetchAllRespondedMuffIds();
+        this.fetchNextSeekResponseBatch(true);
+        $(this.refs.feedItem).fadeIn(1000);
+    },
+    compositionUpdate: function () {
+        this.refreshLastModified();
+        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
+    }
+});
+
+let Review = React.createClass({
+    getInitialState: function () {
+        return {
+            fromLastModified: '',
+        }
+    },
+    refreshLastModified: function () {
+        this.setState({fromLastModified: fromNow(this.props.data.lastModified)});
+    },
+    render: function () {
+        return (
+            <div className="card review hoverable" ref="feedItem"
+                 style={{backgroundColor: 'whitesmoke'}}
+                 onMouseEnter={e => this.refreshLastModified()}>
+                <div className="card-content">
+                    <div>{this.props.data.muff.name} <span className="pink-text">@{this.props.data.muff.handle}</span>
+                    </div>
+                    <div>{this.props.data.movieName}</div>
+                    <div className="blue-text">{this.state.fromLastModified}</div>
+                    <br/>
+                    <div className="red-text">{this.props.data.rating}</div>
+                    <div className="flow-text">{this.props.data.text}</div>
                 </div>
             </div>
         );
@@ -316,9 +438,6 @@ let Seek = React.createClass({
     componentDidMount: function () {
         this.refreshLastModified();
         $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
-        if (this.props.muff.id === this.props.inSessionMuffId) {
-            $(this.refs.createSeekResponseAppDiv).fadeOut(0);
-        }
     },
     compositionUpdate: function () {
         this.refreshLastModified();
@@ -339,7 +458,7 @@ let POSTFIXES = {
     PROPS: {
         FETCH_URL: 'FetchUrl',
         FETCH_PARAM: 'FetchParam',
-        LIMIT: 'Limit',
+        FETCH_LIMIT: 'FetchLimit',
         IS_ENABLED: 'IsEnabled',
     },
 };
@@ -372,12 +491,12 @@ window.InfiniteFeedApp = React.createClass({
             inSessionMuffId: 0,
         };
         // REVIEW
-        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.LIMIT] = 10;
+        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_LIMIT] = 10;
         defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_URL] = '';
         defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.IS_ENABLED] = true;
         // SEEK
-        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.LIMIT] = 10;
+        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_LIMIT] = 10;
         defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_URL] = '';
         defaultProps[TYPES.SEEK + POSTFIXES.PROPS.IS_ENABLED] = true;
@@ -392,7 +511,7 @@ window.InfiniteFeedApp = React.createClass({
         let self = this;
 
         let url = this.props.contextPath + this.props[type + POSTFIXES.PROPS.FETCH_URL];
-        let limit = this.props[type + POSTFIXES.PROPS.LIMIT];
+        let limit = this.props[type + POSTFIXES.PROPS.FETCH_LIMIT];
         let param = this.props[type + POSTFIXES.PROPS.FETCH_PARAM];
 
         let offsetKey = type + POSTFIXES.STATE.OFFSET;
@@ -488,24 +607,21 @@ window.InfiniteFeedApp = React.createClass({
                     HTMLFeed.push(
                         <Review
                             key={TYPES.REVIEW + '-' + feedItem.data.id}
-                            id={feedItem.data.id}
-                            rating={feedItem.data.rating}
-                            text={feedItem.data.text}
-                            lastModified={feedItem.data.lastModified}
-                            movieName={feedItem.data.movieName}
-                            muff={feedItem.data.muff}/>
+                            data={feedItem.data}/>
                     );
                     break;
                 case TYPES.SEEK:
                     HTMLFeed.push(
                         <Seek
                             key={TYPES.SEEK + '-' + feedItem.data.id}
-                            id={feedItem.data.id}
-                            muff={feedItem.data.muff}
-                            text={feedItem.data.text}
-                            timestamp={feedItem.data.timestamp}
-                            genres={feedItem.data.genres}
-                            inSessionMuffId={this.props.inSessionMuffId}/>
+                            data={feedItem.data}
+                            contextPath={this.props.contextPath}
+                            inSessionMuffId={this.props.inSessionMuffId}
+                            seekResponseFetchUrl='/seek/response/fetch/seek'
+                            respondedMuffIdsFetchUrl='/seek/response/fetch/respondedMuffIdsOfSeek'
+                            seekResponseFetchParam={feedItem.data.id}
+                            seekResponseFetchLimit={3}
+                        />
                     );
                     break;
                 default:
@@ -521,10 +637,10 @@ window.InfiniteFeedApp = React.createClass({
                 <div className="card">
                     <div className="card-content">
                         <button className="btn btn-flat" onClick={e => this.fetchNextReviewBatch()}>
-                            LOAD MORE REVIEWS...
+                            LOAD SOME REVIEWS...
                         </button>
                         <button className="btn btn-flat" onClick={e => this.fetchNextSeekBatch()}>
-                            LOAD MORE SEEKS...
+                            LOAD SOME SEEKS...
                         </button>
                     </div>
                 </div>

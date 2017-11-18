@@ -1,9 +1,6 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.Genre;
-import org.muffin.muffin.beans.Muff;
-import org.muffin.muffin.beans.Seek;
-import org.muffin.muffin.beans.SeekResponse;
+import org.muffin.muffin.beans.*;
 import org.muffin.muffin.daos.SeekDAO;
 import org.muffin.muffin.daos.SeekResponseDAO;
 import org.muffin.muffin.db.DBConfig;
@@ -46,6 +43,22 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
         String oldTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp <= ? ORDER BY timestamp DESC OFFSET ? LIMIT ?;";
         String newTuplesQuery = "SELECT id, muff_id, seek_id, movie_id, text, timestamp FROM seek_response WHERE seek_id = ? AND timestamp > ? ORDER BY timestamp DESC;";
         return get(seekId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery);
+    }
+
+    @Override
+    public List<Integer> getMuffIdsOfAllSeekResponsesOfSeek(int seekId) {
+        List<Integer> muffIds = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement getMuffIds = conn.prepareStatement("SELECT muff_id FROM seek_response WHERE seek_id = ?")) {
+            getMuffIds.setInt(1, seekId);
+            ResultSet rs = getMuffIds.executeQuery();
+            while (rs.next()) {
+                muffIds.add(rs.getInt(1));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return muffIds;
     }
 
     private List<SeekResponse> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
