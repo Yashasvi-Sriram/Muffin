@@ -4,6 +4,8 @@
 1. ResponseWrapper
 1. Jsp tags & EL
 1. Smart feed
+    1. Buffered feed fetch with priority for latest feed
+    1. Automatic periodic check for new Recommendations of seeks
 1. Seek & Response
 1. Design & Aesthetics
 1. Automated suggestions

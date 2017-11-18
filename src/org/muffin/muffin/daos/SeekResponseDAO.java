@@ -13,4 +13,6 @@ public interface SeekResponseDAO {
     public List<SeekResponse> getBySeek(final int seekId, final int offset, final int limit, final Timestamp lastSeen);
 
     public List<Integer> getMuffIdsOfAllSeekResponsesOfSeek(final int seekId);
+
+    public Optional<Boolean> checkForNewResponsesOfSeek(final int seekId, final Timestamp lastSeen);
 }

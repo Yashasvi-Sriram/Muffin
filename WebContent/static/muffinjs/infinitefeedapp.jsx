@@ -228,7 +228,9 @@ let CreateSeekResponseApp = React.createClass({
         $(this.refs.results).hide();
     },
 });
-
+/**
+ * @propFunctions: requestFeedRefresh
+ * */
 let Seek = React.createClass({
     getInitialState: function () {
         return {
@@ -244,13 +246,15 @@ let Seek = React.createClass({
             data: {},
             inSessionMuffId: 0,
             contextPath: '',
+            checkForNewResponseUrl: '',
             respondedMuffIdsFetchUrl: '',
             seekResponseFetchUrl: '',
             seekResponseFetchParam: 0,
             seekResponseFetchLimit: 0,
+            timeIntervalForNewResponseCheck: 5000, // ms
         };
     },
-    refreshLastModified: function () {
+    refreshFromNowTS: function () {
         this.setState({fromTimestamp: fromNow(this.props.data.timestamp)});
     },
     onCreateSeekResponse: function (seekResponse) {
@@ -260,7 +264,7 @@ let Seek = React.createClass({
         });
         $(this.refs.createSeekResponseAppDiv).hide();
     },
-    fetchNextSeekResponseBatch: function (isFirstOne) {
+    fetchNextSeekResponseBatch: function (shouldToastIfNoMoreFeed) {
         let self = this;
         let url = this.props.contextPath + this.props.seekResponseFetchUrl;
         let limit = this.props.seekResponseFetchLimit;
@@ -268,6 +272,7 @@ let Seek = React.createClass({
         let offset = this.state.seekResponseOffset;
         let lastSeen = this.state.seekResponseLastSeen;
         let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
+        $(this.refs.loadMore).prop('disabled', true);
         $.ajax({
             url: url,
             type: 'GET',
@@ -278,6 +283,7 @@ let Seek = React.createClass({
                 lastSeen: lastSeen,
             },
             success: function (r) {
+                $(self.refs.loadMore).prop('disabled', false);
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
@@ -286,7 +292,7 @@ let Seek = React.createClass({
                     let fetchedData = json.data;
                     // no results
                     if (fetchedData.length === 0) {
-                        if (isFirstOne !== true) {
+                        if (shouldToastIfNoMoreFeed !== true) {
                             Materialize.toast('That\'s it', 2000);
                         }
                         return;
@@ -326,11 +332,12 @@ let Seek = React.createClass({
                 }
             },
             error: function (data) {
+                $(self.refs.loadMore).prop('disabled', false);
                 Materialize.toast('Server Error', 2000);
             }
         });
     },
-    fetchAllRespondedMuffIds: function () {
+    checkIfAlreadyResponded: function () {
         let self = this;
         let seekId = this.props.data.id;
         let url = this.props.contextPath + this.props.respondedMuffIdsFetchUrl;
@@ -347,11 +354,45 @@ let Seek = React.createClass({
                 }
                 else {
                     let respondedMuffIds = json.data;
+                    let notYetResponded = true;
                     respondedMuffIds.forEach(muffId => {
                         if (muffId === self.props.inSessionMuffId) {
-                            $(self.refs.createSeekResponseAppDiv).fadeOut(0);
+                            notYetResponded = false;
                         }
                     });
+                    if (notYetResponded) {
+                        $(self.refs.createSeekResponseAppDiv).fadeIn(0);
+                    }
+                }
+            },
+            error: function (data) {
+                Materialize.toast('Server Error', 2000);
+            }
+        });
+    },
+    checkForNewResponses: function () {
+        let self = this;
+        let seekId = this.props.data.id;
+        let lastSeen = this.state.seekResponseLastSeen;
+        let url = this.props.contextPath + this.props.checkForNewResponseUrl;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                seekId: seekId,
+                lastSeen: lastSeen,
+            },
+            success: function (r) {
+                let json = JSON.parse(r);
+                if (json.status === -1) {
+                    Materialize.toast(json.error, 2000);
+                }
+                else {
+                    let newResponsesExist = json.data;
+                    if (newResponsesExist) {
+                        self.fetchNextSeekResponseBatch();
+                        self.props.requestFeedRefresh(self.props.data.id);
+                    }
                 }
             },
             error: function (data) {
@@ -363,7 +404,7 @@ let Seek = React.createClass({
         return (
             <div ref="feedItem">
                 <div className="card seek hoverable blue lighten-5"
-                     onMouseEnter={e => this.refreshLastModified()}>
+                     onMouseEnter={e => this.refreshFromNowTS()}>
                     <div className="card-content">
                         <div>{this.props.data.muff.name} <span
                             className="pink-text">@{this.props.data.muff.handle}</span></div>
@@ -377,7 +418,7 @@ let Seek = React.createClass({
                         <br/>
                         <div className="flow-text">{this.props.data.text}</div>
                     </div>
-                    <div className="card" ref="createSeekResponseAppDiv">
+                    <div className="card" ref="createSeekResponseAppDiv" style={{display: 'none'}}>
                         <div className="card-content" style={{padding: '5px'}}>
                             <CreateSeekResponseApp
                                 contextPath=''
@@ -397,7 +438,8 @@ let Seek = React.createClass({
                         )}
                     </div>
                     <div>
-                        <button className="btn btn-flat right-align" onClick={e => this.fetchNextSeekResponseBatch()}>
+                        <button className="btn btn-flat right-align" ref="loadMore"
+                                onClick={e => this.fetchNextSeekResponseBatch()}>
                             <i className="material-icons">more_horiz</i>
                         </button>
                     </div>
@@ -407,16 +449,24 @@ let Seek = React.createClass({
     },
     componentDidMount: function () {
         $(this.refs.feedItem).fadeOut(0);
-        this.refreshLastModified();
+        // refresh timestamp
+        this.refreshFromNowTS();
+        // decide whether or not to be able to give response
         if (this.props.data.muff.id === this.props.inSessionMuffId) {
             $(this.refs.createSeekResponseAppDiv).fadeOut(0);
+        } else {
+            this.checkIfAlreadyResponded();
         }
-        this.fetchAllRespondedMuffIds();
+        // get first batch
         this.fetchNextSeekResponseBatch(true);
         $(this.refs.feedItem).fadeIn(1000);
+        // start periodic polling
+        setInterval(e => {
+            this.checkForNewResponses();
+        }, this.props.timeIntervalForNewResponseCheck);
     },
     compositionUpdate: function () {
-        this.refreshLastModified();
+        this.refreshFromNowTS();
         $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     }
 });
@@ -427,14 +477,14 @@ let Review = React.createClass({
             fromLastModified: '',
         }
     },
-    refreshLastModified: function () {
+    refreshFromNowTS: function () {
         this.setState({fromLastModified: fromNow(this.props.data.lastModified)});
     },
     render: function () {
         return (
             <div className="card review hoverable" ref="feedItem"
                  style={{backgroundColor: 'whitesmoke'}}
-                 onMouseEnter={e => this.refreshLastModified()}>
+                 onMouseEnter={e => this.refreshFromNowTS()}>
                 <div className="card-content">
                     <div>{this.props.data.muff.name} <span className="pink-text">@{this.props.data.muff.handle}</span>
                     </div>
@@ -448,11 +498,11 @@ let Review = React.createClass({
         );
     },
     componentDidMount: function () {
-        this.refreshLastModified();
+        this.refreshFromNowTS();
         $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     },
     compositionUpdate: function () {
-        this.refreshLastModified();
+        this.refreshFromNowTS();
         $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     }
 });
@@ -601,11 +651,34 @@ window.InfiniteFeedApp = React.createClass({
             }
         });
     },
-    fetchNextReviewBatch: function () {
-        this.fetchNextBatch(TYPES.REVIEW);
-    },
-    fetchNextSeekBatch: function () {
-        this.fetchNextBatch(TYPES.SEEK);
+    requestFeedRefresh: function (type, feedItemId) {
+        let isEnabled = this.props[type + POSTFIXES.PROPS.IS_ENABLED];
+        if (!isEnabled) {
+            Materialize.toast(type + ' feed is disabled', 3000);
+            return;
+        }
+        let hashMapKey = type + POSTFIXES.STATE.FEED_HASH_MAP;
+        this.setState(prevState => {
+            let feed = prevState.feed;
+            let _T_HashMap = prevState[hashMapKey];
+
+            let existingFeedIndex = _T_HashMap[feedItemId];
+            if (existingFeedIndex === feed.length -1) {
+                return {};
+            }
+            // invalidate old one
+            let feedItem = feed.splice(existingFeedIndex, 1)[0];
+            feed.splice(existingFeedIndex, 0, undefined);
+            // add new one at end
+            _T_HashMap[feedItemId] = feed.length;
+            feed.push(feedItem);
+            // return
+            let retObject = {
+                feed: feed,
+            };
+            retObject[hashMapKey] = _T_HashMap;
+            return retObject;
+        });
     },
     render: function () {
         let HTMLFeed = [];
@@ -630,9 +703,11 @@ window.InfiniteFeedApp = React.createClass({
                             contextPath={this.props.contextPath}
                             inSessionMuffId={this.props.inSessionMuffId}
                             seekResponseFetchUrl='/seek/response/fetch/seek'
-                            respondedMuffIdsFetchUrl='/seek/response/fetch/respondedMuffIdsOfSeek'
                             seekResponseFetchParam={feedItem.data.id}
                             seekResponseFetchLimit={3}
+                            respondedMuffIdsFetchUrl='/seek/response/fetch/respondedMuffIdsOfSeek'
+                            requestFeedRefresh={seekId => this.requestFeedRefresh(TYPES.SEEK, seekId)}
+                            checkForNewResponseUrl='/seek/response/check/forNew'
                         />
                     );
                     break;
@@ -648,10 +723,10 @@ window.InfiniteFeedApp = React.createClass({
                 </div>
                 <div className="card">
                     <div className="card-content">
-                        <button className="btn btn-flat" onClick={e => this.fetchNextReviewBatch()}>
+                        <button className="btn btn-flat" onClick={e => this.fetchNextBatch(TYPES.REVIEW)}>
                             LOAD SOME REVIEWS...
                         </button>
-                        <button className="btn btn-flat" onClick={e => this.fetchNextSeekBatch()}>
+                        <button className="btn btn-flat" onClick={e => this.fetchNextBatch(TYPES.SEEK)}>
                             LOAD SOME SEEKS...
                         </button>
                     </div>
@@ -660,7 +735,7 @@ window.InfiniteFeedApp = React.createClass({
         );
     },
     componentDidMount: function () {
-        this.fetchNextReviewBatch();
-        this.fetchNextSeekBatch();
+        this.fetchNextBatch(TYPES.REVIEW);
+        this.fetchNextBatch(TYPES.SEEK);
     },
 });

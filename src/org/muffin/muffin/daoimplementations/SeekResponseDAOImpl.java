@@ -77,6 +77,24 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
         return muffIds;
     }
 
+    @Override
+    public Optional<Boolean> checkForNewResponsesOfSeek(int seekId, Timestamp lastSeen) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement checkForNew = conn.prepareStatement("SELECT count(*) FROM seek_response WHERE seek_id = ? AND timestamp > ?;");
+        ) {
+            checkForNew.setInt(1, seekId);
+            checkForNew.setTimestamp(2, lastSeen);
+            ResultSet rs = checkForNew.executeQuery();
+            if (rs.next()) {
+                return Optional.of(rs.getInt(1) > 0);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
     private List<SeekResponse> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement oldTuplesPS = conn.prepareStatement(oldTuplesQuery);
