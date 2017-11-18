@@ -9,8 +9,20 @@ let SeekResponse = React.createClass({
     render: function () {
         return (
             <div className="collection-item">
-                {this.props.data.text}
-                {this.props.data.movieId}
+                <div className="secondary-content">
+                    <div className="black-text">
+                        {this.props.data.muff.name}
+                    </div>
+                    <div className="pink-text">
+                        @{this.props.data.muff.handle}
+                    </div>
+                </div>
+                <div className="chip">
+                    {this.props.data.movieName}
+                </div>
+                <div>
+                    {this.props.data.text}
+                </div>
             </div>
         );
     }
@@ -350,16 +362,16 @@ let Seek = React.createClass({
     render: function () {
         return (
             <div ref="feedItem">
-                <div className="card seek hoverable pink lighten-5"
+                <div className="card seek hoverable blue lighten-5"
                      onMouseEnter={e => this.refreshLastModified()}>
                     <div className="card-content">
                         <div>{this.props.data.muff.name} <span
                             className="pink-text">@{this.props.data.muff.handle}</span></div>
                         <div className="blue-text">{this.state.fromTimestamp}</div>
                         <br/>
-                        <div ref="genres">Genres: {
+                        <div ref="genres">{
                             this.props.data.genres.map(genre => {
-                                return <span key={genre.id} className="teal white-text badge">{genre.name}</span>
+                                return <span key={genre.id} className="teal white-text  badge">{genre.name}</span>
                             })
                         }</div>
                         <br/>

@@ -11,9 +11,12 @@ import java.util.List;
 @AllArgsConstructor
 public class SeekResponse {
     private int id;
-    private int muffId;
+    @NonNull
+    private Muff muff;
     private int seekId;
     private int movieId;
+    @NonNull
+    private String movieName;
     @NonNull
     private String text;
     private LocalDateTime timestamp;

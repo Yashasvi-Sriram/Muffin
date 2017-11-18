@@ -27,7 +27,6 @@ public class FetchRespondedMuffIdsOfSeek extends EnsuredSessionServlet {
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         int seekId = Integer.parseInt(request.getParameter("seekId"));
         List<Integer> seekResponseMuffIds = seekResponseDAO.getMuffIdsOfAllSeekResponsesOfSeek(seekId);
-        System.out.println(seekResponseMuffIds);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(seekResponseMuffIds, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();
