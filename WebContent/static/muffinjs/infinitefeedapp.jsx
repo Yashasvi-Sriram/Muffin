@@ -45,6 +45,8 @@ let MovieSearchResult = React.createClass({
  * @propFunctions: onCreateSeekResponse
  * */
 let CreateSeekResponseApp = React.createClass({
+    giveSeekResponseLock: false,
+    fetchNextBatchLock: false,
     getInitialState: function () {
         return {
             results: [],
@@ -80,11 +82,16 @@ let CreateSeekResponseApp = React.createClass({
     fetchNextBatch: function (pattern) {
         let self = this;
         let url = this.props.contextPath + this.props.searchUrl;
+        if (this.fetchNextBatchLock) {
+            return;
+        }
+        this.fetchNextBatchLock = true;
         $.ajax({
             url: url,
             type: 'GET',
             data: {pattern: pattern, offset: self.state.offset, limit: self.props.limit},
             success: function (r) {
+                self.fetchNextBatchLock = false;
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
@@ -105,6 +112,7 @@ let CreateSeekResponseApp = React.createClass({
                 }
             },
             error: function (data) {
+                self.fetchNextBatchLock = false;
                 Materialize.toast('Server Error', 2000);
             }
         });
@@ -159,11 +167,16 @@ let CreateSeekResponseApp = React.createClass({
         if (!this.isSeekResponseValid(seekId, movieName, text)) {
             return;
         }
+        if (this.giveSeekResponseLock) {
+            return;
+        }
+        this.giveSeekResponseLock = true;
         $.ajax({
             url: url,
             type: 'GET',
             data: {movieName: movieName, seekId: seekId, text: text},
             success: function (r) {
+                self.giveSeekResponseLock = false;
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
@@ -175,6 +188,7 @@ let CreateSeekResponseApp = React.createClass({
                 }
             },
             error: function (data) {
+                self.giveSeekResponseLock = false;
                 Materialize.toast('Server Error', 2000);
             }
         });
@@ -232,6 +246,8 @@ let CreateSeekResponseApp = React.createClass({
  * @propFunctions: requestFeedRefresh
  * */
 let Seek = React.createClass({
+    seekResponseFetchLock: false,
+    checkForNewResponseLock: false,
     getInitialState: function () {
         return {
             fromTimestamp: '',
@@ -270,6 +286,10 @@ let Seek = React.createClass({
         let lastSeen = this.state.seekResponseLastSeen;
         let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
         $(this.refs.loadMore).prop('disabled', true);
+        if (this.seekResponseFetchLock) {
+            return;
+        }
+        this.seekResponseFetchLock = true;
         $.ajax({
             url: url,
             type: 'GET',
@@ -280,6 +300,7 @@ let Seek = React.createClass({
                 lastSeen: lastSeen,
             },
             success: function (r) {
+                self.seekResponseFetchLock = false;
                 $(self.refs.loadMore).prop('disabled', false);
                 let json = JSON.parse(r);
                 if (json.status === -1) {
@@ -329,6 +350,7 @@ let Seek = React.createClass({
                 }
             },
             error: function (data) {
+                self.seekResponseFetchLock = false;
                 $(self.refs.loadMore).prop('disabled', false);
                 Materialize.toast('Server Error', 2000);
             }
@@ -372,6 +394,10 @@ let Seek = React.createClass({
         let seekId = this.props.data.id;
         let lastSeen = this.state.seekResponseLastSeen;
         let url = this.props.contextPath + this.props.checkForNewResponseUrl;
+        if (this.checkForNewResponseLock) {
+            return;
+        }
+        this.checkForNewResponseLock = true;
         $.ajax({
             url: url,
             type: 'GET',
@@ -380,6 +406,7 @@ let Seek = React.createClass({
                 lastSeen: lastSeen,
             },
             success: function (r) {
+                self.checkForNewResponseLock = false;
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
@@ -393,6 +420,7 @@ let Seek = React.createClass({
                 }
             },
             error: function (data) {
+                self.checkForNewResponseLock = false;
                 Materialize.toast('Server Error', 2000);
             }
         });
@@ -537,6 +565,7 @@ let POSTFIXES = {
  * But it becomes inconsistent when items can be deleted, roughly speaking some items can never be fetched due to offset problems
  * */
 window.InfiniteFeedApp = React.createClass({
+    feedFetchLock: false,
     getInitialState: function () {
         let ts = moment().format('YYYY-MM-DD HH:mm:ss');
         let initialState = {
@@ -589,7 +618,10 @@ window.InfiniteFeedApp = React.createClass({
 
         let hashMapKey = type + POSTFIXES.STATE.FEED_HASH_MAP;
         let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
-
+        if (this.feedFetchLock) {
+            return;
+        }
+        this.feedFetchLock = true;
         $.ajax({
             url: url,
             type: 'GET',
@@ -600,6 +632,7 @@ window.InfiniteFeedApp = React.createClass({
                 lastSeen: lastSeen,
             },
             success: function (r) {
+                self.feedFetchLock = false;
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
@@ -652,6 +685,7 @@ window.InfiniteFeedApp = React.createClass({
                 }
             },
             error: function (data) {
+                self.feedFetchLock = false;
                 Materialize.toast('Server Error', 2000);
             }
         });
