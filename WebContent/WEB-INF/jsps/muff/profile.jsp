@@ -29,7 +29,7 @@
                             contextPath="${pageContext.request.contextPath}"
                             reviewFetchParam={${requestScope.profileMuff.getId()}}
                             reviewFetchUrl="/review/fetch/muff"
-                            seekFetchParam={${sessionScope.get(SessionKeys.MUFF).getId()}}
+                            seekFetchParam={${requestScope.profileMuff.getId()}}
                             seekFetchUrl="/seek/fetch/muff"
                     />, document.getElementById('infinite-feed-app'));
                     ReactDOM.render(<ToggleFollowsApp

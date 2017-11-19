@@ -88,8 +88,8 @@ public class SeekDAOImpl implements SeekDAO {
 
     @Override
     public List<Seek> getByFollowers(int muffId, int offset, int limit, Timestamp lastSeen) {
-        String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
-        String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id1 = ? AND muff.id = follows.id2 AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp DESC;";
+        String oldTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id2 = ? AND muff.id = follows.id1 AND muff.id = seek.muff_id AND seek.timestamp <= ? ORDER BY seek.timestamp DESC OFFSET ? LIMIT ?;";
+        String newTuplesQuery = "SELECT seek.id, muff.id, muff.handle, muff.name, muff.level, muff.joined_on, seek.text, seek.timestamp FROM muff, seek, follows WHERE follows.id2 = ? AND muff.id = follows.id1 AND muff.id = seek.muff_id AND seek.timestamp > ? ORDER BY seek.timestamp DESC;";
         String getGenresQuery = "SELECT genre.id, genre.name FROM seek, seek_genre_r, genre WHERE seek.id = ? AND seek.id = seek_genre_r.seek_id AND seek_genre_r.genre_id = genre.id;";
         return get(muffId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery, getGenresQuery);
     }

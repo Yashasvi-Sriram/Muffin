@@ -258,10 +258,7 @@ let Seek = React.createClass({
         this.setState({fromTimestamp: fromNow(this.props.data.timestamp)});
     },
     onCreateSeekResponse: function (seekResponse) {
-        this.setState(ps => {
-            ps.seekResponses.splice(0, 0, seekResponse);
-            return {seekResponses: ps.seekResponses}
-        });
+        this.fetchNextSeekResponseBatch();
         $(this.refs.createSeekResponseAppDiv).hide();
     },
     fetchNextSeekResponseBatch: function (shouldToastIfNoMoreFeed) {
@@ -401,6 +398,19 @@ let Seek = React.createClass({
         });
     },
     render: function () {
+        let responses = [];
+        for (let i = 0; i < this.state.seekResponses.length; i++) {
+            let response = this.state.seekResponses[i];
+            if (response === undefined) {
+                continue;
+            }
+            responses.push(
+                <SeekResponse
+                    key={response.id}
+                    data={response}
+                />
+            );
+        }
         return (
             <div ref="feedItem">
                 <div className="card seek hoverable blue lighten-5"
@@ -430,12 +440,7 @@ let Seek = React.createClass({
                         </div>
                     </div>
                     <div className="collection" style={{margin: '0px'}}>
-                        {this.state.seekResponses.map(response =>
-                            <SeekResponse
-                                key={response.id}
-                                data={response}
-                            />
-                        )}
+                        {responses}
                     </div>
                     <div>
                         <button className="btn btn-flat right-align" ref="loadMore"
