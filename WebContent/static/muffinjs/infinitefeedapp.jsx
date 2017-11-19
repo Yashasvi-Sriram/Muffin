@@ -275,6 +275,7 @@ let Seek = React.createClass({
     },
     onCreateSeekResponse: function (seekResponse) {
         this.fetchNextSeekResponseBatch();
+        this.props.requestFeedRefresh(self.props.data.id);
         $(this.refs.createSeekResponseAppDiv).hide();
     },
     fetchNextSeekResponseBatch: function (shouldToastIfNoMoreFeed) {
