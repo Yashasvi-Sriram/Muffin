@@ -16,4 +16,3 @@ public interface TheatreDAO {
 
     public boolean delete(final int theatreId, final int cinemaBuildingOwnerId);
 }
-
