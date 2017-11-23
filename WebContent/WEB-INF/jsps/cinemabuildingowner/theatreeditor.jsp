@@ -21,16 +21,23 @@
                                 inReadMode: true,
                             }
                         },
-                        readModeRender: function () {
-                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/showeditor?theatreId=" + this.props.id;
+                        render: function () {
                             return (
                                     <tr title={this.props.screenNo}>
-                                        <td>{this.props.screenNo}</td>
+                                        <td><span className="flow-text">{this.props.screenNo}</span></td>
                                         <td>
-                                            <a href={url} type="submit" value={this.props.id}
-                                               title="Shows present"
+                                            <a href={"${pageContext.request.contextPath}/cinemabuildingowner/theatreviewer?cinemaBuildingId=${requestScope.cinemaBuilding.getId()}&theatreId=" + this.props.id + "&screenNo=" + this.props.screenNo}
+                                               title="Seat Layout"
+                                               className="btn-floating waves-effect waves-light green">
+                                                <i className="material-icons">apps</i>
+                                            </a>
+                                        </td>
+                                        <td>
+                                            <a href={"${pageContext.request.contextPath}/cinemabuildingowner/showeditor?theatreId=" + this.props.id}
+                                               title="Edit Shows"
                                                className="btn-floating waves-effect waves-light blue">
-                                                <i className="material-icons">local_movies</i></a>
+                                                <i className="material-icons">local_movies</i>
+                                            </a>
                                         </td>
                                         <td title="Delete">
                                             <button
@@ -43,16 +50,11 @@
                                         </td>
                                     </tr>
                             );
-                        },
-
-                        render: function () {
-                            return this.readModeRender();
                         }
                     });
 
                     let TheatreList = React.createClass({
                         getInitialState: function () {
-
                             return {
                                 cinemaBuildingId: ${requestScope.cinemaBuilding.getId()},
                                 theatres: [
@@ -103,11 +105,12 @@
                                         <tr>
                                             <th>Screen No</th>
                                             <th></th>
+                                            <th></th>
                                             <th>
                                                 <a href="${pageContext.request.contextPath}/cinemabuildingowner/theatrecreator?cinemaBuildingId=${requestScope.cinemaBuilding.getId()}"
                                                    className="btn-floating waves-effect waves-light green">
-                                                <i className="material-icons">add</i>
-                                            </a>
+                                                    <i className="material-icons">add</i>
+                                                </a>
                                             </th>
                                         </tr>
                                         </thead>

@@ -1,13 +1,14 @@
 package org.muffin.muffin.daoimplementations;
 
 import javafx.util.Pair;
+import org.muffin.muffin.beans.Actor;
+import org.muffin.muffin.beans.Seat;
 import org.muffin.muffin.daos.SeatDAO;
 import org.muffin.muffin.db.DBConfig;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
+import java.sql.*;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class SeatDAOImpl implements SeatDAO {
@@ -28,5 +29,28 @@ public class SeatDAOImpl implements SeatDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public List<Seat> getSeatsOfTheatre(int theatreID) {
+        List<Seat> seats = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, theatre_id, x, y FROM seat WHERE theatre_id = ?")) {
+            preparedStmt.setInt(1, theatreID);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                Seat seat = new Seat(
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getInt(4)
+                );
+                seats.add(seat);
+            }
+            return seats;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return seats;
+        }
     }
 }
