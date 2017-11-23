@@ -17,6 +17,7 @@ seek response
 1. improve db queries, do indexing
 
 1. booking
+    1. theatre creation
 1. batch commit for theatre creation
 1. begin commit for booking seats
 

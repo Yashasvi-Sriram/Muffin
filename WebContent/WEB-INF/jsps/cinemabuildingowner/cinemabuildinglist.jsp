@@ -28,7 +28,7 @@
                     let CinemaBuildingItem = React.createClass({
 
                         render: function () {
-                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/theatredetail?cinemaBuildingId=" + this.props.id;
+                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/theatreeditor?cinemaBuildingId=" + this.props.id;
                             return (
                                     <tr title={this.props.name}>
                                         <td>{truncate(this.props.name, 25)}</td>

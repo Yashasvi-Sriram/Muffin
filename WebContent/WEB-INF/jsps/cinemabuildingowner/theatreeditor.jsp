@@ -12,29 +12,6 @@
                     name="inSessionCinemaBuildingOwnerId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
             <jsp:body>
                 <script type="text/babel">
-                    let truncate = function (string, maxLength) {
-                        let label;
-                        if (string.length > maxLength) {
-                            label = string.substring(0, maxLength) + '...';
-                        }
-                        else {
-                            label = string;
-                        }
-                        return label;
-                    };
-
-                    let isTheatreValid = function (screenNo) {
-
-                        if (screenNo === ''
-                            || isNaN(Number(screenNo))) {
-                            Materialize.toast('Invalid Screen Number!', 3000);
-                            return false;
-                        }
-
-                        return true;
-                    };
-
-
                     /**
                      * @propFunctions: onDeleteClick
                      * */
@@ -46,7 +23,7 @@
                             }
                         },
                         readModeRender: function () {
-                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/showdetail?theatreId=" + this.props.id;
+                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/showeditor?theatreId=" + this.props.id;
 
                             return (
                                     <tr title={this.props.screenNo}>
@@ -80,7 +57,7 @@
                         }
                     });
 
-                    let TheatreEditor = React.createClass({
+                    let TheatreList = React.createClass({
                         getInitialState: function () {
 
                             return {
@@ -96,40 +73,6 @@
                                     </jstl:forEach>
                                 ],
                             }
-                        },
-                        createTheatre: function () {
-                            let self = this;
-                            // validation
-                            if (!isTheatreValid(this.refs.screenNo.value)) {
-                                return;
-                            }
-                            // ajax call
-
-                            $.ajax({
-                                url: '${pageContext.request.contextPath}/theatre/create',
-                                type: 'GET',
-                                data: {
-                                    cinemaBuildingId: this.state.cinemaBuildingId,
-                                    screenNo: this.refs.screenNo.value
-                                },
-                                success: function (r) {
-                                    let json = JSON.parse(r);
-                                    if (json.status === -1) {
-                                        Materialize.toast(json.error, 2000);
-                                    }
-                                    else {
-                                        let data = json.data;
-                                        self.setState((prevState, props) => {
-                                            prevState.theatres.push(data);
-                                            return prevState;
-                                        });
-                                        $(self.refs.createTheatreForm).find('input').val('');
-                                    }
-                                },
-                                error: function (data) {
-                                    Materialize.toast('Server Error', 2000);
-                                }
-                            });
                         },
                         deleteTheatre: function (id) {
                             let self = this;
@@ -166,33 +109,9 @@
                                         <thead>
                                         <tr>
                                             <th>Screen No</th>
-
-
                                         </tr>
                                         </thead>
                                         <tbody>
-                                        <tr className="create-theatre-form"
-                                            ref="createTheatreForm">
-
-                                            <td>
-                                                <input type="number"
-                                                       ref="screenNo"
-                                                       name="screenNo"
-                                                       placeholder="Screen Number"
-                                                       defaultValue=""/>
-                                            </td>
-                                            <td>
-                                            </td>
-
-                                            <td>
-                                            </td>
-                                            <td>
-                                                <button onClick={this.createTheatre}
-                                                        className="btn-floating waves-effect waves-light green">
-                                                    <i className="material-icons">add</i>
-                                                </button>
-                                            </td>
-                                        </tr>
                                         {
                                             this.state.theatres.map(m => {
                                                 return <TheatreItem key={m.id}
@@ -208,7 +127,7 @@
                         }
                     });
 
-                    ReactDOM.render(<TheatreEditor/>, document.getElementById('app'));
+                    ReactDOM.render(<TheatreList/>, document.getElementById('app'));
                 </script>
                 <div class="container" style="min-height: 100vh">
                     <h1>${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</h1>

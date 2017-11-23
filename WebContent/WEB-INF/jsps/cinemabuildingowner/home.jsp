@@ -13,7 +13,7 @@
                 <div class="container" style="min-height: 100vh">
                     <h1>Hello, ${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getName()}</h1>
                     <div class="collection">
-                        <a href="${pageContext.request.contextPath}/cinemabuildingowner/buildinglist"
+                        <a href="${pageContext.request.contextPath}/cinemabuildingowner/cinemabuildinglist"
                            class="collection-item">Your Cinemas</a>
                     </div>
                 </div>

@@ -21,8 +21,8 @@ import java.util.List;
  * doGetWithSession:  sends all buildings of cinema_building_owner
  * doPostWithSession: same as get
  */
-@WebServlet("/cinemabuildingowner/buildinglist")
-public class BuildingList extends CinemaBuildingOwnerEnsuredSessionServlet {
+@WebServlet("/cinemabuildingowner/cinemabuildinglist")
+public class CinemaBuildingList extends CinemaBuildingOwnerEnsuredSessionServlet {
     private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
 
     @Override

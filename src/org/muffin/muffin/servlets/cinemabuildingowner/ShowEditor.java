@@ -23,8 +23,8 @@ import java.util.Optional;
  * doGetWithSession:  sends all shows of theatre
  * doPostWithSession: same as get
  */
-@WebServlet("/cinemabuildingowner/showdetail")
-public class ShowDetail extends CinemaBuildingOwnerEnsuredSessionServlet {
+@WebServlet("/cinemabuildingowner/showeditor")
+public class ShowEditor extends CinemaBuildingOwnerEnsuredSessionServlet {
     private ShowDAO showDAO = new ShowDAOImpl();
     private TheatreDAO theatreDAO = new TheatreDAOImpl();
 
@@ -43,7 +43,7 @@ public class ShowDetail extends CinemaBuildingOwnerEnsuredSessionServlet {
 
         request.setAttribute("theatre", theatreOpt.get());
         request.setAttribute("showList", showList);
-        request.getRequestDispatcher("/WEB-INF/jsps/cinemabuildingowner/showdetail.jsp").include(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsps/cinemabuildingowner/showeditor.jsp").include(request, response);
     }
 
     @Override
