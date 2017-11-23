@@ -3,7 +3,8 @@
 <%@taglib prefix="jstl" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@taglib prefix="m" tagdir="/WEB-INF/tags" %>
 <m:base>
-    <jsp:attribute name="title">${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</jsp:attribute>
+    <jsp:attribute
+            name="title">${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</jsp:attribute>
     <jsp:body>
         <m:insessioncinemabuildingownercommons>
             <jsp:attribute name="contextPath">${pageContext.request.contextPath}</jsp:attribute>
@@ -45,17 +46,22 @@
                             }
                         },
                         readModeRender: function () {
-
+                            let url = "${pageContext.request.contextPath}/cinemabuildingowner/showdetail?theatreId=" + this.props.id;
 
                             return (
                                     <tr title={this.props.screenNo}>
-
 
                                         <td>{this.props.screenNo}</td>
 
                                         <td>
                                         </td>
                                         <td>
+                                            <a href={url} type="submit" value={this.props.id}
+                                               title="Shows present"
+                                               className="btn-floating waves-effect waves-light blue">
+                                                <i className="material-icons">local_movies</i></a>
+                                        </td>
+                                        <td title="Delete">
                                             <a href="#"
                                                onClick={(e) => {
                                                    this.props.onDeleteClick(this.props.id)
@@ -102,7 +108,10 @@
                             $.ajax({
                                 url: '${pageContext.request.contextPath}/theatre/create',
                                 type: 'GET',
-                                data: {cinemaBuildingId: this.state.cinemaBuildingId, screenNo: this.refs.screenNo.value},
+                                data: {
+                                    cinemaBuildingId: this.state.cinemaBuildingId,
+                                    screenNo: this.refs.screenNo.value
+                                },
                                 success: function (r) {
                                     let json = JSON.parse(r);
                                     if (json.status === -1) {
@@ -172,7 +181,8 @@
                                                        placeholder="Screen Number"
                                                        defaultValue=""/>
                                             </td>
-
+                                            <td>
+                                            </td>
 
                                             <td>
                                             </td>

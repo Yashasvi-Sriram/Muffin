@@ -49,7 +49,26 @@ public class TheatreDAOImpl implements TheatreDAO {
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,cinema_building_id,screen_no FROM theatre WHERE cinema_building_id = ? and screen_no = ?");) {
             preparedStmt.setInt(1, cinemaBuildingId);
             preparedStmt.setInt(2, screenNo);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                Theatre theatre = new Theatre(result.getInt(1), result.getInt(2), result.getInt(3));
+                return Optional.of(theatre);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
 
+    }
+
+    @Override
+    public Optional<Theatre> getByOwner(int theatreId, int cinemaBuildingOwnerId) {
+
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT theatre.id,cinema_building_id,screen_no FROM theatre,cinema_building WHERE theatre.id = ? AND theatre.cinema_building_id = cinema_building.id AND cinema_building.owner_id = ?");) {
+            preparedStmt.setInt(2, cinemaBuildingOwnerId);
+            preparedStmt.setInt(1, theatreId);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
                 Theatre theatre = new Theatre(result.getInt(1), result.getInt(2), result.getInt(3));
