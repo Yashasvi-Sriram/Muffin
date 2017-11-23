@@ -14,7 +14,7 @@ public class MuffDAOImpl implements MuffDAO {
     @Override
     public Optional<Muff> create(String handle, String name, String password) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?) RETURNING  id, handle, name, level, joined_on;");
+             PreparedStatement createMuff = conn.prepareStatement("INSERT INTO muff(handle, name) VALUES (?, ?) RETURNING  id, handle, name, no_approvals, joined_on;");
              PreparedStatement createMuffPassword = conn.prepareStatement("INSERT INTO muff_password(id, password) VALUES (?, ?);");
              PreparedStatement createMuffSelfFollow = conn.prepareStatement("INSERT INTO follows(id1, id2) VALUES (?, ?);");) {
             // createMuff
@@ -63,7 +63,7 @@ public class MuffDAOImpl implements MuffDAO {
     @Override
     public Optional<Muff> get(String handle) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE handle = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on FROM muff WHERE handle = ?")) {
             preparedStmt.setString(1, handle);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
@@ -84,7 +84,7 @@ public class MuffDAOImpl implements MuffDAO {
     @Override
     public Optional<Muff> get(int id) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on FROM muff WHERE id = ?")) {
             preparedStmt.setInt(1, id);
             ResultSet result = preparedStmt.executeQuery();
             if (result.next()) {
@@ -106,7 +106,7 @@ public class MuffDAOImpl implements MuffDAO {
     public List<Muff> search(String searchKey, final int offset, final int limit) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM muff WHERE name ILIKE ? OR handle ILIKE ? ORDER BY handle OFFSET ? LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on FROM muff WHERE name ILIKE ? OR handle ILIKE ? ORDER BY handle OFFSET ? LIMIT ?")) {
             preparedStmt.setString(1, "%" + searchKey + "%");
             preparedStmt.setString(2, "%" + searchKey + "%");
             preparedStmt.setInt(3, offset);
@@ -131,7 +131,7 @@ public class MuffDAOImpl implements MuffDAO {
     public List<Muff> getFollowees(int muffId) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE follows.id1 = ?  AND follows.id2 = muff.id")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on FROM follows,muff WHERE follows.id1 = ?  AND follows.id2 = muff.id")) {
             preparedStmt.setInt(1, muffId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
@@ -153,7 +153,7 @@ public class MuffDAOImpl implements MuffDAO {
     public List<Muff> getFollowers(int muffId) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, level, joined_on FROM follows,muff WHERE follows.id1 = muff.id  AND follows.id2 = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on FROM follows,muff WHERE follows.id1 = muff.id  AND follows.id2 = ?")) {
             preparedStmt.setInt(1, muffId);
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {

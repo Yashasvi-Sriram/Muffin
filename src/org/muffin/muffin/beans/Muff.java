@@ -14,7 +14,7 @@ public class Muff {
     private String handle;
     @NonNull
     private String name;
-    private int level;
+    private int noApprovals;
     @NonNull
     private LocalDateTime joinedOn;
 }

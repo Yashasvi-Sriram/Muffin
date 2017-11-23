@@ -33,7 +33,7 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public Optional<Review> get(int movieId, int muffId) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on  FROM review, movie, muff WHERE movie_id = ? AND muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id;")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.no_approvals, muff.joined_on  FROM review, movie, muff WHERE movie_id = ? AND muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id;")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setInt(2, muffId);
             ResultSet result = preparedStmt.executeQuery();
@@ -62,22 +62,22 @@ public class ReviewDAOImpl implements ReviewDAO {
     @Override
     public List<Review> getByMovie(int movieId, int offset, int limit, Timestamp lastSeen) {
         return get(movieId, offset, limit, lastSeen,
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp <= ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?",
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp > ? ORDER BY review.timestamp DESC ");
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.no_approvals, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp <= ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?",
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.no_approvals, muff.joined_on FROM review, movie, muff WHERE movie_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp > ? ORDER BY review.timestamp DESC ");
     }
 
     @Override
     public List<Review> getByMuff(int muffId, int offset, int limit, final Timestamp lastSeen) {
         return get(muffId, offset, limit, lastSeen,
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp <= ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?",
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.level, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp > ? ORDER BY review.timestamp DESC ");
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.no_approvals, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp <= ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?",
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp, movie.id, movie.name,  muff.id,  muff.handle, muff.name, muff.no_approvals, muff.joined_on FROM review, movie, muff WHERE muff_id = ? AND review.movie_id = movie.id AND review.muff_id = muff.id AND review.timestamp > ? ORDER BY review.timestamp DESC ");
     }
 
     @Override
     public List<Review> getByFollowers(int muffId, int offset, int limit, Timestamp lastSeen) {
         return get(muffId, offset, limit, lastSeen,
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.level,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp <=  ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?;",
-                "SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.level,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp >  ? ORDER BY review.timestamp DESC ;");
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.no_approvals,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp <=  ? ORDER BY review.timestamp DESC OFFSET ? LIMIT ?;",
+                "SELECT  review.id,  review.rating,  review.text,  review.timestamp,  movie.id,  movie.name,  muff.id,  muff.handle,  muff.name,  muff.no_approvals,  muff.joined_on FROM review, movie, follows, muff WHERE follows.id1 = ? AND review.movie_id = movie.id AND review.muff_id = follows.id2 AND muff.id = follows.id2 AND review.timestamp >  ? ORDER BY review.timestamp DESC ;");
     }
 
     @Override

@@ -60,11 +60,11 @@ DROP TABLE IF EXISTS valid_region;
 -- now it can be easily changed without complex update chains or much db time
 -- handle update can be provided
 CREATE TABLE muff (
-  id        SERIAL,
-  handle    VARCHAR(50) NOT NULL,
-  name      VARCHAR(50) NOT NULL,
-  level     INT         NOT NULL DEFAULT 0,
-  joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id           SERIAL,
+  handle       VARCHAR(50) NOT NULL,
+  name         VARCHAR(50) NOT NULL,
+  no_approvals INT         NOT NULL DEFAULT 0,
+  joined_on    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );

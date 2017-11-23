@@ -267,7 +267,7 @@ let Seek = React.createClass({
             seekResponseFetchUrl: '',
             seekResponseFetchParam: 0,
             seekResponseFetchLimit: 0,
-            timeIntervalForNewResponseCheck: 5000, // ms
+            timeIntervalForNewResponseCheck: 10000, // ms
         };
     },
     refreshFromNowTS: function () {
@@ -275,7 +275,6 @@ let Seek = React.createClass({
     },
     onCreateSeekResponse: function (seekResponse) {
         this.fetchNextSeekResponseBatch();
-        this.props.requestFeedRefresh(self.props.data.id);
         $(this.refs.createSeekResponseAppDiv).hide();
     },
     fetchNextSeekResponseBatch: function (shouldToastIfNoMoreFeed) {
@@ -442,7 +441,7 @@ let Seek = React.createClass({
         }
         return (
             <div ref="feedItem">
-                <div className="card seek hoverable blue lighten-5"
+                <div className="card seek hoverable yellow lighten-4"
                      onMouseEnter={e => this.refreshFromNowTS()}>
                     <div className="card-content">
                         <div>{this.props.data.muff.name} <span
@@ -494,15 +493,13 @@ let Seek = React.createClass({
         // get first batch
         this.fetchNextSeekResponseBatch(true);
         $(this.refs.feedItem).fadeIn(1000);
-        // start periodic polling
-        setInterval(e => {
-            this.checkForNewResponses();
-        }, this.props.timeIntervalForNewResponseCheck);
+        // start periodic polling with a random delay to prevent traffic bursts
+        setTimeout(p => {
+            setInterval(e => {
+                this.checkForNewResponses();
+            }, this.props.timeIntervalForNewResponseCheck);
+        }, Math.random() * this.props.timeIntervalForNewResponseCheck);
     },
-    compositionUpdate: function () {
-        this.refreshFromNowTS();
-        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
-    }
 });
 
 let Review = React.createClass({
@@ -535,10 +532,6 @@ let Review = React.createClass({
         this.refreshFromNowTS();
         $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
     },
-    compositionUpdate: function () {
-        this.refreshFromNowTS();
-        $(this.refs.feedItem).fadeOut(0).fadeIn(1000);
-    }
 });
 
 let TYPES = {
@@ -602,7 +595,6 @@ window.InfiniteFeedApp = React.createClass({
     fetchNextBatch: function (type) {
         let isEnabled = this.props[type + POSTFIXES.PROPS.IS_ENABLED];
         if (!isEnabled) {
-            Materialize.toast(type + ' feed is disabled', 3000);
             return;
         }
         let self = this;
@@ -703,7 +695,7 @@ window.InfiniteFeedApp = React.createClass({
             let _T_HashMap = prevState[hashMapKey];
 
             let existingFeedIndex = _T_HashMap[feedItemId];
-            if (existingFeedIndex === feed.length -1) {
+            if (existingFeedIndex === feed.length - 1) {
                 return {};
             }
             // invalidate old one

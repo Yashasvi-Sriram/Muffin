@@ -6,9 +6,9 @@ let MuffButterSearchResult = React.createClass({
     },
     render: function () {
         return (
-            <a href={this.props.contextPath + '/muff/profile?muffId=' + this.props.id} className="collection-item">
-                <div>{this.props.name}</div>
-                <div className="pink-text">{this.props.handle}</div>
+            <a href={this.props.contextPath + '/muff/profile?muffId=' + this.props.data.id} className="collection-item">
+                <div>{this.props.data.name}</div>
+                <div className="pink-text">{this.props.data.handle}</div>
             </a>
         );
     }
@@ -22,8 +22,9 @@ let MovieButterSearchResult = React.createClass({
     },
     render: function () {
         return (
-            <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.id} className="collection-item">
-                <div>{this.props.name}</div>
+            <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.data.id}
+               className="collection-item">
+                <div>{this.props.data.name}</div>
             </a>
         );
     }
@@ -37,8 +38,9 @@ let ActorButterSearchResult = React.createClass({
     },
     render: function () {
         return (
-            <a href={this.props.contextPath + '/actor/profile?actorId=' + this.props.id} className="collection-item">
-                <div>{this.props.name}</div>
+            <a href={this.props.contextPath + '/actor/profile?actorId=' + this.props.data.id}
+               className="collection-item">
+                <div>{this.props.data.name}</div>
             </a>
         );
     }
@@ -205,31 +207,23 @@ window.ButterSearchApp = React.createClass({
                 results = this.state.muffs.map(muff => {
                     return <MuffButterSearchResult
                         key={muff.id}
-                        id={muff.id}
-                        contextPath={this.state.contextPath}
-                        name={muff.name}
-                        handle={muff.handle}
-                        level={muff.level}
+                        data={muff}
                     />;
                 });
                 break;
             case this.MODE.ACTOR:
-                results = this.state.actors.map(muff => {
+                results = this.state.actors.map(actors => {
                     return <ActorButterSearchResult
-                        key={muff.id}
-                        id={muff.id}
-                        name={muff.name}
-                        contextPath={this.state.contextPath}
+                        key={actors.id}
+                        data={actors}
                     />;
                 });
                 break;
             case this.MODE.MOVIE:
-                results = this.state.movies.map(muff => {
+                results = this.state.movies.map(movies => {
                     return <MovieButterSearchResult
-                        key={muff.id}
-                        id={muff.id}
-                        name={muff.name}
-                        contextPath={this.state.contextPath}
+                        key={movies.id}
+                        data={movies}
                     />;
                 });
                 break;
