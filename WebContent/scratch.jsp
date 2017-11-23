@@ -7,7 +7,7 @@
     <jsp:body>
         <div id="app"></div>
         <script type="text/babel"
-                src="${pageContext.request.contextPath}/static/muffinjs/seatingcreatorapp.jsx"></script>
+                src="${pageContext.request.contextPath}/static/muffinjs/threatrecreaterapp.jsx"></script>
         <script type="text/babel">
             ReactDOM.render(<SeatingCreatorApp
             />, document.getElementById('app'));

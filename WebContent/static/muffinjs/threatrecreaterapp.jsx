@@ -104,6 +104,7 @@ window.SeatingCreatorApp = React.createClass({
     },
     getDefaultProps: function () {
         return {
+            submitUrl: '',
             MAX_X: 50,
             MAX_Y: 50,
             MIN_X: 4,
@@ -136,6 +137,20 @@ window.SeatingCreatorApp = React.createClass({
             return {seats: ps.seats}
         });
     },
+    submit: function () {
+        let createdSeats = [];
+        let dimX = this.state.seats[0].length;
+        let dimY = this.state.seats.length;
+        for (let y = 0; y < dimY; y++) {
+            for (let x = 0; x < dimX; x++) {
+                let seat = this.state.seats[y][x];
+                if (seat === true) {
+                    createdSeats.push(x);
+                    createdSeats.push(y);
+                }
+            }
+        }
+    },
     render: function () {
         let dimX = this.state.seats[0].length;
         let dimY = this.state.seats.length;
@@ -150,8 +165,7 @@ window.SeatingCreatorApp = React.createClass({
                        key={x + 'x'}/>
             );
         }
-        for (let y = 0; y < this.state.seats.length; y++) {
-            let ithRow = this.state.seats[y];
+        for (let y = 0; y < dimY; y++) {
             indexedSeatsHTML.push([]);
             indexedSeatsHTML[0].push(
                 <Index x={0}
@@ -159,7 +173,7 @@ window.SeatingCreatorApp = React.createClass({
                        i={y + 1}
                        key={y + 'y'}/>
             );
-            for (let x = 0; x < ithRow.length; x++) {
+            for (let x = 0; x < dimX; x++) {
                 let seat = this.state.seats[y][x];
                 indexedSeatsHTML[y].push(
                     <Seat x={x}
@@ -173,15 +187,24 @@ window.SeatingCreatorApp = React.createClass({
         return (
             <div>
                 <div className="row">
-                    <div className="input-field col s4">
+                    <div className="input-field col s3">
+                        <input placeholder="Screen Number" type="number" ref="screenNo"
+                               defaultValue={0}/>
+                    </div>
+                    <div className="input-field col s3">
                         <input placeholder="rows" type="number" ref="dimY"
                                onChange={this.onDimensionChange}
                                defaultValue={dimY}/>
                     </div>
-                    <div className="input-field col s4">
+                    <div className="input-field col s3">
                         <input placeholder="columns" type="number" ref="dimX"
                                onChange={this.onDimensionChange}
                                defaultValue={dimX}/>
+                    </div>
+                    <div className="col s3">
+                        <button className="btn btn-flat pink white-text" onClick={this.submit}>
+                            Create
+                        </button>
                     </div>
                 </div>
                 <div className="screen flow-text center-align grey white-text" style={{margin: '10px'}}>
