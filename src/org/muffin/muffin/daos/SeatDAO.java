@@ -1,7 +1,10 @@
 package org.muffin.muffin.daos;
 
-import java.util.List;
+import javafx.util.Pair;
+import lombok.NonNull;
+
+import java.util.Set;
 
 public interface SeatDAO {
-    public boolean createList(int theatreID, List<Integer> x, List<Integer> y);
+    public boolean createSeatsOfTheatre(int theatreID, @NonNull Set<Pair<Integer, Integer>> seatsXY);
 }
