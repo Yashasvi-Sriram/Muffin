@@ -1,9 +1,8 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.Genre;
-import org.muffin.muffin.beans.Movie;
-import org.muffin.muffin.beans.Show;
-import org.muffin.muffin.beans.Showtime;
+import org.muffin.muffin.beans.*;
+import org.muffin.muffin.daos.CinemaBuildingDAO;
+import org.muffin.muffin.daos.GenreDAO;
 import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.daos.ShowDAO;
 import org.muffin.muffin.db.DBConfig;
@@ -17,6 +16,10 @@ import java.time.format.DateTimeFormatter;
 public class ShowDAOImpl implements ShowDAO {
     private String toTSRange(Showtime showtime) {
         return "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
+    }
+
+    private String toTSUpperInfiniteRange(LocalDateTime currentTimeStamp) {
+        return "[" + currentTimeStamp.toString() + "," + "" + "]";
     }
 
     @Override
@@ -58,6 +61,39 @@ public class ShowDAOImpl implements ShowDAO {
                 LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
                 Showtime showtime1 = new Showtime(startTime, endTime);
                 MovieDAO movieDAO = new MovieDAOImpl();
+                Optional<Movie> movieOpt = movieDAO.get(resultSet.getInt(3));
+                if (movieOpt.isPresent()) {
+                    Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movieOpt.get(), showtime1);
+                    return Optional.of(show);
+                }
+                return Optional.empty();
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+
+    }
+
+    @Override
+    public Optional<Show> getShow(int showId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE show.id = ?")) {
+            preparedStmt.setInt(1, showId);
+
+            ResultSet resultSet = preparedStmt.executeQuery();
+            if (resultSet.next()) {
+
+                StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
+                String initial = tokens.nextToken();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                LocalDateTime startTime = LocalDateTime.parse(initial.substring(2, initial.length() - 1), formatter);
+                String helper = tokens.nextToken();
+                helper = helper.substring(1, helper.length() - 2);
+                LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
+                MovieDAO movieDAO = new MovieDAOImpl();
+                Showtime showtime1 = new Showtime(startTime, endTime);
                 Optional<Movie> movieOpt = movieDAO.get(resultSet.getInt(3));
                 if (movieOpt.isPresent()) {
                     Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movieOpt.get(), showtime1);
@@ -122,6 +158,64 @@ public class ShowDAOImpl implements ShowDAO {
             e.printStackTrace();
             return false;
         }
+
+    }
+
+    @Override
+    public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStamp) {
+        List<Movie> movies = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie WHERE movie.name ILIKE ? AND movie.id in (SELECT show.movie_id from show WHERE (show.during && ?::tsrange) ) ORDER BY movie.name OFFSET ? LIMIT ?")) {
+            preparedStmt.setString(1, "%" + pattern + "%");
+            preparedStmt.setString(2, toTSUpperInfiniteRange(currentTimeStamp));
+            preparedStmt.setInt(3, offset);
+            preparedStmt.setInt(4, limit);
+            ResultSet rs = preparedStmt.executeQuery();
+            while (rs.next()) {
+                int movieId = rs.getInt(1);
+                GenreDAO genreDAO = new GenreDAOImpl();
+                List<Genre> genres = genreDAO.getByMovie(movieId);
+                Movie movie = new Movie(movieId, rs.getInt(2), rs.getString(3), rs.getInt(4), genres);
+                movies.add(movie);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return movies;
+    }
+
+    @Override
+    public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, LocalDateTime currentTimeStamp) {
+
+        Map<CinemaBuilding, List<Show>> shows = new HashMap<>();
+        CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange)")) {
+            preparedStmt.setInt(1, movieId);
+            preparedStmt.setString(2, city);
+            preparedStmt.setString(3, state);
+            preparedStmt.setString(4, country);
+            preparedStmt.setString(5, toTSUpperInfiniteRange(currentTimeStamp));
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                CinemaBuilding cinemaBuilding = cinemaBuildingDAO.get(resultSet.getInt(1)).get();
+                Show show = getShow(resultSet.getInt(2)).get();
+
+                if (shows.containsKey(cinemaBuilding)) {
+                    shows.get(cinemaBuilding).add(show);
+
+                } else {
+                    List<Show> showList = new ArrayList<>();
+                    showList.add(show);
+                    shows.put(cinemaBuilding, showList);
+                }
+
+
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return shows;
 
     }
 }

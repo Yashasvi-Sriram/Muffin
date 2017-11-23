@@ -155,6 +155,13 @@
         </a>
     </li>
     <li>
+        <a href="<jsp:invoke fragment="contextPath"/>/show/book"
+           title="Book Tickets">
+            <i class="material-icons">book</i>
+            Book Tickets
+        </a>
+    </li>
+    <li>
         <a href="<jsp:invoke fragment="contextPath"/>/muff/logout"
            title="Logout">
             <i class="material-icons">power_settings_new</i>
