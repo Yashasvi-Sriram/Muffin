@@ -58,8 +58,8 @@ let CreateSeekResponseApp = React.createClass({
             limit: 5,
             seekId: undefined,
             contextPath: '',
-            searchUrl: '',
-            createSeekResponseUrl: '',
+            searchUrl: '/movie/search',
+            createSeekResponseUrl: '/seek/response/create',
         }
     },
     _resetOffset: function () {
@@ -243,7 +243,7 @@ let CreateSeekResponseApp = React.createClass({
     },
 });
 /**
- * @propFunctions: requestFeedRefresh
+ * @propFunctions: requestGoToBottom
  * */
 let Seek = React.createClass({
     seekResponseFetchLock: false,
@@ -262,9 +262,9 @@ let Seek = React.createClass({
             data: {},
             inSessionMuffId: 0,
             contextPath: '',
-            checkForNewResponseUrl: '',
-            respondedMuffIdsFetchUrl: '',
-            seekResponseFetchUrl: '',
+            checkForNewResponseUrl: '/seek/response/check/forNew',
+            respondedMuffIdsFetchUrl: '/seek/response/fetch/respondedMuffIdsOfSeek',
+            seekResponseFetchUrl: '/seek/response/fetch/seek',
             seekResponseFetchParam: 0,
             seekResponseFetchLimit: 0,
             timeIntervalForNewResponseCheck: 10000, // ms
@@ -415,7 +415,7 @@ let Seek = React.createClass({
                     let newResponsesExist = json.data;
                     if (newResponsesExist) {
                         self.fetchNextSeekResponseBatch();
-                        self.props.requestFeedRefresh(self.props.data.id);
+                        self.props.requestGoToBottom(self.props.data.id);
                     }
                 }
             },
@@ -459,9 +459,7 @@ let Seek = React.createClass({
                     <div className="card" ref="createSeekResponseAppDiv" style={{display: 'none'}}>
                         <div className="card-content" style={{padding: '5px'}}>
                             <CreateSeekResponseApp
-                                contextPath=''
-                                searchUrl='/movie/search'
-                                createSeekResponseUrl='/seek/response/create'
+                                contextPath={this.props.contextPath}
                                 seekId={this.props.data.id}
                                 onCreateSeekResponse={this.onCreateSeekResponse}
                             />
@@ -493,7 +491,7 @@ let Seek = React.createClass({
         // get first batch
         this.fetchNextSeekResponseBatch(true);
         $(this.refs.feedItem).fadeIn(1000);
-        // start periodic polling with a random delay to prevent traffic bursts
+        // start periodic polling with a random delay to reduce traffic bursts
         setTimeout(p => {
             setInterval(e => {
                 this.checkForNewResponses();
@@ -534,11 +532,11 @@ let Review = React.createClass({
     },
 });
 
-let TYPES = {
+let FEED_TYPES = {
     REVIEW: 'review',
     SEEK: 'seek',
 };
-let POSTFIXES = {
+let FEED_POSTFIXES = {
     STATE: {
         OFFSET: 'Offset',
         FEED_HASH_MAP: 'FeedHashMap',
@@ -566,13 +564,13 @@ window.InfiniteFeedApp = React.createClass({
             feed: [],
         };
         // REVIEW
-        initialState[TYPES.REVIEW + POSTFIXES.STATE.LAST_SEEN] = ts;
-        initialState[TYPES.REVIEW + POSTFIXES.STATE.OFFSET] = 0;
-        initialState[TYPES.REVIEW + POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        initialState[FEED_TYPES.REVIEW + FEED_POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[FEED_TYPES.REVIEW + FEED_POSTFIXES.STATE.OFFSET] = 0;
+        initialState[FEED_TYPES.REVIEW + FEED_POSTFIXES.STATE.FEED_HASH_MAP] = {};
         // SEEK
-        initialState[TYPES.SEEK + POSTFIXES.STATE.LAST_SEEN] = ts;
-        initialState[TYPES.SEEK + POSTFIXES.STATE.OFFSET] = 0;
-        initialState[TYPES.SEEK + POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.OFFSET] = 0;
+        initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.FEED_HASH_MAP] = {};
         return initialState;
     },
     getDefaultProps: function () {
@@ -581,35 +579,35 @@ window.InfiniteFeedApp = React.createClass({
             inSessionMuffId: 0,
         };
         // REVIEW
-        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_LIMIT] = 10;
-        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_PARAM] = 0;
-        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.FETCH_URL] = '';
-        defaultProps[TYPES.REVIEW + POSTFIXES.PROPS.IS_ENABLED] = true;
+        defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 5;
+        defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.FETCH_URL] = '';
+        defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         // SEEK
-        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_LIMIT] = 10;
-        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_PARAM] = 0;
-        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.FETCH_URL] = '';
-        defaultProps[TYPES.SEEK + POSTFIXES.PROPS.IS_ENABLED] = true;
+        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_URL] = '';
+        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         return defaultProps;
     },
-    fetchNextBatch: function (type) {
-        let isEnabled = this.props[type + POSTFIXES.PROPS.IS_ENABLED];
+    fetchNextFeedBatch: function (type) {
+        let isEnabled = this.props[type + FEED_POSTFIXES.PROPS.IS_ENABLED];
         if (!isEnabled) {
             return;
         }
         let self = this;
 
-        let url = this.props.contextPath + this.props[type + POSTFIXES.PROPS.FETCH_URL];
-        let limit = this.props[type + POSTFIXES.PROPS.FETCH_LIMIT];
-        let param = this.props[type + POSTFIXES.PROPS.FETCH_PARAM];
+        let url = this.props.contextPath + this.props[type + FEED_POSTFIXES.PROPS.FETCH_URL];
+        let limit = this.props[type + FEED_POSTFIXES.PROPS.FETCH_LIMIT];
+        let param = this.props[type + FEED_POSTFIXES.PROPS.FETCH_PARAM];
 
-        let offsetKey = type + POSTFIXES.STATE.OFFSET;
+        let offsetKey = type + FEED_POSTFIXES.STATE.OFFSET;
         let offset = this.state[offsetKey];
 
-        let lastSeenKey = type + POSTFIXES.STATE.LAST_SEEN;
+        let lastSeenKey = type + FEED_POSTFIXES.STATE.LAST_SEEN;
         let lastSeen = this.state[lastSeenKey];
 
-        let hashMapKey = type + POSTFIXES.STATE.FEED_HASH_MAP;
+        let hashMapKey = type + FEED_POSTFIXES.STATE.FEED_HASH_MAP;
         let requestTimeStamp = moment().format('YYYY-MM-DD HH:mm:ss');
         if (this.feedFetchLock) {
             return;
@@ -629,12 +627,15 @@ window.InfiniteFeedApp = React.createClass({
                 let json = JSON.parse(r);
                 if (json.status === -1) {
                     Materialize.toast(json.error, 2000);
+                    // Signal RR Feed Fetch handler
+                    self.onRRFeedFetch(type, 0);
                 }
                 else {
                     let fetchedData = json.data;
+                    // Signal RR Feed Fetch handler
+                    self.onRRFeedFetch(type, fetchedData.length);
                     // no results
                     if (fetchedData.length === 0) {
-                        Materialize.toast('End of feed!', 2000);
                         return;
                     }
                     // add results
@@ -679,17 +680,63 @@ window.InfiniteFeedApp = React.createClass({
             },
             error: function (data) {
                 self.feedFetchLock = false;
+                // Signal RR Feed Fetch handler
+                self.onRRFeedFetch(type, 0);
                 Materialize.toast('Server Error', 2000);
             }
         });
     },
-    requestFeedRefresh: function (type, feedItemId) {
-        let isEnabled = this.props[type + POSTFIXES.PROPS.IS_ENABLED];
+    RRFeedFetchState: {
+        lock: false,
+        typesFetchedBitmap: {},
+        noFeedItemsFetchedInOneCycle: 0,
+        reset: function () {
+            this.noFeedItemsFetchedInOneCycle = 0;
+            this.typesFetchedBitmap = {};
+        }
+    },
+    onRRFeedFetch: function (type, noFeedItems) {
+        // update state
+        this.RRFeedFetchState.typesFetchedBitmap[type] = true;
+        this.RRFeedFetchState.noFeedItemsFetchedInOneCycle += noFeedItems;
+        // get any un-fetched feed item type
+        let newType = undefined;
+        for (let key in FEED_TYPES) {
+            if (FEED_TYPES.hasOwnProperty(key)) {
+                // if this feed is not fetched in this cycle
+                if (this.RRFeedFetchState.typesFetchedBitmap[FEED_TYPES[key]] !== true) {
+                    newType = FEED_TYPES[key];
+                    break;
+                }
+            }
+        }
+        if (newType === undefined) {
+            // end the cycle
+            this.RRFeedFetchState.lock = false;
+            if (this.RRFeedFetchState.noFeedItemsFetchedInOneCycle === 0) {
+                Materialize.toast('End of feed!', 2000);
+            }
+        } else {
+            // fetch new feed item
+            this.fetchNextFeedBatch(newType);
+        }
+    },
+    startRRFeedFetch: function () {
+        if (this.RRFeedFetchState.lock) {
+            Materialize.toast('Fetching in progress', 2000);
+            return;
+        }
+        this.RRFeedFetchState.lock = true;
+        this.RRFeedFetchState.reset();
+        this.fetchNextFeedBatch(FEED_TYPES.SEEK);
+    },
+    bringFeedItemToBottom: function (type, feedItemId) {
+        let isEnabled = this.props[type + FEED_POSTFIXES.PROPS.IS_ENABLED];
         if (!isEnabled) {
             Materialize.toast(type + ' feed is disabled', 3000);
             return;
         }
-        let hashMapKey = type + POSTFIXES.STATE.FEED_HASH_MAP;
+        let hashMapKey = type + FEED_POSTFIXES.STATE.FEED_HASH_MAP;
         this.setState(prevState => {
             let feed = prevState.feed;
             let _T_HashMap = prevState[hashMapKey];
@@ -720,26 +767,23 @@ window.InfiniteFeedApp = React.createClass({
                 continue;
             }
             switch (feedItem.type) {
-                case TYPES.REVIEW:
+                case FEED_TYPES.REVIEW:
                     HTMLFeed.push(
                         <Review
-                            key={TYPES.REVIEW + '-' + feedItem.data.id}
+                            key={FEED_TYPES.REVIEW + '-' + feedItem.data.id}
                             data={feedItem.data}/>
                     );
                     break;
-                case TYPES.SEEK:
+                case FEED_TYPES.SEEK:
                     HTMLFeed.push(
                         <Seek
-                            key={TYPES.SEEK + '-' + feedItem.data.id}
+                            key={FEED_TYPES.SEEK + '-' + feedItem.data.id}
                             data={feedItem.data}
                             contextPath={this.props.contextPath}
                             inSessionMuffId={this.props.inSessionMuffId}
-                            seekResponseFetchUrl='/seek/response/fetch/seek'
                             seekResponseFetchParam={feedItem.data.id}
                             seekResponseFetchLimit={3}
-                            respondedMuffIdsFetchUrl='/seek/response/fetch/respondedMuffIdsOfSeek'
-                            requestFeedRefresh={seekId => this.requestFeedRefresh(TYPES.SEEK, seekId)}
-                            checkForNewResponseUrl='/seek/response/check/forNew'
+                            requestGoToBottom={seekId => this.bringFeedItemToBottom(FEED_TYPES.SEEK, seekId)}
                         />
                     );
                     break;
@@ -755,11 +799,8 @@ window.InfiniteFeedApp = React.createClass({
                 </div>
                 <div className="card">
                     <div className="card-content">
-                        <button className="btn btn-flat" onClick={e => this.fetchNextBatch(TYPES.REVIEW)}>
-                            LOAD SOME REVIEWS...
-                        </button>
-                        <button className="btn btn-flat" onClick={e => this.fetchNextBatch(TYPES.SEEK)}>
-                            LOAD SOME SEEKS...
+                        <button className="btn btn-flat" onClick={e => this.startRRFeedFetch()}>
+                            <i className="material-icons">more_vert</i>
                         </button>
                     </div>
                 </div>
@@ -767,7 +808,12 @@ window.InfiniteFeedApp = React.createClass({
         );
     },
     componentDidMount: function () {
-        this.fetchNextBatch(TYPES.REVIEW);
-        this.fetchNextBatch(TYPES.SEEK);
+        let self = this;
+        $(window).scroll(function () {
+            if ($(window).scrollTop() + $(window).height() === $(document).height()) {
+                self.startRRFeedFetch()
+            }
+        });
+        this.startRRFeedFetch()
     },
 });

@@ -4,8 +4,9 @@
 1. ResponseWrapper
 1. Jsp tags & EL
 1. Smart feed
-    1. Buffered feed fetch with priority for latest feed
-    1. Automatic periodic check for new Recommendations of seeks
+    1. Uses buffered (timestamp based) two partition algorithm
+    1. Automatic periodic check for new Responses of seeks
 1. Seek & Response
+    1. Approval and Level increment
 1. Design & Aesthetics
 1. Automated suggestions
