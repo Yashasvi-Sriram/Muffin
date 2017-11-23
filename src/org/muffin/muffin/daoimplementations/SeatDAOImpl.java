@@ -20,7 +20,7 @@ public class SeatDAOImpl implements SeatDAO {
                 preparedStmt.setInt(1, theatreID);
                 preparedStmt.setInt(2, seatXY.getKey());
                 preparedStmt.setInt(3, seatXY.getValue());
-                preparedStmt.executeQuery();
+                preparedStmt.executeUpdate();
             }
             conn.commit();
             return true;

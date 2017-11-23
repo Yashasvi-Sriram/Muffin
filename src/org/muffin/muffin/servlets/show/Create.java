@@ -47,7 +47,7 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         Optional<Theatre> theatreOpt = theatreDAO.getByOwner(theatreId, cinemaBuildingOwner.getId());
         if (!theatreOpt.isPresent()) {
-            request.setAttribute("message", "You have invaded an illegal page");
+            request.setAttribute("message", "The theatre with id = " + theatreId + " does not exist");
             request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
             return;
         }
@@ -62,14 +62,11 @@ public class Create extends CinemaBuildingOwnerEnsuredSessionServlet {
                 } else {
                     out.println(gson.toJson(ResponseWrapper.error("Error!")));
                 }
-
-
             } else {
-                out.println(gson.toJson(ResponseWrapper.error("Error! Hint : Check that the startDateTime must be less than endDateTime and also that the show must be unique from the existing ones")));
+                out.println(gson.toJson(ResponseWrapper.error("Error! Hint : The show times may be overlapping")));
             }
-
         } else {
-            out.println(gson.toJson(ResponseWrapper.error("Error! The Movie name doesn't exist")));
+            out.println(gson.toJson(ResponseWrapper.error("Error! The movie doesn't exist")));
         }
 
         out.close();

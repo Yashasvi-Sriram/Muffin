@@ -2,12 +2,16 @@ package org.muffin.muffin.servlets.cinemabuildingowner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.reflect.TypeToken;
+import javafx.util.Pair;
 import org.muffin.muffin.beans.CinemaBuilding;
 import org.muffin.muffin.beans.CinemaBuildingOwner;
 import org.muffin.muffin.beans.Theatre;
 import org.muffin.muffin.daoimplementations.CinemaBuildingDAOImpl;
+import org.muffin.muffin.daoimplementations.SeatDAOImpl;
 import org.muffin.muffin.daoimplementations.TheatreDAOImpl;
 import org.muffin.muffin.daos.CinemaBuildingDAO;
+import org.muffin.muffin.daos.SeatDAO;
 import org.muffin.muffin.daos.TheatreDAO;
 import org.muffin.muffin.responses.ResponseWrapper;
 import org.muffin.muffin.servlets.CinemaBuildingOwnerEnsuredSessionServlet;
@@ -20,7 +24,10 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 /**
  * doGetWithSession:  renders theatre creator
@@ -28,6 +35,7 @@ import java.util.Optional;
  */
 @WebServlet("/cinemabuildingowner/theatrecreator")
 public class TheatreCreator extends CinemaBuildingOwnerEnsuredSessionServlet {
+    private SeatDAO seatDAO = new SeatDAOImpl();
     private TheatreDAO theatreDAO = new TheatreDAOImpl();
     private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
 
@@ -46,22 +54,33 @@ public class TheatreCreator extends CinemaBuildingOwnerEnsuredSessionServlet {
 
     @Override
     protected void doPostWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-//        int cinemaBuildingId = Integer.parseInt(request.getParameter("cinemaBuildingId"));
-//        int screenNo = Integer.parseInt(request.getParameter("screenNo"));
-//        CinemaBuildingOwner cinemaBuildingOwner = (CinemaBuildingOwner) session.getAttribute(SessionKeys.CINEMA_BUILDING_OWNER);
-//        PrintWriter out = response.getWriter();
-//        Gson gson = new GsonBuilder().create();
-//        if (theatreDAO.create(cinemaBuildingId, screenNo, cinemaBuildingOwner.getId()).isPresent()) {
-//            Optional<Theatre> theatreOpt = theatreDAO.get(cinemaBuildingId, screenNo);
-//            if (theatreOpt.isPresent()) {
-//                out.println(gson.toJson(ResponseWrapper.get(theatreOpt.get(), ResponseWrapper.OBJECT_RESPONSE)));
-//            } else {
-//                System.out.println("Critical error!");
-//                out.println(gson.toJson(ResponseWrapper.error("Error!")));
-//            }
-//        } else {
-//            out.println(gson.toJson(ResponseWrapper.error("Error! Hint: The Screen Number has to be different from all the existing ones")));
-//        }
-//        out.close();
+        int cinemaBuildingId = Integer.parseInt(request.getParameter("cinemaBuildingId"));
+        int screenNo = Integer.parseInt(request.getParameter("screenNo"));
+        Gson gson = new GsonBuilder().create();
+        List<Integer> seats = gson.fromJson(request.getParameter("seats"), new TypeToken<List<Integer>>() {
+        }.getType());
+        if (seats.size() % 2 != 0) {
+            request.setAttribute("message", "Seats data is invalid");
+            request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
+            return;
+        }
+        Set<Pair<Integer, Integer>> seatsXY = new HashSet<>();
+        for (int i = 0; i < seats.size(); i += 2) {
+            seatsXY.add(new Pair<>(seats.get(i), seats.get(i + 1)));
+        }
+
+        CinemaBuildingOwner cinemaBuildingOwner = (CinemaBuildingOwner) session.getAttribute(SessionKeys.CINEMA_BUILDING_OWNER);
+        Optional<Theatre> theatreOpt = theatreDAO.create(cinemaBuildingId, screenNo, cinemaBuildingOwner.getId());
+        if (!theatreOpt.isPresent()) {
+            request.setAttribute("message", "The theatre could not be created");
+            request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
+            return;
+        }
+        if (!seatDAO.createSeatsOfTheatre(theatreOpt.get().getId(), seatsXY)) {
+            request.setAttribute("message", "The seats could not be created for the theatre");
+            request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
+            return;
+        }
+        response.sendRedirect(request.getContextPath() + "/cinemabuildingowner/theatreeditor?cinemaBuildingId=" + cinemaBuildingId);
     }
 }

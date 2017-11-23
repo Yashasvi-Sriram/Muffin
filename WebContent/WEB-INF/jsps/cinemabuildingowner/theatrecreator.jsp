@@ -10,9 +10,19 @@
             <jsp:attribute
                     name="inSessionCinemaBuildingOwnerId">${sessionScope.get(SessionKeys.CINEMA_BUILDING_OWNER).getId()}</jsp:attribute>
             <jsp:body>
-                <div class="container" style="min-height: 100vh">
+                <script type="text/babel"
+                        src="${pageContext.request.contextPath}/static/muffinjs/threatrecreatorapp.jsx"></script>
+                <script type="text/babel">
+                    ReactDOM.render(<TheatreCreatorApp
+                            contextPath="${pageContext.request.contextPath}"
+                            submitUrl="/cinemabuildingowner/theatrecreator"
+                            cinemaBuildingId={${requestScope.cinemaBuilding.getId()}}
+                    />, document.getElementById('app'));
+                </script>
+                <div class="container-fluid" style="min-height: 100vh">
                     <h1>Theatre Creator</h1>
                     <h3>${requestScope.cinemaBuilding.getName()}, ${requestScope.cinemaBuilding.getStreetName()}, ${requestScope.cinemaBuilding.getCity()}</h3>
+                    <div id="app"></div>
                 </div>
             </jsp:body>
         </m:insessioncinemabuildingownercommons>

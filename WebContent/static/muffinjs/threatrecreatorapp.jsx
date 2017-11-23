@@ -86,7 +86,7 @@ let Index = React.createClass({
     }
 });
 
-window.SeatingCreatorApp = React.createClass({
+window.TheatreCreatorApp = React.createClass({
     getDefaultSeatMatrix: function (dimX, dimY) {
         let seats = [];
         for (let y = 0; y < dimY; y++) {
@@ -99,17 +99,26 @@ window.SeatingCreatorApp = React.createClass({
     },
     getInitialState: function () {
         return {
-            seats: this.getDefaultSeatMatrix(30, 19),
+            seats: this.getDefaultSeatMatrix(20, 14),
         }
     },
     getDefaultProps: function () {
         return {
             submitUrl: '',
+            contextPath: '',
+            cinemaBuildingId: 0,
             MAX_X: 50,
             MAX_Y: 50,
             MIN_X: 4,
             MIN_Y: 4,
         }
+    },
+    isScreenNumberValid: function (screenNo) {
+        if (isNaN(screenNo) || screenNo < 1) {
+            Materialize.toast('Invalid Screen No', 1000);
+            return false;
+        }
+        return true;
     },
     isDimensionValid: function (dimX, dimY) {
         if (isNaN(dimY) || isNaN(dimX)
@@ -150,6 +159,13 @@ window.SeatingCreatorApp = React.createClass({
                 }
             }
         }
+        let screenNo = this.refs.screenNo.value;
+        if (!this.isScreenNumberValid(screenNo)) {
+            return;
+        }
+        $(this.refs.screenNoFormField).val(screenNo);
+        $(this.refs.seatsFormField).val(JSON.stringify(createdSeats));
+        $(this.refs.form).submit();
     },
     render: function () {
         let dimX = this.state.seats[0].length;
@@ -186,10 +202,14 @@ window.SeatingCreatorApp = React.createClass({
         }
         return (
             <div>
+                <form action={this.props.contextPath + this.props.submitUrl} method="POST" style={{display: 'none'}} ref="form">
+                    <input type="number" name="screenNo" ref="screenNoFormField"/>
+                    <input type="text" name="seats" ref="seatsFormField"/>
+                    <input type="number" name="cinemaBuildingId" defaultValue={this.props.cinemaBuildingId}/>
+                </form>
                 <div className="row">
                     <div className="input-field col s3">
-                        <input placeholder="Screen Number" type="number" ref="screenNo"
-                               defaultValue={0}/>
+                        <input placeholder="Screen Number" type="number" ref="screenNo"/>
                     </div>
                     <div className="input-field col s3">
                         <input placeholder="rows" type="number" ref="dimY"
