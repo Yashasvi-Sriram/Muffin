@@ -17,21 +17,15 @@
                      * */
                     let TheatreItem = React.createClass({
                         getInitialState: function () {
-
                             return {
                                 inReadMode: true,
                             }
                         },
                         readModeRender: function () {
                             let url = "${pageContext.request.contextPath}/cinemabuildingowner/showeditor?theatreId=" + this.props.id;
-
                             return (
                                     <tr title={this.props.screenNo}>
-
                                         <td>{this.props.screenNo}</td>
-
-                                        <td>
-                                        </td>
                                         <td>
                                             <a href={url} type="submit" value={this.props.id}
                                                title="Shows present"
@@ -39,15 +33,14 @@
                                                 <i className="material-icons">local_movies</i></a>
                                         </td>
                                         <td title="Delete">
-                                            <a href="#"
-                                               onClick={(e) => {
-                                                   this.props.onDeleteClick(this.props.id)
-                                               }}
-                                               className="btn-floating waves-effect waves-light red">
+                                            <button
+                                                    onClick={(e) => {
+                                                        this.props.onDeleteClick(this.props.id)
+                                                    }}
+                                                    className="btn-floating waves-effect waves-light red">
                                                 <i className="material-icons">remove</i>
-                                            </a>
+                                            </button>
                                         </td>
-
                                     </tr>
                             );
                         },
@@ -109,6 +102,13 @@
                                         <thead>
                                         <tr>
                                             <th>Screen No</th>
+                                            <th></th>
+                                            <th>
+                                                <a href="${pageContext.request.contextPath}/cinemabuildingowner/theatrecreator?cinemaBuildingId=${requestScope.cinemaBuilding.getId()}"
+                                                   className="btn-floating waves-effect waves-light green">
+                                                <i className="material-icons">add</i>
+                                            </a>
+                                            </th>
                                         </tr>
                                         </thead>
                                         <tbody>
