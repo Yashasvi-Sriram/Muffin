@@ -106,12 +106,15 @@ window.SeatingCreatorApp = React.createClass({
         return {
             MAX_X: 50,
             MAX_Y: 50,
+            MIN_X: 4,
+            MIN_Y: 4,
         }
     },
     isDimensionValid: function (dimX, dimY) {
         if (isNaN(dimY) || isNaN(dimX)
             || dimX < 1 || dimX > this.props.MAX_X
             || dimY < 1 || dimY > this.props.MAX_Y
+            || dimX < this.props.MIN_X || dimY < this.props.MIN_Y
         ) {
             Materialize.toast('Invalid Dimension', 1000);
             return false;
