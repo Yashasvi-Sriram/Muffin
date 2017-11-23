@@ -40,10 +40,6 @@
                     Login as Cinema Building Owner
                     <span class="secondary-content"><i class="material-icons">account_balance</i></span>
                 </a>
-                <a href="${pageContext.request.contextPath}/cinemabuildingowner/signup" class="collection-item">
-                    Signup as Cinema Building Owner
-                    <span class="secondary-content"><i class="material-icons">add_to_queue</i></span>
-                </a>
             </div>
         </div>
         <div class="parallax-container">
