@@ -11,8 +11,8 @@ import java.sql.Timestamp;
 @AllArgsConstructor
 public class Show {
     private int id;
-    private int theatre_id;
-    private int movie_id;
+    private int theatreId;
+    private Movie movie;
     @NonNull
     private Showtime showtime;
 }

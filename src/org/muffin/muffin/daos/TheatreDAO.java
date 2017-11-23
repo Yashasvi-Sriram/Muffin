@@ -14,6 +14,8 @@ public interface TheatreDAO {
 
     public Optional<Theatre> get(final int cinemaBuildingId, final int screenNo);
 
+    public Optional<Theatre> getByOwner(final int theatreId, final int cinemaBuildingOwnerId);
+
     public boolean delete(final int theatreId, final int cinemaBuildingOwnerId);
 }
 
