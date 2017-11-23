@@ -9,7 +9,7 @@ seek response
 
 1. use returning in dao implementations
 1. DB checks for strings check <> ''
-1. implement approve for seek response
+1. implement approve for seek response & level
 1. add a feed item - movie suggestion
 
 1. report, docs, future todo s, brag list
@@ -21,6 +21,7 @@ seek response
 1. batch commit for theatre creation
 1. begin commit for booking seats
 
+1. add data
 1. offset limit for movies in movieowner
 1. suggestions
 

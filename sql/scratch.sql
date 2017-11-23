@@ -1,4 +1,4 @@
 SELECT *
-FROM theatre;
+FROM seat;
 
 DELETE FROM theatre;

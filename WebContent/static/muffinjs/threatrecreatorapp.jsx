@@ -107,8 +107,8 @@ window.TheatreCreatorApp = React.createClass({
             submitUrl: '',
             contextPath: '',
             cinemaBuildingId: 0,
-            MAX_X: 50,
-            MAX_Y: 50,
+            MAX_X: 40,
+            MAX_Y: 30,
             MIN_X: 4,
             MIN_Y: 4,
         }
