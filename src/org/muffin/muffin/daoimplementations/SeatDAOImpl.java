@@ -9,6 +9,7 @@ import org.muffin.muffin.db.DBConfig;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 public class SeatDAOImpl implements SeatDAO {
@@ -53,4 +54,33 @@ public class SeatDAOImpl implements SeatDAO {
             return seats;
         }
     }
+
+    @Override
+    public Optional<Seat> get(int seatID) {
+
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, theatre_id, x, y FROM seat WHERE id = ?")) {
+            preparedStmt.setInt(1, seatID);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            if (resultSet.next()) {
+                Seat seat = new Seat(
+                        resultSet.getInt(1),
+                        resultSet.getInt(2),
+                        resultSet.getInt(3),
+                        resultSet.getInt(4)
+                );
+
+                return Optional.of(seat);
+
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+
+        }
+
+    }
+
+
 }
