@@ -73,11 +73,11 @@
                     let ShowItem = React.createClass({
                         render: function () {
                             return (
-                                    <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>
+                                    <a href={"${pageContext.request.contextPath}/show/book?showId=" + this.props.data.id + "&theatreId=" + this.props.data.theatreId}>
                                         <span className="chip blue-text"
                                               style={{marginRight: '10px'}}>
-                                            {timeString(this.props.showtime.startTime)}
-                                            - {timeString(this.props.showtime.endTime)}
+                                            {timeString(this.props.data.showtime.startTime)}
+                                            - {timeString(this.props.data.showtime.endTime)}
                                         </span>
                                     </a>
                             );
@@ -86,11 +86,9 @@
 
                     let BuildingItem = React.createClass({
                         render: function () {
-                            let showItems = this.props.showList.map(c => {
-                                return <ShowItem key={c.id}
-                                                 id={c.id}
-                                                 movie={c.movie}
-                                                 showtime={c.showtime}
+                            let showItems = this.props.showList.map(show => {
+                                return <ShowItem key={show.id}
+                                                 data={show}
                                 />;
                             });
                             return (
@@ -454,7 +452,7 @@
                                                 <button className="btn btn-flat pink white-text"
                                                         style={{marginTop: '20px'}}
                                                         onClick={e => this.getShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML, 0)}>
-                                                    Search shows
+                                                    Search Shows
                                                 </button>
                                             </div>
                                         </div>

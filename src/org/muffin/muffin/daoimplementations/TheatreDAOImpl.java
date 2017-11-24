@@ -43,7 +43,6 @@ public class TheatreDAOImpl implements TheatreDAO {
 
     @Override
     public Optional<Theatre> get(int cinemaBuildingId, int screenNo) {
-
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,cinema_building_id,screen_no FROM theatre WHERE cinema_building_id = ? AND screen_no = ?");) {
             preparedStmt.setInt(1, cinemaBuildingId);
@@ -58,7 +57,6 @@ public class TheatreDAOImpl implements TheatreDAO {
             e.printStackTrace();
             return Optional.empty();
         }
-
     }
 
     @Override
@@ -116,7 +114,7 @@ public class TheatreDAOImpl implements TheatreDAO {
     }
 
     @Override
-    public List<Seat> getSeatsOfTheatre(int theatreID) {
+    public List<Seat> getSeatsOf(int theatreID) {
         List<Seat> seats = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement preparedStmt = conn.prepareStatement("SELECT id, theatre_id, x, y FROM seat WHERE theatre_id = ?")) {
@@ -155,6 +153,23 @@ public class TheatreDAOImpl implements TheatreDAO {
             e.printStackTrace();
         }
         return false;
+    }
+
+    @Override
+    public Optional<Theatre> getById(int theatreId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,cinema_building_id,screen_no FROM theatre WHERE id = ?");) {
+            preparedStmt.setInt(1, theatreId);
+            ResultSet result = preparedStmt.executeQuery();
+            if (result.next()) {
+                Theatre theatre = new Theatre(result.getInt(1), result.getInt(2), result.getInt(3));
+                return Optional.of(theatre);
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 }
 

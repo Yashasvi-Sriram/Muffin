@@ -40,7 +40,7 @@ public class TheatreViewer extends CinemaBuildingOwnerEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         request.setAttribute("cinemaBuilding", cinemaBuildingOpt.get());
         request.setAttribute("screenNo", screenNo);
-        request.setAttribute("seats", gson.toJson(theatreDAO.getSeatsOfTheatre(theatreId)));
+        request.setAttribute("seats", gson.toJson(theatreDAO.getSeatsOf(theatreId)));
         request.getRequestDispatcher("/WEB-INF/jsps/cinemabuildingowner/theatreviewer.jsp").include(request, response);
     }
 
