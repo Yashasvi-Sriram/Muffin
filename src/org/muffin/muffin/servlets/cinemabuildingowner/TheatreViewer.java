@@ -2,19 +2,12 @@ package org.muffin.muffin.servlets.cinemabuildingowner;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.reflect.TypeToken;
-import javafx.util.Pair;
 import org.muffin.muffin.beans.CinemaBuilding;
-import org.muffin.muffin.beans.CinemaBuildingOwner;
-import org.muffin.muffin.beans.Theatre;
 import org.muffin.muffin.daoimplementations.CinemaBuildingDAOImpl;
-import org.muffin.muffin.daoimplementations.SeatDAOImpl;
 import org.muffin.muffin.daoimplementations.TheatreDAOImpl;
 import org.muffin.muffin.daos.CinemaBuildingDAO;
-import org.muffin.muffin.daos.SeatDAO;
 import org.muffin.muffin.daos.TheatreDAO;
 import org.muffin.muffin.servlets.CinemaBuildingOwnerEnsuredSessionServlet;
-import org.muffin.muffin.servlets.SessionKeys;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -22,10 +15,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.List;
 import java.util.Optional;
-import java.util.Set;
 
 /**
  * doGetWithSession:  renders theatre creator
@@ -33,7 +23,7 @@ import java.util.Set;
  */
 @WebServlet("/cinemabuildingowner/theatreviewer")
 public class TheatreViewer extends CinemaBuildingOwnerEnsuredSessionServlet {
-    private SeatDAO seatDAO = new SeatDAOImpl();
+    private TheatreDAO theatreDAO = new TheatreDAOImpl();
     private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
 
     @Override
@@ -50,7 +40,7 @@ public class TheatreViewer extends CinemaBuildingOwnerEnsuredSessionServlet {
         Gson gson = new GsonBuilder().create();
         request.setAttribute("cinemaBuilding", cinemaBuildingOpt.get());
         request.setAttribute("screenNo", screenNo);
-        request.setAttribute("seats", gson.toJson(seatDAO.getSeatsOfTheatre(theatreId)));
+        request.setAttribute("seats", gson.toJson(theatreDAO.getSeatsOfTheatre(theatreId)));
         request.getRequestDispatcher("/WEB-INF/jsps/cinemabuildingowner/theatreviewer.jsp").include(request, response);
     }
 

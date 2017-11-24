@@ -14,8 +14,6 @@
                         src="${pageContext.request.contextPath}/static/muffinjs/threatreviewerapp.jsx"></script>
                 <script type="text/babel">
                     ReactDOM.render(<TheatreViewerApp
-                            contextPath="${pageContext.request.contextPath}"
-                            submitUrl="/cinemabuildingowner/theatrecreator"
                             screenNo={${requestScope.screenNo}}
                             seats={${requestScope.seats}}
                     />, document.getElementById('app'));

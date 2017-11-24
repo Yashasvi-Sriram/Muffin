@@ -57,13 +57,6 @@ let Index = React.createClass({
 });
 
 window.TheatreViewerApp = React.createClass({
-    getDefaultProps: function () {
-        return {
-            submitUrl: '',
-            contextPath: '',
-            cinemaBuildingId: 0,
-        }
-    },
     render: function () {
         let seatArray = this.props.seats;
         let dimX = -1;
