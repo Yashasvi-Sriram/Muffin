@@ -114,7 +114,7 @@ CREATE TABLE movie_owner_password (
 -- name update can be allowed
 CREATE TABLE movie (
   id       SERIAL,
-  name     VARCHAR(50) NOT NULL,
+  name     VARCHAR(100) NOT NULL,
   owner_id INT         NOT NULL,
   duration INT         NOT NULL,
   PRIMARY KEY (id),
