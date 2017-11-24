@@ -1,5 +1,7 @@
 package org.muffin.muffin.daos;
 
+import org.muffin.muffin.beans.Genre;
+import org.muffin.muffin.beans.Movie;
 import org.muffin.muffin.beans.Seek;
 
 import java.sql.Timestamp;
@@ -14,4 +16,6 @@ public interface SeekDAO {
     public List<Seek> getByMuff(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
 
     public List<Seek> getByFollowers(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
+
+    public Optional<Movie> getAutomatedSuggestion(List<Genre> genres);
 }
