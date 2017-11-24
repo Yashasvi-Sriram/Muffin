@@ -24,18 +24,14 @@
                     };
 
                     let isMovieValid = function (movieName) {
-
                         if (movieName === '') {
                             Materialize.toast('Movie Name is Empty', 2000);
                             return false;
                         }
                         return true;
-
-
                     };
 
                     let isTimeValid = function (dateTime) {
-
                         if (dateTime) {
                             return true;
                         }
@@ -43,18 +39,15 @@
                             Materialize.toast('Invalid Start/End Time', 2000);
                             return false;
                         }
-
-
                     };
 
                     let dateTimeString = function (localDateTime) {
                         let p = moment();
                         p.year(localDateTime.date.year).month(localDateTime.date.month - 1).date(localDateTime.date.day);
                         p.hour(localDateTime.time.hour).minute(localDateTime.time.minute).second(localDateTime.time.second);
-                        var str = p.format("YYYY-MM-DD");
-                        var str2 = p.format("HH:mm")
+                        let str = p.format("YYYY-MM-DD");
+                        let str2 = p.format("HH:mm");
                         return str + "T" + str2;
-
                     };
 
                     let ShowItem = React.createClass({
@@ -90,7 +83,6 @@
 
                     let ShowEditor = React.createClass({
                         getInitialState: function () {
-
                             return {
                                 movieSearchResults: [],
                                 offset: 0,
@@ -105,8 +97,6 @@
                                             startTime: '${show.showtime.startTime}',
                                             endTime: '${show.showtime.endTime}'
                                         },
-
-
                                     },
                                     </jstl:forEach>
                                 ],
@@ -116,9 +106,7 @@
                         getDefaultProps: function () {
                             return {
                                 contextPath: '',
-
-                                limit: 2,
-
+                                limit: 5,
                             }
                         },
                         _resetOffset: function () {
@@ -206,15 +194,11 @@
 
                         },
                         createShow: function () {
-
                             let self = this;
-
                             if (!isMovieValid(this.refs.pattern.value) || !isTimeValid(this.refs.startDateTime.value) || !isTimeValid(this.refs.endDateTime.value)) {
                                 return;
                             }
-
                             // ajax call
-
                             $.ajax({
                                 url: '${pageContext.request.contextPath}/show/create',
                                 type: 'GET',
@@ -239,8 +223,6 @@
                                                 startTime: dateTimeString(data.showtime.startTime),
                                                 endTime: dateTimeString(data.showtime.endTime)
                                             },
-
-
                                         };
                                         self.setState((prevState, props) => {
                                             prevState.shows.push(putData);
@@ -285,7 +267,6 @@
                             });
                         },
                         render: function () {
-
                             let shows = this.state.shows.map(c => {
                                 return <ShowItem key={c.id}
                                                  id={c.id}
@@ -294,7 +275,6 @@
                                                  onDeleteClick={this.deleteShow}
                                 />;
                             });
-
                             let movieSearchResults = this.state.movieSearchResults.map(movie => {
                                 return <MovieSearchResult
                                         key={movie.id}
@@ -316,12 +296,10 @@
                                                            placeholder="Movie" type="text"/>
                                                 </td>
                                                 <td>
-                                                    <input type="datetime-local" name="startTime" ref="startDateTime"/>
+                                                    <input type="datetime-local" name="startTime" ref="startDateTime" placeholder="Show starts at (datetime)"/>
                                                 </td>
                                                 <td>
-                                                    <input type="datetime-local" name="endTime" ref="endDateTime"/>
-
-
+                                                    <input type="datetime-local" name="endTime" ref="endDateTime" placeholder="Show ends at (datetime)"/>
                                                 </td>
                                                 <td>
                                                     <button onClick={this.createShow}
@@ -331,8 +309,6 @@
                                                 </td>
                                             </tr>
                                             </thead>
-
-
                                         </table>
                                         <div className="collection with-header" ref="movieSearchResults">
                                             <div className="collection-header"><span className="flow-text">Movies</span>
