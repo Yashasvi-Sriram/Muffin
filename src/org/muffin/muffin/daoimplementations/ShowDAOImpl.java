@@ -113,7 +113,7 @@ public class ShowDAOImpl implements ShowDAO {
     public List<Show> get(int theatreId) {
         List<Show> showList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE show.theatre_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE show.theatre_id = ? ORDER BY during")) {
             preparedStmt.setInt(1, theatreId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
@@ -190,7 +190,7 @@ public class ShowDAOImpl implements ShowDAO {
         Map<CinemaBuilding, List<Show>> shows = new HashMap<>();
         CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange)")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange) ORDER BY during")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setString(2, city);
             preparedStmt.setString(3, state);

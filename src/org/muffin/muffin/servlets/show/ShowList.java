@@ -38,16 +38,12 @@ public class ShowList extends EnsuredSessionServlet {
         MovieDAO movieDAO = new MovieDAOImpl();
         ValidRegionDAO validRegionDAO = new ValidRegionDAOImpl();
         String moviename = request.getParameter("movieName");
-        String regionName = request.getParameter("regionName");
-        String regionAttr[] = regionName.split(",");
+        String city = request.getParameter("city");
+        String state = request.getParameter("state");
+        String country = request.getParameter("country");
         PrintWriter out = response.getWriter();
         Gson gson = new GsonBuilder().create();
-        if (regionAttr.length != 3) {
-            out.println(gson.toJson(ResponseWrapper.error("Error! Invalid region entry")));
-            out.close();
-            return;
 
-        }
         Optional<Movie> MovieOpt = movieDAO.get(moviename);
 
         if (!MovieOpt.isPresent()) {
@@ -58,7 +54,7 @@ public class ShowList extends EnsuredSessionServlet {
         }
 
 
-        Optional<ValidRegion> ValidRegionOpt = validRegionDAO.get(regionAttr[0], regionAttr[1], regionAttr[2]);
+        Optional<ValidRegion> ValidRegionOpt = validRegionDAO.get(city,state,country);
 
         if (!ValidRegionOpt.isPresent()) {
             out.println(gson.toJson(ResponseWrapper.error("Error! Invalid region entry")));
@@ -73,7 +69,7 @@ public class ShowList extends EnsuredSessionServlet {
         LocalDateTime startTimeStamp = LocalDateTime.parse(startTimeStampString);
         LocalDateTime endTimeStamp = LocalDateTime.parse(endTimeStampString);
         Showtime showtime = new Showtime(startTimeStamp, endTimeStamp);
-        Map<CinemaBuilding, List<Show>> allShows = showDAO.getAllShows(MovieOpt.get().getId(), regionAttr[0], regionAttr[1], regionAttr[2], showtime);
+        Map<CinemaBuilding, List<Show>> allShows = showDAO.getAllShows(MovieOpt.get().getId(), city, state, country, showtime);
         List<Pair<CinemaBuilding, List<Show>>> allShowsList = new ArrayList<>();
         for (Map.Entry<CinemaBuilding, List<Show>> entry : allShows.entrySet()) {
             allShowsList.add(new Pair<>(entry.getKey(), entry.getValue()));

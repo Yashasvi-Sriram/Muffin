@@ -288,12 +288,13 @@ CREATE TABLE seek (
 );
 
 CREATE TABLE seek_response (
-  id        SERIAL,
-  muff_id   INT       NOT NULL,
-  seek_id   INT       NOT NULL,
-  movie_id  INT       NOT NULL,
-  text      TEXT      NOT NULL,
-  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id              SERIAL,
+  muff_id         INT       NOT NULL,
+  seek_id         INT       NOT NULL,
+  movie_id        INT       NOT NULL,
+  text            TEXT      NOT NULL,
+  approval_status INT       NOT NULL DEFAULT 0,
+  timestamp       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (muff_id, seek_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)

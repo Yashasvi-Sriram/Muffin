@@ -23,26 +23,34 @@
                     };
 
                     let isMovieValid = function (movieName) {
-
                         if (movieName === '') {
                             Materialize.toast('Movie Name is Empty', 2000);
                             return false;
                         }
                         return true;
-
-
                     };
 
-                    let dateTimeString = function (localDateTime) {
+                    let isRegionValid = function (city, state, country) {
+                        if (city === '' || state === '' || country === '') {
+                            Materialize.toast('Select a Region before search', 2000);
+                            return false;
+                        }
+                        return true;
+                    };
+
+                    let dateString = function (localDateTime) {
                         let p = moment();
                         p.year(localDateTime.date.year).month(localDateTime.date.month - 1).date(localDateTime.date.day);
-                        p.hour(localDateTime.time.hour).minute(localDateTime.time.minute).second(localDateTime.time.second);
-                        let str = p.format("YYYY-MM-DD");
-                        let str2 = p.format("HH:mm");
-                        return str + "T" + str2;
+                        return p.format("DD-MM-YYYY");
 
                     };
 
+                    let timeString = function (localDateTime) {
+                        let p = moment();
+                        p.hour(localDateTime.time.hour).minute(localDateTime.time.minute).second(localDateTime.time.second);
+                        return p.format("HH:mm");
+
+                    };
 
                     let MovieSearchResult = React.createClass({
                         render: function () {
@@ -67,42 +75,33 @@
                             return (
                                     <div>
 
-                                        <p>{dateTimeString(this.props.showtime.startTime)}, {dateTimeString(this.props.showtime.endTime)}</p>
+                                        <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>{dateString(this.props.showtime.startTime)} {timeString(this.props.showtime.startTime)}
+                                            - {dateString(this.props.showtime.endTime)} {timeString(this.props.showtime.endTime)}</a>
                                     </div>
-
-
                             );
                         }
                     });
 
                     let BuildingItem = React.createClass({
-
                         render: function () {
-
                             let showItem = this.props.showList.map(c => {
                                 return <ShowItem key={c.id}
                                                  id={c.id}
                                                  movie={c.movie}
                                                  showtime={c.showtime}
-
                                 />;
-
                             });
-
                             return (
                                     <div>
-                                        <div>{this.props.name} , {this.props.streetName}</div>
+                                        <div><h5>{this.props.name} , {this.props.streetName}</h5></div>
                                         <div>{showItem}</div>
                                     </div>
-
                             );
                         }
                     });
 
-
                     let ShowApp = React.createClass({
                         getInitialState: function () {
-
                             return {
                                 movieSearchResults: [],
                                 offset: 0,
@@ -115,35 +114,34 @@
                         getDefaultProps: function () {
                             return {
                                 contextPath: '',
-                                region_limit: 3,
-                                limit: 3,
-
+                                region_limit: 5,
+                                movie_limit: 5,
                             }
                         },
-                        _resetOffset: function () {
+                        _movie_resetOffset: function () {
                             this.state.offset = 0;
                         },
-                        _incrementOffset: function (fetchedDataLength) {
+                        _movie_incrementOffset: function (fetchedDataLength) {
                             // last batch
-                            if (fetchedDataLength < this.props.limit) {
-                                this.state.offset -= this.props.limit;
+                            if (fetchedDataLength < this.props.movie_limit) {
+                                this.state.offset -= this.props.movie_limit;
                                 this.state.offset += fetchedDataLength;
                             }
-                            // update limit
-                            this.state.offset += this.props.limit;
+                            // update movie_limit
+                            this.state.offset += this.props.movie_limit;
                         },
-                        _decrementOffset: function () {
-                            let floorExcess = this.state.offset % this.props.limit;
+                        _movie_decrementOffset: function () {
+                            let floorExcess = this.state.offset % this.props.movie_limit;
                             this.state.offset -= floorExcess;
                             if (floorExcess === 0) {
-                                let prevOffset = this.state.offset - 2 * this.props.limit;
+                                let prevOffset = this.state.offset - 2 * this.props.movie_limit;
                                 this.state.offset = prevOffset < 0 ? 0 : prevOffset;
                             } else {
-                                let prevOffset = this.state.offset - this.props.limit;
+                                let prevOffset = this.state.offset - this.props.movie_limit;
                                 this.state.offset = prevOffset < 0 ? 0 : prevOffset;
                             }
                         },
-                        fetchNextBatch: function (pattern) {
+                        movie_fetchNextBatch: function (pattern) {
                             let url = '${pageContext.request.contextPath}/show/activemoviesearch';
                             let self = this;
                             let currentTimeStamp = moment().format("YYYY-MM-DDTHH:mm");
@@ -153,7 +151,7 @@
                                 data: {
                                     pattern: pattern,
                                     offset: self.state.offset,
-                                    limit: self.props.limit,
+                                    limit: self.props.movie_limit,
                                     currentTimeStamp: currentTimeStamp
                                 },
                                 success: function (r) {
@@ -163,7 +161,7 @@
                                     }
                                     else {
                                         let data = json.data;
-                                        self._incrementOffset(data.length);
+                                        self._movie_incrementOffset(data.length);
                                         // no movieSearchResults
                                         if (data.length === 0) {
                                             Materialize.toast('End of search!', 2000);
@@ -181,21 +179,21 @@
                                 }
                             });
                         },
-                        fetchPreviousBatch: function (pattern) {
-                            this._decrementOffset();
+                        movie_fetchPreviousBatch: function (pattern) {
+                            this._movie_decrementOffset();
                             if (this.state.offset === 0) {
                                 Materialize.toast('Start of search!', 2000);
                             }
-                            this.fetchNextBatch(pattern);
+                            this.movie_fetchNextBatch(pattern);
                         },
-                        onRegexInputKeyDown: function (e) {
+                        movie_onRegexInputKeyDown: function (e) {
                             switch (e.keyCode || e.which) {
                                 // Enter Key
                                 case 13:
                                     let self = this;
-                                    this._resetOffset();
+                                    this._movie_resetOffset();
                                     self.setState({movieSearchResults: []});
-                                    this.fetchNextBatch(e.target.value);
+                                    this.movie_fetchNextBatch(e.target.value);
                                     break;
                                 // Escape key
                                 case 27:
@@ -208,10 +206,9 @@
                         selectMovie: function (text) {
                             this.refs.pattern.value = text;
                             $(this.refs.movieSearchResults).hide();
-                            $(this.refs.dateToggle).hide();
+                            $(this.refs.dateSelectDiv).hide();
 
                         },
-
                         _region_resetOffset: function () {
                             this.state.region_offset = 0;
                         },
@@ -304,20 +301,33 @@
                             }
                         },
                         selectRegion: function (city, state, country) {
-                            this.refs.region_pattern.value = city + "," + state + "," + country;
+                            this.refs.region_pattern.value = '';
                             $(this.refs.regionResults).hide();
-                            $(this.refs.dateToggle).hide();
+                            $(this.refs.dateSelectDiv).hide();
+                            this.refs.city.innerHTML = city;
+                            this.refs.state.innerHTML = state;
+                            this.refs.country.innerHTML = country;
 
 
                         },
 
-                        getShows: function (movieName, regionName, date_offset) {
+                        getShows: function (movieName, city, state, country, date_offset) {
                             let url = '${pageContext.request.contextPath}/show/showlist';
                             let self = this;
-                            console.log(moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm"));
-                            let startTimeStamp = moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm");
+                            let startTimeStamp = '';
+                            if (date_offset === 0) {
+
+                                startTimeStamp = moment().format("YYYY-MM-DDTHH:mm");
+                            }
+                            else {
+
+                                startTimeStamp = moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm");
+                            }
                             let endTimeStamp = moment().add(date_offset, 'days').endOf('day').format("YYYY-MM-DDTHH:mm");
                             if (!isMovieValid(movieName)) {
+                                return;
+                            }
+                            if (!isRegionValid(city, state, country)) {
                                 return;
                             }
                             $.ajax({
@@ -325,7 +335,9 @@
                                 type: 'GET',
                                 data: {
                                     movieName: movieName,
-                                    regionName: regionName,
+                                    city: city,
+                                    state: state,
+                                    country: country,
                                     startTimeStamp: startTimeStamp,
                                     endTimeStamp: endTimeStamp,
                                 },
@@ -336,11 +348,10 @@
                                     }
                                     else {
                                         let data = json.data;
-
                                         self.setState(ps => {
-                                            return {shows: data};
+                                            return {shows: data, date_offset: date_offset};
                                         });
-                                        $(self.refs.dateToggle).show();
+                                        $(self.refs.dateSelectDiv).show();
 
 
                                     }
@@ -351,32 +362,30 @@
                             });
                         },
 
-                        getNextDateShows: function (movieName, regionName) {
+                        getNextDateShows: function (movieName, city, state, country) {
 
                             let self = this;
-                            self.state.date_offset = self.state.date_offset + 1;
-                            self.getShows(movieName, regionName, self.state.date_offset);
+
+                            self.getShows(movieName, city, state, country, self.state.date_offset + 1);
 
 
                         },
 
-                        getPrevDateShows: function (movieName, regionName) {
+                        getPrevDateShows: function (movieName, city, state, country) {
 
                             let self = this;
                             if (self.state.date_offset === 0) {
                                 Materialize.toast('You cannot go back', 2000);
                                 return;
                             }
-                            self.state.date_offset = self.state.date_offset - 1;
-                            self.getShows(movieName, regionName, self.state.date_offset);
+
+                            self.getShows(movieName, city, state, country, self.state.date_offset - 1);
 
 
                         },
 
 
                         render: function () {
-
-
                             let movieSearchResults = this.state.movieSearchResults.map(movie => {
                                 return <MovieSearchResult
                                         key={movie.id}
@@ -385,7 +394,6 @@
                                         onItemClick={this.selectMovie}
                                 />;
                             });
-
                             let regionResults = this.state.regions.map(region => {
                                 return <Region
                                         key={region.id}
@@ -397,7 +405,6 @@
 
                                 />;
                             });
-
                             let buildingResults = this.state.shows.map(building => {
                                 return <BuildingItem
                                         key={building.key.id}
@@ -405,62 +412,52 @@
                                         name={building.key.name}
                                         streetName={building.key.streetName}
                                         showList={building.value}
-
-
                                 />;
                             });
 
 
-                            let dateToDisplay = moment().add(this.state.date_offset, 'days').format("YYYY-MM-DD");
+                            let dateToDisplay = moment().add(this.state.date_offset, 'days').format("DD-MM-YYYY");
 
                             return (
                                     <div>
                                         <div className="row">
-                                            <div class="col s6">
+                                            <div className="col s5">
                                                 <table className="highlight centered striped">
                                                     <thead>
                                                     <tr>
-
                                                         <td>
-                                                            <input onKeyDown={this.onRegexInputKeyDown}
+                                                            <input onKeyDown={this.movie_onRegexInputKeyDown}
                                                                    ref="pattern"
                                                                    placeholder="Movie" type="text"/>
                                                         </td>
-
                                                     </tr>
                                                     </thead>
-
-
                                                 </table>
                                                 <div className="collection with-header" ref="movieSearchResults">
                                                     <div className="collection-header"><span className="flow-text">Movies</span>
                                                         <span className="right">
                                                 <button className="btn btn-flat"
-                                                        onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                                        onClick={e => this.movie_fetchPreviousBatch(this.refs.pattern.value)}><i
                                                         className="material-icons">keyboard_arrow_left</i></button>
                                                 <button className="btn btn-flat"
-                                                        onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                                        onClick={e => this.movie_fetchNextBatch(this.refs.pattern.value)}><i
                                                         className="material-icons">keyboard_arrow_right</i></button>
                                                 </span>
                                                     </div>
                                                     {movieSearchResults}
                                                 </div>
                                             </div>
-                                            <div class="col s6">
+                                            <div className="col s5">
                                                 <table className="highlight centered striped">
                                                     <thead>
                                                     <tr>
-
                                                         <td>
                                                             <input onKeyDown={this.region_onRegexInputKeyDown}
                                                                    ref="region_pattern"
                                                                    placeholder="Region" type="text"/>
                                                         </td>
-
                                                     </tr>
                                                     </thead>
-
-
                                                 </table>
                                                 <div className="collection with-header" ref="regionResults">
                                                     <div className="collection-header"><span className="flow-text">Regions</span>
@@ -476,25 +473,40 @@
                                                     {regionResults}
                                                 </div>
                                             </div>
+                                            <div className="col s2">
+                                                <button className="btn btn-flat pink white-text"
+                                                        style={{marginTop: '20px'}}
+                                                        onClick={e => this.getShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML, 0)}>
+                                                    <i className="material-icons">search</i>
+                                                </button>
+                                            </div>
+                                            <div className="col s4">
+                                                <div ref="city"></div>
+                                            </div>
+                                            <div className="col s4">
+                                                <div ref="state"></div>
+                                            </div>
+                                            <div className="col s4">
+                                                <div ref="country"></div>
+                                            </div>
+
                                         </div>
 
-                                        <button className="btn btn-flat"
-                                                onClick={e => this.getShows(this.refs.pattern.value, this.refs.region_pattern.value, 0)}>
-                                            <i
-                                                    className="material-icons">info</i></button>
-                                        <div ref="dateToggle">
+
+                                        <div ref="dateSelectDiv">
                                             <button className="btn btn-flat"
-                                                    onClick={e => this.getPrevDateShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                    onClick={e => this.getPrevDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
                                                 <i
                                                         className="material-icons">keyboard_arrow_left</i></button>
                                             {dateToDisplay}
                                             <button className="btn btn-flat"
-                                                    onClick={e => this.getNextDateShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                    onClick={e => this.getNextDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
                                                 <i
                                                         className="material-icons">keyboard_arrow_right</i></button>
 
+                                            <div>{buildingResults}</div>
                                         </div>
-                                        <div>{buildingResults}</div>
+
 
                                     </div>
 
@@ -503,20 +515,16 @@
                         componentDidMount: function () {
                             $(this.refs.movieSearchResults).hide();
                             $(this.refs.regionResults).hide();
-                            $(this.refs.dateToggle).hide();
+                            $(this.refs.dateSelectDiv).hide();
 
                         },
                     });
 
-
                     ReactDOM.render(<ShowApp/>, document.getElementById('app'));
-
                 </script>
-                <div>
-                    <div id="app"></div>
+                <div class="container">
+                    <div id="app" style="min-height: 100vh"></div>
                 </div>
-
-
             </jsp:body>
         </m:insessionmuffcommons>
     </jsp:body>

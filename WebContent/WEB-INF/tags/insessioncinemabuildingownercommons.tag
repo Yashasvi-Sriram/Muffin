@@ -320,7 +320,7 @@
         </a>
     </li>
     <li>
-        <a href="<jsp:invoke fragment="contextPath"/>/cinemabuildingowner/buildinglist"
+        <a href="<jsp:invoke fragment="contextPath"/>/cinemabuildingowner/cinemabuildinglist"
            title="My Cinemas">
             <i class="material-icons">list</i>
             My Cinemas
