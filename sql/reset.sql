@@ -399,7 +399,7 @@ CREATE TABLE muff_suggestion(
 CREATE TABLE movie_suggestion(
   muff_id INT,
   movie_id INT,
-  distance FLOAT,
+  rating FLOAT,
   PRIMARY KEY (muff_id, movie_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
   ON DELETE CASCADE,
