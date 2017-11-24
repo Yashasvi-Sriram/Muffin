@@ -22,7 +22,7 @@ public interface ShowDAO {
 
     public boolean delete(int showId, int cinemaBuildingOwnerId);
 
-    public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStamp);
+    public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStam);
 
-    public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, LocalDateTime currentTimeStamp);
+    public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, Showtime showtime);
 }

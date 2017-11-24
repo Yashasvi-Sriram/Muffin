@@ -67,9 +67,13 @@ public class ShowList extends EnsuredSessionServlet {
 
         }
 
-        String currentTimeStampString = request.getParameter("currentTimeStamp");
-        LocalDateTime currentTimeStamp = LocalDateTime.parse(currentTimeStampString);
-        Map<CinemaBuilding, List<Show>> allShows = showDAO.getAllShows(MovieOpt.get().getId(), regionAttr[0], regionAttr[1], regionAttr[2], currentTimeStamp);
+        String startTimeStampString = request.getParameter("startTimeStamp");
+        String endTimeStampString = request.getParameter("endTimeStamp");
+
+        LocalDateTime startTimeStamp = LocalDateTime.parse(startTimeStampString);
+        LocalDateTime endTimeStamp = LocalDateTime.parse(endTimeStampString);
+        Showtime showtime = new Showtime(startTimeStamp, endTimeStamp);
+        Map<CinemaBuilding, List<Show>> allShows = showDAO.getAllShows(MovieOpt.get().getId(), regionAttr[0], regionAttr[1], regionAttr[2], showtime);
         List<Pair<CinemaBuilding, List<Show>>> allShowsList = new ArrayList<>();
         for (Map.Entry<CinemaBuilding, List<Show>> entry : allShows.entrySet()) {
             allShowsList.add(new Pair<>(entry.getKey(), entry.getValue()));

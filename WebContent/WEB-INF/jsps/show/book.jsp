@@ -109,6 +109,7 @@
                                 regions: [],
                                 region_offset: 0,
                                 shows: [],
+                                date_offset: 0,
                             }
                         },
                         getDefaultProps: function () {
@@ -207,6 +208,7 @@
                         selectMovie: function (text) {
                             this.refs.pattern.value = text;
                             $(this.refs.movieSearchResults).hide();
+                            $(this.refs.dateToggle).hide();
 
                         },
 
@@ -304,20 +306,28 @@
                         selectRegion: function (city, state, country) {
                             this.refs.region_pattern.value = city + "," + state + "," + country;
                             $(this.refs.regionResults).hide();
+                            $(this.refs.dateToggle).hide();
+
 
                         },
 
-                        getShows: function (movieName, regionName) {
+                        getShows: function (movieName, regionName, date_offset) {
                             let url = '${pageContext.request.contextPath}/show/showlist';
                             let self = this;
-                            let currentTimeStamp = moment().format("YYYY-MM-DDTHH:mm");
+                            console.log(moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm"));
+                            let startTimeStamp = moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm");
+                            let endTimeStamp = moment().add(date_offset, 'days').endOf('day').format("YYYY-MM-DDTHH:mm");
+                            if (!isMovieValid(movieName)) {
+                                return;
+                            }
                             $.ajax({
                                 url: url,
                                 type: 'GET',
                                 data: {
                                     movieName: movieName,
                                     regionName: regionName,
-                                    currentTimeStamp: currentTimeStamp
+                                    startTimeStamp: startTimeStamp,
+                                    endTimeStamp: endTimeStamp,
                                 },
                                 success: function (r) {
                                     let json = JSON.parse(r);
@@ -326,9 +336,11 @@
                                     }
                                     else {
                                         let data = json.data;
+
                                         self.setState(ps => {
                                             return {shows: data};
                                         });
+                                        $(self.refs.dateToggle).show();
 
 
                                     }
@@ -337,6 +349,28 @@
                                     Materialize.toast('Server Error', 2000);
                                 }
                             });
+                        },
+
+                        getNextDateShows: function (movieName, regionName) {
+
+                            let self = this;
+                            self.state.date_offset = self.state.date_offset + 1;
+                            self.getShows(movieName, regionName, self.state.date_offset);
+
+
+                        },
+
+                        getPrevDateShows: function (movieName, regionName) {
+
+                            let self = this;
+                            if (self.state.date_offset === 0) {
+                                Materialize.toast('You cannot go back', 2000);
+                                return;
+                            }
+                            self.state.date_offset = self.state.date_offset - 1;
+                            self.getShows(movieName, regionName, self.state.date_offset);
+
+
                         },
 
 
@@ -376,6 +410,8 @@
                                 />;
                             });
 
+
+                            let dateToDisplay = moment().add(this.state.date_offset, 'days').format("YYYY-MM-DD");
 
                             return (
                                     <div>
@@ -443,9 +479,21 @@
                                         </div>
 
                                         <button className="btn btn-flat"
-                                                onClick={e => this.getShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                onClick={e => this.getShows(this.refs.pattern.value, this.refs.region_pattern.value, 0)}>
                                             <i
                                                     className="material-icons">info</i></button>
+                                        <div ref="dateToggle">
+                                            <button className="btn btn-flat"
+                                                    onClick={e => this.getPrevDateShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                <i
+                                                        className="material-icons">keyboard_arrow_left</i></button>
+                                            {dateToDisplay}
+                                            <button className="btn btn-flat"
+                                                    onClick={e => this.getNextDateShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                <i
+                                                        className="material-icons">keyboard_arrow_right</i></button>
+
+                                        </div>
                                         <div>{buildingResults}</div>
 
                                     </div>
@@ -455,6 +503,7 @@
                         componentDidMount: function () {
                             $(this.refs.movieSearchResults).hide();
                             $(this.refs.regionResults).hide();
+                            $(this.refs.dateToggle).hide();
 
                         },
                     });

@@ -185,7 +185,7 @@ public class ShowDAOImpl implements ShowDAO {
     }
 
     @Override
-    public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, LocalDateTime currentTimeStamp) {
+    public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, Showtime showtime) {
 
         Map<CinemaBuilding, List<Show>> shows = new HashMap<>();
         CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
@@ -195,7 +195,7 @@ public class ShowDAOImpl implements ShowDAO {
             preparedStmt.setString(2, city);
             preparedStmt.setString(3, state);
             preparedStmt.setString(4, country);
-            preparedStmt.setString(5, toTSUpperInfiniteRange(currentTimeStamp));
+            preparedStmt.setString(5, toTSRange(showtime));
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
                 CinemaBuilding cinemaBuilding = cinemaBuildingDAO.get(resultSet.getInt(1)).get();
