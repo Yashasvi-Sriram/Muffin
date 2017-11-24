@@ -56,12 +56,19 @@ let Index = React.createClass({
     }
 });
 
-window.TheatreViewerApp = React.createClass({
+window.BookingApp = React.createClass({
+    getDefaultProps: function () {
+        return {
+            theatreSeats: '',
+            theatre: '',
+        }
+    },
     render: function () {
-        let seatArray = this.props.seats;
+        let theatre = this.props.theatre;
+        let theatreSeats = this.props.theatreSeats;
         let dimX = -1;
         let dimY = -1;
-        seatArray.forEach(seat => {
+        theatreSeats.forEach(seat => {
             if (seat.x > dimX) {
                 dimX = seat.x;
             }
@@ -79,7 +86,7 @@ window.TheatreViewerApp = React.createClass({
                 seatBitmap[y].push(false);
             }
         }
-        seatArray.forEach(seat => {
+        theatreSeats.forEach(seat => {
             seatBitmap[seat.y][seat.x] = true;
         });
         // seatBitmap is ready
@@ -117,13 +124,13 @@ window.TheatreViewerApp = React.createClass({
             <div>
                 <div className="row flow-text">
                     <div className="col s3">
-                        Screen No. {this.props.screenNo}
+                        {/*Screen No. {this.props.screenNo}*/}
                     </div>
                     <div className="col s3">
-                        Rows : {dimY}
+                        {/*Rows : {dimY}*/}
                     </div>
                     <div className="col s3">
-                        Columns : {dimX}
+                        {/*Columns : {dimX}*/}
                     </div>
                 </div>
                 <div className="screen flow-text center-align grey white-text" style={{margin: '10px'}}>

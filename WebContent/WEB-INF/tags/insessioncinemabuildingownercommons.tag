@@ -46,7 +46,9 @@
         render: function () {
             return (
                     <div className="collection-item"
-                         onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>{this.props.city}({this.props.state},{this.props.country})</div>
+                         onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>
+                        {this.props.city}, {this.props.state}, {this.props.country}
+                    </div>
             );
         }
     });

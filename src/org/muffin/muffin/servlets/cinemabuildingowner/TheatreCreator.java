@@ -8,12 +8,9 @@ import org.muffin.muffin.beans.CinemaBuilding;
 import org.muffin.muffin.beans.CinemaBuildingOwner;
 import org.muffin.muffin.beans.Theatre;
 import org.muffin.muffin.daoimplementations.CinemaBuildingDAOImpl;
-import org.muffin.muffin.daoimplementations.SeatDAOImpl;
 import org.muffin.muffin.daoimplementations.TheatreDAOImpl;
 import org.muffin.muffin.daos.CinemaBuildingDAO;
-import org.muffin.muffin.daos.SeatDAO;
 import org.muffin.muffin.daos.TheatreDAO;
-import org.muffin.muffin.responses.ResponseWrapper;
 import org.muffin.muffin.servlets.CinemaBuildingOwnerEnsuredSessionServlet;
 import org.muffin.muffin.servlets.SessionKeys;
 
@@ -23,7 +20,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
-import java.io.PrintWriter;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Optional;
@@ -35,7 +31,6 @@ import java.util.Set;
  */
 @WebServlet("/cinemabuildingowner/theatrecreator")
 public class TheatreCreator extends CinemaBuildingOwnerEnsuredSessionServlet {
-    private SeatDAO seatDAO = new SeatDAOImpl();
     private TheatreDAO theatreDAO = new TheatreDAOImpl();
     private CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
 
@@ -76,7 +71,7 @@ public class TheatreCreator extends CinemaBuildingOwnerEnsuredSessionServlet {
             request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
             return;
         }
-        if (!seatDAO.createSeatsOfTheatre(theatreOpt.get().getId(), seatsXY)) {
+        if (!theatreDAO.createSeatsOfTheatre(theatreOpt.get().getId(), seatsXY)) {
             request.setAttribute("message", "The seats could not be created for the theatre");
             request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
             return;

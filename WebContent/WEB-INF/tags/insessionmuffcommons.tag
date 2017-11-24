@@ -83,7 +83,7 @@
    title="Seek Entertainment"
    class="btn-floating btn-large waves-effect waves-light green modal-trigger"
    style="position:fixed;bottom:180px; right: 20px">
-    <i class="material-icons">local_movies</i>
+    <i class="material-icons">accessibility</i>
 </a>
 
 <%--Give Review Modal--%>
@@ -150,14 +150,14 @@
         <a class="modal-trigger"
            href="#seek-entertainment-modal"
            title="Seek Entertainment">
-            <i class="material-icons">local_movies</i>
+            <i class="material-icons">accessibility</i>
             Seek Entertainment
         </a>
     </li>
     <li>
-        <a href="<jsp:invoke fragment="contextPath"/>/show/book"
+        <a href="<jsp:invoke fragment="contextPath"/>/show/search"
            title="Book Tickets">
-            <i class="material-icons">book</i>
+            <i class="material-icons">local_movies</i>
             Book Tickets
         </a>
     </li>

@@ -26,6 +26,8 @@ DROP TABLE IF EXISTS genre;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 DROP TABLE IF EXISTS valid_region;
+DROP TABLE IF EXISTS moviesuggestion;
+DROP TABLE IF EXISTS muffsuggestion;
 
 /*
   Anything can be done with data as long as the sql constraints are followed
@@ -332,6 +334,7 @@ CREATE TABLE booking (
   id      SERIAL,
   show_id INT NOT NULL,
   muff_id INT NOT NULL,
+  booked_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (id, show_id),
   FOREIGN KEY (show_id) REFERENCES show (id)
@@ -347,7 +350,7 @@ CREATE TABLE booked_show_seats (
   show_id    INT NOT NULL,
   booking_id INT NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (booking_id, show_id, seat_id),
+  UNIQUE (show_id, seat_id),
   FOREIGN KEY (seat_id, theatre_id) REFERENCES seat (id, theatre_id)
   ON DELETE CASCADE,
   FOREIGN KEY (show_id, theatre_id) REFERENCES show (id, theatre_id)
@@ -380,5 +383,27 @@ CREATE TABLE seek_genre_r (
   FOREIGN KEY (seek_id) REFERENCES seek (id)
   ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES genre (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE muff_suggestion(
+  id1 INT,
+  id2 INT,
+  distance FLOAT,
+  PRIMARY KEY (id1,id2),
+  FOREIGN KEY (id1) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (id2) REFERENCES muff (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE movie_suggestion(
+  muff_id INT,
+  movie_id INT,
+  rating FLOAT,
+  PRIMARY KEY (muff_id, movie_id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );

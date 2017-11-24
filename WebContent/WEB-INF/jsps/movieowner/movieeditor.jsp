@@ -104,12 +104,9 @@
                                         <td title="edit">
                                             <a
                                                     onClick={(e) => {
-                                                        this.setState(()
-                                                    =>
-                                                        {
+                                                        this.setState(() => {
                                                             return {inReadMode: false}
-                                                        }
-                                                    )
+                                                        })
                                                     }}
                                                     className="btn-floating waves-effect waves-light yellow darken-4">
                                                 <i className="material-icons">edit</i>
@@ -148,13 +145,9 @@
                                             <a
                                                     onClick={(e) => {
                                                         this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
-                                                        this.setState(()
-                                                    =>
-                                                        {
+                                                        this.setState(() => {
                                                             return {inReadMode: true}
-                                                        }
-                                                    )
-                                                        ;
+                                                        });
                                                     }}
                                                     className="btn-floating waves-effect waves-light yellow darken-4">
                                                 <i className="material-icons">send</i>
@@ -163,12 +156,9 @@
                                         <td title="cancel">
                                             <a
                                                     onClick={(e) => {
-                                                        this.setState(()
-                                                    =>
-                                                        {
+                                                        this.setState(() => {
                                                             return {inReadMode: true}
-                                                        }
-                                                    )
+                                                        })
                                                     }}
                                                     className="btn-floating waves-effect waves-light black">
                                                 <i className="material-icons">cancel</i>
@@ -275,9 +265,7 @@
                                     break;
                             }
                         },
-
                         onSearchClick: function (pattern) {
-                            console.log("hey");
                             let self = this;
                             this._resetOffset();
                             self.setState({movieSearchResults: []});
@@ -381,7 +369,6 @@
                         },
                         render: function () {
                             let movieSearchResults = this.state.movieSearchResults.map(m => {
-
                                 return <MovieItem key={m.id}
                                                   id={m.id}
                                                   name={m.name}
@@ -389,17 +376,10 @@
                                                   genres={m.genres}
                                                   onDeleteClick={this.deleteMovie}
                                                   onEditClick={this.editMovie}/>;
-
                             });
                             return (
                                     <div>
                                         <table className="highlight centered striped">
-                                            <thead>
-                                            <tr>
-                                                <th><h5>Name</h5></th>
-                                                <th><h5>Duration (In minutes)</h5></th>
-                                            </tr>
-                                            </thead>
                                             <tbody>
                                             <tr className="create-movie-form"
                                                 ref="createMovieForm">
@@ -417,10 +397,7 @@
                                                            placeholder="Duration (In Minutes)"
                                                            defaultValue=""/>
                                                 </td>
-                                                <td>
-                                                </td>
-                                                <td>
-                                                </td>
+                                                <td></td>
                                                 <td>
                                                     <button onClick={this.createMovie}
                                                             className="btn-floating waves-effect waves-light green">
@@ -428,43 +405,45 @@
                                                     </button>
                                                 </td>
                                             </tr>
-
+                                            <tr>
+                                                <td>
+                                                    <input type="text" ref="pattern"
+                                                           placeholder="Search For Your Movies"
+                                                           onKeyDown={this.onRegexInputKeyDown}
+                                                           defaultValue=""/>
+                                                </td>
+                                                <td></td>
+                                                <td></td>
+                                                <td>
+                                                    <button className="btn-floating"
+                                                            onClick={e => this.onSearchClick(this.refs.pattern.value)}>
+                                                        <i
+                                                                className="material-icons">search</i></button>
+                                                </td>
+                                            </tr>
                                             </tbody>
                                         </table>
-                                        <div className="input-field">
-                                            <input type="text" ref="pattern" placeholder="Search For Your Movies"
-                                                   onKeyDown={this.onRegexInputKeyDown}
-                                                   defaultValue=""/>
-                                            <span className="right">
-                                                    <button className="btn btn-flat"
-                                                            onClick={e => this.onSearchClick(this.refs.pattern.value)}><i
-                                                            className="material-icons">search</i></button>
-                                            </span>
-                                        </div>
                                         <div ref="movieSearchResults">
-                                            <div>
-                                                <div className="collection with-header">
-                                                    <div className="collection-header"><span className="flow-text">Movies</span>
-                                                        <span className="right">
-                                                        <button className="btn btn-flat"
-                                                                onClick={e => this.onRegexInputKeyDown}><i
-                                                                className="material-icons">search</i></button>
-                                                        <button className="btn btn-flat"
-                                                                onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
-                                                                className="material-icons">keyboard_arrow_left</i></button>
-                                                        <button className="btn btn-flat"
-                                                                onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
-                                                                className="material-icons">keyboard_arrow_right</i></button>
-                                                        </span>
-                                                    </div>
-
-                                                </div>
-                                            </div>
                                             <table className="highlight centered striped">
                                                 <thead>
                                                 <tr>
-                                                    <th><h5>Name</h5></th>
-                                                    <th><h5>Duration (In minutes)</h5></th>
+                                                    <th>Name</th>
+                                                    <th>Duration (In minutes)</th>
+                                                    <th></th>
+                                                    <th>
+                                                        <button className="btn btn-flat"
+                                                                onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}>
+                                                            <i
+                                                                    className="material-icons">keyboard_arrow_left</i>
+                                                        </button>
+                                                    </th>
+                                                    <th>
+                                                        <button className="btn btn-flat"
+                                                                onClick={e => this.fetchNextBatch(this.refs.pattern.value)}>
+                                                            <i
+                                                                    className="material-icons">keyboard_arrow_right</i>
+                                                        </button>
+                                                    </th>
                                                 </tr>
                                                 </thead>
                                                 <tbody>
@@ -472,9 +451,7 @@
                                                 </tbody>
                                             </table>
                                         </div>
-
                                     </div>
-
                             );
                         },
                         componentDidMount: function () {
