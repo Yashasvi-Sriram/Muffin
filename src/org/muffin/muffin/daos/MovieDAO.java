@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.Optional;
 
 public interface MovieDAO {
-    public List<Movie> getByOwner(final int ownerId);
+    public List<Movie> getByOwner(final int ownerId, final int offset, final int limit, final String pattern);
 
     public List<Movie> getByGenre(final int genreId);
 

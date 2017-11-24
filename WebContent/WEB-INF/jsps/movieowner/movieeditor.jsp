@@ -87,29 +87,31 @@
                                         <td>{truncate(this.props.name, 20)}</td>
                                         <td>{this.props.durationInMinutes}</td>
 
-                                        <td>
+                                        <td title="info">
                                             <a href={url} type="submit" name="movieId" value={this.props.id}
                                                className="btn-floating waves-effect waves-light blue">
                                                 <i className="material-icons">info</i></a>
                                         </td>
-                                        <td>
+                                        <td title="remove">
                                             <a
-                                               onClick={(e) => {
-                                                   this.props.onDeleteClick(this.props.id)
-                                               }}
-                                               className="btn-floating waves-effect waves-light red">
+                                                    onClick={(e) => {
+                                                        this.props.onDeleteClick(this.props.id)
+                                                    }}
+                                                    className="btn-floating waves-effect waves-light red">
                                                 <i className="material-icons">remove</i>
                                             </a>
                                         </td>
-                                        <td>
+                                        <td title="edit">
                                             <a
-                                               onClick={(e) => {
-                                                   this.setState(() => {
-                                                           return {inReadMode: false}
-                                                       }
-                                                   )
-                                               }}
-                                               className="btn-floating waves-effect waves-light yellow darken-4">
+                                                    onClick={(e) => {
+                                                        this.setState(()
+                                                    =>
+                                                        {
+                                                            return {inReadMode: false}
+                                                        }
+                                                    )
+                                                    }}
+                                                    className="btn-floating waves-effect waves-light yellow darken-4">
                                                 <i className="material-icons">edit</i>
                                             </a>
                                         </td>
@@ -142,29 +144,33 @@
                                         </td>
                                         <td>
                                         </td>
-                                        <td>
+                                        <td title="send">
                                             <a
-                                               onClick={(e) => {
-                                                   this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
-                                                   this.setState(() => {
-                                                           return {inReadMode: true}
-                                                       }
-                                                   )
-                                                   ;
-                                               }}
-                                               className="btn-floating waves-effect waves-light yellow darken-4">
+                                                    onClick={(e) => {
+                                                        this.props.onEditClick(this.props.id, this.refs.name.value, this.refs.durationInMinutes.value);
+                                                        this.setState(()
+                                                    =>
+                                                        {
+                                                            return {inReadMode: true}
+                                                        }
+                                                    )
+                                                        ;
+                                                    }}
+                                                    className="btn-floating waves-effect waves-light yellow darken-4">
                                                 <i className="material-icons">send</i>
                                             </a>
                                         </td>
-                                        <td>
+                                        <td title="cancel">
                                             <a
-                                               onClick={(e) => {
-                                                   this.setState(() => {
-                                                           return {inReadMode: true}
-                                                       }
-                                                   )
-                                               }}
-                                               className="btn-floating waves-effect waves-light black">
+                                                    onClick={(e) => {
+                                                        this.setState(()
+                                                    =>
+                                                        {
+                                                            return {inReadMode: true}
+                                                        }
+                                                    )
+                                                    }}
+                                                    className="btn-floating waves-effect waves-light black">
                                                 <i className="material-icons">cancel</i>
                                             </a>
                                         </td>
@@ -179,26 +185,106 @@
                     let MovieEditor = React.createClass({
                         getInitialState: function () {
                             return {
-                                movies: [
-                                    <jstl:forEach items="${requestScope.movieList}" var="movie">
-                                    {
-                                        id: ${movie.id},
-                                        name: '${movie.name}',
-                                        movieOwnerId: '${movie.movieOwnerId}',
-                                        durationInMinutes: ${movie.durationInMinutes},
-                                        genres: [
-                                            <jstl:forEach items="${movie.genres}" var="genre">
-                                            {
-                                                genreid: ${genre.id},
-                                                name: '${genre.name}',
-                                            },
-                                            </jstl:forEach>
-                                        ],
-                                    },
-                                    </jstl:forEach>
-                                ],
+                                movieSearchResults: [],
+                                offset: 0,
                             }
                         },
+                        getDefaultProps: function () {
+                            return {
+
+                                limit: 5,
+                                movieSearchUrl: '/movie/movieownersearch',
+                            }
+                        },
+                        _resetOffset: function () {
+                            this.state.offset = 0;
+                        },
+                        _incrementOffset: function (fetchedDataLength) {
+                            // last batch
+                            if (fetchedDataLength < this.props.limit) {
+                                this.state.offset -= this.props.limit;
+                                this.state.offset += fetchedDataLength;
+                            }
+                            // update limit
+                            this.state.offset += this.props.limit;
+                        },
+                        _decrementOffset: function () {
+                            let floorExcess = this.state.offset % this.props.limit;
+                            this.state.offset -= floorExcess;
+                            if (floorExcess === 0) {
+                                let prevOffset = this.state.offset - 2 * this.props.limit;
+                                this.state.offset = prevOffset < 0 ? 0 : prevOffset;
+                            } else {
+                                let prevOffset = this.state.offset - this.props.limit;
+                                this.state.offset = prevOffset < 0 ? 0 : prevOffset;
+                            }
+                        },
+                        fetchNextBatch: function (pattern) {
+                            let url = '${pageContext.request.contextPath}/movie/searchbymovieowner';
+                            let self = this;
+                            $.ajax({
+                                url: url,
+                                type: 'GET',
+                                data: {pattern: pattern, offset: self.state.offset, limit: self.props.limit},
+                                success: function (r) {
+                                    let json = JSON.parse(r);
+                                    if (json.status === -1) {
+                                        Materialize.toast(json.error, 2000);
+                                    }
+                                    else {
+                                        let data = json.data;
+                                        self._incrementOffset(data.length);
+                                        // no movieSearchResults
+                                        if (data.length === 0) {
+                                            Materialize.toast('End of search!', 2000);
+                                            return;
+                                        }
+                                        // add movieSearchResults
+                                        self.setState(ps => {
+                                            return {movieSearchResults: data};
+                                        });
+                                        $(self.refs.movieSearchResults).show();
+                                    }
+                                },
+                                error: function (data) {
+                                    Materialize.toast('Server Error', 2000);
+                                }
+                            });
+                        },
+                        fetchPreviousBatch: function (pattern) {
+                            this._decrementOffset();
+                            if (this.state.offset === 0) {
+                                Materialize.toast('Start of search!', 2000);
+                            }
+                            this.fetchNextBatch(pattern);
+                        },
+                        onRegexInputKeyDown: function (e) {
+                            switch (e.keyCode || e.which) {
+                                // Enter Key
+                                case 13:
+                                    let self = this;
+                                    this._resetOffset();
+                                    self.setState({movieSearchResults: []});
+                                    this.fetchNextBatch(e.target.value);
+                                    break;
+                                // Escape key
+                                case 27:
+                                    $(this.refs.movieSearchResults).hide();
+                                    break;
+                                default:
+                                    break;
+                            }
+                        },
+
+                        onSearchClick: function (pattern) {
+                            console.log("hey");
+                            let self = this;
+                            this._resetOffset();
+                            self.setState({movieSearchResults: []});
+                            this.fetchNextBatch(pattern);
+
+                        },
+
                         createMovie: function () {
                             let self = this;
                             // validation
@@ -217,11 +303,9 @@
                                         Materialize.toast(json.error, 2000);
                                     }
                                     else {
-                                        let data = json.data;
-                                        self.setState((prevState, props) => {
-                                            prevState.movies.push(data);
-                                            return prevState;
-                                        });
+
+                                        Materialize.toast('Added Succesfully', 2000);
+
                                         $(self.refs.createMovieForm).find('input').val('');
                                     }
                                 },
@@ -250,12 +334,12 @@
                                         let data = json.data;
                                         self.setState((prevState, props) => {
                                             let updateIndex = -1;
-                                            prevState.movies.forEach((movie, i) => {
+                                            prevState.movieSearchResults.forEach((movie, i) => {
                                                 if (movie.id === id) {
                                                     updateIndex = i;
                                                 }
                                             });
-                                            prevState.movies.splice(updateIndex, 1, data);
+                                            prevState.movieSearchResults.splice(updateIndex, 1, data);
                                             return prevState;
                                         });
                                         self.forceUpdate();
@@ -280,12 +364,12 @@
                                     else {
                                         self.setState((prevState, props) => {
                                             let delIndex = -1;
-                                            prevState.movies.forEach((movie, i) => {
+                                            prevState.movieSearchResults.forEach((movie, i) => {
                                                 if (movie.id === id) {
                                                     delIndex = i;
                                                 }
                                             });
-                                            prevState.movies.splice(delIndex, 1);
+                                            prevState.movieSearchResults.splice(delIndex, 1);
                                             return prevState;
                                         });
                                     }
@@ -296,60 +380,106 @@
                             });
                         },
                         render: function () {
+                            let movieSearchResults = this.state.movieSearchResults.map(m => {
+
+                                return <MovieItem key={m.id}
+                                                  id={m.id}
+                                                  name={m.name}
+                                                  durationInMinutes={m.durationInMinutes}
+                                                  genres={m.genres}
+                                                  onDeleteClick={this.deleteMovie}
+                                                  onEditClick={this.editMovie}/>;
+
+                            });
                             return (
-                                    <table className="highlight centered striped">
-                                        <thead>
-                                        <tr>
-                                            <th><h5>Name</h5></th>
-                                            <th><h5>Duration (In minutes)</h5></th>
-                                        </tr>
-                                        </thead>
-                                        <tbody>
-                                        <tr className="create-movie-form"
-                                            ref="createMovieForm">
-                                            <td>
-                                                <input type="text"
-                                                       ref="name"
-                                                       name="name"
-                                                       placeholder="Name"
-                                                       defaultValue=""/>
-                                            </td>
-                                            <td>
-                                                <input type="number"
-                                                       ref="durationInMinutes"
-                                                       name="durationInMinutes"
-                                                       placeholder="Duration (In Minutes)"
-                                                       defaultValue=""/>
-                                            </td>
-                                            <td>
-                                            </td>
-                                            <td>
-                                            </td>
-                                            <td>
-                                                <button onClick={this.createMovie}
-                                                        className="btn-floating waves-effect waves-light green">
-                                                    <i className="material-icons">add</i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td className="flow-text">No. movies made = {this.state.movies.length}</td>
-                                        </tr>
-                                        {
-                                            this.state.movies.map(m => {
-                                                return <MovieItem key={m.id}
-                                                                  id={m.id}
-                                                                  name={m.name}
-                                                                  durationInMinutes={m.durationInMinutes}
-                                                                  genres={m.genres}
-                                                                  onDeleteClick={this.deleteMovie}
-                                                                  onEditClick={this.editMovie}/>;
-                                            })
-                                        }
-                                        </tbody>
-                                    </table>
+                                    <div>
+                                        <table className="highlight centered striped">
+                                            <thead>
+                                            <tr>
+                                                <th><h5>Name</h5></th>
+                                                <th><h5>Duration (In minutes)</h5></th>
+                                            </tr>
+                                            </thead>
+                                            <tbody>
+                                            <tr className="create-movie-form"
+                                                ref="createMovieForm">
+                                                <td>
+                                                    <input type="text"
+                                                           ref="name"
+                                                           name="name"
+                                                           placeholder="Name"
+                                                           defaultValue=""/>
+                                                </td>
+                                                <td>
+                                                    <input type="number"
+                                                           ref="durationInMinutes"
+                                                           name="durationInMinutes"
+                                                           placeholder="Duration (In Minutes)"
+                                                           defaultValue=""/>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                </td>
+                                                <td>
+                                                    <button onClick={this.createMovie}
+                                                            className="btn-floating waves-effect waves-light green">
+                                                        <i className="material-icons">add</i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+
+                                            </tbody>
+                                        </table>
+                                        <div className="input-field">
+                                            <input type="text" ref="pattern" placeholder="Search For Your Movies"
+                                                   onKeyDown={this.onRegexInputKeyDown}
+                                                   defaultValue=""/>
+                                            <span className="right">
+                                                    <button className="btn btn-flat"
+                                                            onClick={e => this.onSearchClick(this.refs.pattern.value)}><i
+                                                            className="material-icons">search</i></button>
+                                            </span>
+                                        </div>
+                                        <div ref="movieSearchResults">
+                                            <div>
+                                                <div className="collection with-header">
+                                                    <div className="collection-header"><span className="flow-text">Movies</span>
+                                                        <span className="right">
+                                                        <button className="btn btn-flat"
+                                                                onClick={e => this.onRegexInputKeyDown}><i
+                                                                className="material-icons">search</i></button>
+                                                        <button className="btn btn-flat"
+                                                                onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                                                className="material-icons">keyboard_arrow_left</i></button>
+                                                        <button className="btn btn-flat"
+                                                                onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                                                className="material-icons">keyboard_arrow_right</i></button>
+                                                        </span>
+                                                    </div>
+
+                                                </div>
+                                            </div>
+                                            <table className="highlight centered striped">
+                                                <thead>
+                                                <tr>
+                                                    <th><h5>Name</h5></th>
+                                                    <th><h5>Duration (In minutes)</h5></th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                {movieSearchResults}
+                                                </tbody>
+                                            </table>
+                                        </div>
+
+                                    </div>
+
                             );
-                        }
+                        },
+                        componentDidMount: function () {
+                            $(this.refs.movieSearchResults).hide();
+                        },
                     });
 
                     ReactDOM.render(<MovieEditor/>, document.getElementById('app'));

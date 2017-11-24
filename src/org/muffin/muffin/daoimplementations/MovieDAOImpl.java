@@ -11,11 +11,14 @@ import java.util.*;
 
 public class MovieDAOImpl implements MovieDAO {
     @Override
-    public List<Movie> getByOwner(int ownerId) {
+    public List<Movie> getByOwner(int ownerId, int offset, int limit, String pattern) {
         List<Movie> movieList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.owner_id = ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT * FROM movie WHERE movie.owner_id = ?  AND movie.name ILIKE ? ORDER BY name OFFSET ? LIMIT ?")) {
             preparedStmt.setInt(1, ownerId);
+            preparedStmt.setString(2, "%" + pattern + "%");
+            preparedStmt.setInt(3, offset);
+            preparedStmt.setInt(4, limit);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
                 List<Genre> genres = getGenreList(result.getInt(1), conn);
