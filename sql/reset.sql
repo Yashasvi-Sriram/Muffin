@@ -332,6 +332,7 @@ CREATE TABLE booking (
   id      SERIAL,
   show_id INT NOT NULL,
   muff_id INT NOT NULL,
+  booked_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (id, show_id),
   FOREIGN KEY (show_id) REFERENCES show (id)
