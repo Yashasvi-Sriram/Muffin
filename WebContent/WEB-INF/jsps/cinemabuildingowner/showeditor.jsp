@@ -52,7 +52,7 @@
 
                     let dateString = function (localDateTimeString) {
                         let p = moment(localDateTimeString);
-                        return p.format("DD-MM-YYYY");
+                        return p.format("Do MMM YY");
 
                     };
 

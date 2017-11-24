@@ -18,8 +18,6 @@ public interface ShowDAO {
 
     public List<Show> get(int theatreId);
 
-    public Optional<Show> getShow(int showId);
-
     public boolean delete(int showId, int cinemaBuildingOwnerId);
 
     public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStam);
