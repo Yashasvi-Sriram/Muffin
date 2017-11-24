@@ -162,6 +162,13 @@
         </a>
     </li>
     <li>
+        <a href="<jsp:invoke fragment="contextPath"/>/muff/bookinghistory"
+           title="Booking History">
+            <i class="material-icons">history</i>
+            Booking History
+        </a>
+    </li>
+    <li>
         <a href="<jsp:invoke fragment="contextPath"/>/muff/logout"
            title="Logout">
             <i class="material-icons">power_settings_new</i>

@@ -14,6 +14,9 @@ public class Booking {
     private int showId;
     private int muffId;
     @NonNull
+    private String movieName;
+    @NonNull
     private LocalDateTime bookedOn;
+    @NonNull
     private List<Seat> bookedShowSeats;
 }
