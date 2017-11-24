@@ -14,7 +14,7 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
     @Override
     public Optional<SeekResponse> create(final int muffId, final int seekId, final int movieId, final String text) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement createSeek = conn.prepareStatement("INSERT INTO seek_response(muff_id, seek_id, movie_id, text, timestamp) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) RETURNING id, seek_id, text, timestamp;");
+             PreparedStatement createSeek = conn.prepareStatement("INSERT INTO seek_response(muff_id, seek_id, movie_id, text, timestamp) VALUES (?, ?, ?, ?, CURRENT_TIMESTAMP) RETURNING id, seek_id, text, approval_status, timestamp;");
              PreparedStatement getMuff = conn.prepareStatement("SELECT id, handle, name, no_approvals, joined_on  FROM muff WHERE id = ?");
              PreparedStatement getMovie = conn.prepareStatement("SELECT name FROM movie WHERE id = ?");
         ) {
@@ -43,7 +43,8 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
                             movieId,
                             movieRS.getString(1),
                             rs.getString(3),
-                            rs.getTimestamp(4).toLocalDateTime()
+                            rs.getInt(4),
+                            rs.getTimestamp(5).toLocalDateTime()
                     ));
                 }
             }
@@ -56,8 +57,8 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
 
     @Override
     public List<SeekResponse> getBySeek(int seekId, int offset, int limit, final Timestamp lastSeen) {
-        String oldTuplesQuery = "SELECT sr.id, muff.id, muff.handle, muff.name, muff.no_approvals, muff.joined_on, sr.seek_id, movie.id, movie.name, sr.text, sr.timestamp FROM seek_response AS sr, muff, movie WHERE sr.seek_id = ? AND sr.muff_id = muff.id AND sr.movie_id = movie.id AND sr.timestamp <= ? ORDER BY sr.timestamp DESC OFFSET ? LIMIT ?;";
-        String newTuplesQuery = "SELECT sr.id, muff.id, muff.handle, muff.name, muff.no_approvals, muff.joined_on, sr.seek_id, movie.id, movie.name, sr.text, sr.timestamp FROM seek_response AS sr, muff, movie WHERE sr.seek_id = ? AND sr.muff_id = muff.id AND sr.movie_id = movie.id AND sr.timestamp > ? ORDER BY sr.timestamp DESC;";
+        String oldTuplesQuery = "SELECT sr.id, muff.id, muff.handle, muff.name, muff.no_approvals, muff.joined_on, sr.seek_id, movie.id, movie.name, sr.text, sr.approval_status, sr.timestamp FROM seek_response AS sr, muff, movie WHERE sr.seek_id = ? AND sr.muff_id = muff.id AND sr.movie_id = movie.id AND sr.timestamp <= ? ORDER BY sr.timestamp DESC OFFSET ? LIMIT ?;";
+        String newTuplesQuery = "SELECT sr.id, muff.id, muff.handle, muff.name, muff.no_approvals, muff.joined_on, sr.seek_id, movie.id, movie.name, sr.text, sr.approval_status, sr.timestamp FROM seek_response AS sr, muff, movie WHERE sr.seek_id = ? AND sr.muff_id = muff.id AND sr.movie_id = movie.id AND sr.timestamp > ? ORDER BY sr.timestamp DESC;";
         return get(seekId, offset, limit, lastSeen, oldTuplesQuery, newTuplesQuery);
     }
 
@@ -139,7 +140,8 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
                     rs.getInt(8),
                     rs.getString(9),
                     rs.getString(10),
-                    rs.getTimestamp(11).toLocalDateTime()
+                    rs.getInt(11),
+                    rs.getTimestamp(12).toLocalDateTime()
             ));
         }
         return seeks;

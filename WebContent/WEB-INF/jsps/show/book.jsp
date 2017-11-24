@@ -23,14 +23,11 @@
                     };
 
                     let isMovieValid = function (movieName) {
-
                         if (movieName === '') {
                             Materialize.toast('Movie Name is Empty', 2000);
                             return false;
                         }
                         return true;
-
-
                     };
 
                     let dateTimeString = function (localDateTime) {
@@ -42,7 +39,6 @@
                         return str + "T" + str2;
 
                     };
-
 
                     let MovieSearchResult = React.createClass({
                         render: function () {
@@ -69,40 +65,30 @@
 
                                         <p>{dateTimeString(this.props.showtime.startTime)}, {dateTimeString(this.props.showtime.endTime)}</p>
                                     </div>
-
-
                             );
                         }
                     });
 
                     let BuildingItem = React.createClass({
-
                         render: function () {
-
                             let showItem = this.props.showList.map(c => {
                                 return <ShowItem key={c.id}
                                                  id={c.id}
                                                  movie={c.movie}
                                                  showtime={c.showtime}
-
                                 />;
-
                             });
-
                             return (
                                     <div>
                                         <div>{this.props.name} , {this.props.streetName}</div>
                                         <div>{showItem}</div>
                                     </div>
-
                             );
                         }
                     });
 
-
                     let ShowApp = React.createClass({
                         getInitialState: function () {
-
                             return {
                                 movieSearchResults: [],
                                 offset: 0,
@@ -114,35 +100,34 @@
                         getDefaultProps: function () {
                             return {
                                 contextPath: '',
-                                region_limit: 3,
-                                limit: 3,
-
+                                region_limit: 5,
+                                movie_limit: 5,
                             }
                         },
-                        _resetOffset: function () {
+                        _movie_resetOffset: function () {
                             this.state.offset = 0;
                         },
-                        _incrementOffset: function (fetchedDataLength) {
+                        _movie_incrementOffset: function (fetchedDataLength) {
                             // last batch
-                            if (fetchedDataLength < this.props.limit) {
-                                this.state.offset -= this.props.limit;
+                            if (fetchedDataLength < this.props.movie_limit) {
+                                this.state.offset -= this.props.movie_limit;
                                 this.state.offset += fetchedDataLength;
                             }
-                            // update limit
-                            this.state.offset += this.props.limit;
+                            // update movie_limit
+                            this.state.offset += this.props.movie_limit;
                         },
-                        _decrementOffset: function () {
-                            let floorExcess = this.state.offset % this.props.limit;
+                        _movie_decrementOffset: function () {
+                            let floorExcess = this.state.offset % this.props.movie_limit;
                             this.state.offset -= floorExcess;
                             if (floorExcess === 0) {
-                                let prevOffset = this.state.offset - 2 * this.props.limit;
+                                let prevOffset = this.state.offset - 2 * this.props.movie_limit;
                                 this.state.offset = prevOffset < 0 ? 0 : prevOffset;
                             } else {
-                                let prevOffset = this.state.offset - this.props.limit;
+                                let prevOffset = this.state.offset - this.props.movie_limit;
                                 this.state.offset = prevOffset < 0 ? 0 : prevOffset;
                             }
                         },
-                        fetchNextBatch: function (pattern) {
+                        movie_fetchNextBatch: function (pattern) {
                             let url = '${pageContext.request.contextPath}/show/activemoviesearch';
                             let self = this;
                             let currentTimeStamp = moment().format("YYYY-MM-DDTHH:mm");
@@ -152,7 +137,7 @@
                                 data: {
                                     pattern: pattern,
                                     offset: self.state.offset,
-                                    limit: self.props.limit,
+                                    limit: self.props.movie_limit,
                                     currentTimeStamp: currentTimeStamp
                                 },
                                 success: function (r) {
@@ -162,7 +147,7 @@
                                     }
                                     else {
                                         let data = json.data;
-                                        self._incrementOffset(data.length);
+                                        self._movie_incrementOffset(data.length);
                                         // no movieSearchResults
                                         if (data.length === 0) {
                                             Materialize.toast('End of search!', 2000);
@@ -180,21 +165,21 @@
                                 }
                             });
                         },
-                        fetchPreviousBatch: function (pattern) {
-                            this._decrementOffset();
+                        movie_fetchPreviousBatch: function (pattern) {
+                            this._movie_decrementOffset();
                             if (this.state.offset === 0) {
                                 Materialize.toast('Start of search!', 2000);
                             }
-                            this.fetchNextBatch(pattern);
+                            this.movie_fetchNextBatch(pattern);
                         },
-                        onRegexInputKeyDown: function (e) {
+                        movie_onRegexInputKeyDown: function (e) {
                             switch (e.keyCode || e.which) {
                                 // Enter Key
                                 case 13:
                                     let self = this;
-                                    this._resetOffset();
+                                    this._movie_resetOffset();
                                     self.setState({movieSearchResults: []});
-                                    this.fetchNextBatch(e.target.value);
+                                    this.movie_fetchNextBatch(e.target.value);
                                     break;
                                 // Escape key
                                 case 27:
@@ -209,7 +194,6 @@
                             $(this.refs.movieSearchResults).hide();
 
                         },
-
                         _region_resetOffset: function () {
                             this.state.region_offset = 0;
                         },
@@ -304,9 +288,7 @@
                         selectRegion: function (city, state, country) {
                             this.refs.region_pattern.value = city + "," + state + "," + country;
                             $(this.refs.regionResults).hide();
-
                         },
-
                         getShows: function (movieName, regionName) {
                             let url = '${pageContext.request.contextPath}/show/showlist';
                             let self = this;
@@ -329,8 +311,6 @@
                                         self.setState(ps => {
                                             return {shows: data};
                                         });
-
-
                                     }
                                 },
                                 error: function (data) {
@@ -338,11 +318,7 @@
                                 }
                             });
                         },
-
-
                         render: function () {
-
-
                             let movieSearchResults = this.state.movieSearchResults.map(movie => {
                                 return <MovieSearchResult
                                         key={movie.id}
@@ -351,7 +327,6 @@
                                         onItemClick={this.selectMovie}
                                 />;
                             });
-
                             let regionResults = this.state.regions.map(region => {
                                 return <Region
                                         key={region.id}
@@ -363,7 +338,6 @@
 
                                 />;
                             });
-
                             let buildingResults = this.state.shows.map(building => {
                                 return <BuildingItem
                                         key={building.key.id}
@@ -371,60 +345,48 @@
                                         name={building.key.name}
                                         streetName={building.key.streetName}
                                         showList={building.value}
-
-
                                 />;
                             });
-
-
                             return (
                                     <div>
                                         <div className="row">
-                                            <div class="col s6">
+                                            <div className="col s5">
                                                 <table className="highlight centered striped">
                                                     <thead>
                                                     <tr>
-
                                                         <td>
-                                                            <input onKeyDown={this.onRegexInputKeyDown}
+                                                            <input onKeyDown={this.movie_onRegexInputKeyDown}
                                                                    ref="pattern"
                                                                    placeholder="Movie" type="text"/>
                                                         </td>
-
                                                     </tr>
                                                     </thead>
-
-
                                                 </table>
                                                 <div className="collection with-header" ref="movieSearchResults">
                                                     <div className="collection-header"><span className="flow-text">Movies</span>
                                                         <span className="right">
                                                 <button className="btn btn-flat"
-                                                        onClick={e => this.fetchPreviousBatch(this.refs.pattern.value)}><i
+                                                        onClick={e => this.movie_fetchPreviousBatch(this.refs.pattern.value)}><i
                                                         className="material-icons">keyboard_arrow_left</i></button>
                                                 <button className="btn btn-flat"
-                                                        onClick={e => this.fetchNextBatch(this.refs.pattern.value)}><i
+                                                        onClick={e => this.movie_fetchNextBatch(this.refs.pattern.value)}><i
                                                         className="material-icons">keyboard_arrow_right</i></button>
                                                 </span>
                                                     </div>
                                                     {movieSearchResults}
                                                 </div>
                                             </div>
-                                            <div class="col s6">
+                                            <div className="col s5">
                                                 <table className="highlight centered striped">
                                                     <thead>
                                                     <tr>
-
                                                         <td>
                                                             <input onKeyDown={this.region_onRegexInputKeyDown}
                                                                    ref="region_pattern"
                                                                    placeholder="Region" type="text"/>
                                                         </td>
-
                                                     </tr>
                                                     </thead>
-
-
                                                 </table>
                                                 <div className="collection with-header" ref="regionResults">
                                                     <div className="collection-header"><span className="flow-text">Regions</span>
@@ -440,12 +402,14 @@
                                                     {regionResults}
                                                 </div>
                                             </div>
+                                            <div className="col s2">
+                                                <button className="btn btn-flat pink white-text"
+                                                        style={{marginTop: '20px'}}
+                                                        onClick={e => this.getShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
+                                                    <i className="material-icons">search</i>
+                                                </button>
+                                            </div>
                                         </div>
-
-                                        <button className="btn btn-flat"
-                                                onClick={e => this.getShows(this.refs.pattern.value, this.refs.region_pattern.value)}>
-                                            <i
-                                                    className="material-icons">info</i></button>
                                         <div>{buildingResults}</div>
 
                                     </div>
@@ -459,15 +423,11 @@
                         },
                     });
 
-
                     ReactDOM.render(<ShowApp/>, document.getElementById('app'));
-
                 </script>
-                <div>
-                    <div id="app"></div>
+                <div class="container">
+                    <div id="app" style="min-height: 100vh"></div>
                 </div>
-
-
             </jsp:body>
         </m:insessionmuffcommons>
     </jsp:body>
