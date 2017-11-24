@@ -15,6 +15,7 @@ TODO
 1. DB checks for strings check <> ''
 1. implement approve for seek response & level
 1. add a feed item - movie suggestion
+1. show followers, level etc on home page
 
 1. report, docs, future todo s, brag list
 

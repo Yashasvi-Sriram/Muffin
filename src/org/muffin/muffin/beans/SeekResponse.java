@@ -19,5 +19,6 @@ public class SeekResponse {
     private String movieName;
     @NonNull
     private String text;
+    private int approvalStatus;
     private LocalDateTime timestamp;
 }
