@@ -26,6 +26,8 @@ DROP TABLE IF EXISTS genre;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 DROP TABLE IF EXISTS valid_region;
+DROP TABLE IF EXISTS moviesuggestion;
+DROP TABLE IF EXISTS muffsuggestion;
 
 /*
   Anything can be done with data as long as the sql constraints are followed
@@ -60,11 +62,11 @@ DROP TABLE IF EXISTS valid_region;
 -- now it can be easily changed without complex update chains or much db time
 -- handle update can be provided
 CREATE TABLE muff (
-  id        SERIAL,
-  handle    VARCHAR(50) NOT NULL,
-  name      VARCHAR(50) NOT NULL,
-  level     INT         NOT NULL DEFAULT 0,
-  joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id           SERIAL,
+  handle       VARCHAR(50) NOT NULL CHECK (handle <> ''),
+  name         VARCHAR(50) NOT NULL CHECK (name <> ''),
+  no_approvals INT         NOT NULL DEFAULT 0,
+  joined_on    TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (handle)
 );
@@ -72,7 +74,7 @@ CREATE TABLE muff (
 -- password update can be provided
 CREATE TABLE muff_password (
   id       INT,
-  password VARCHAR(50) NOT NULL,
+  password VARCHAR(50) NOT NULL CHECK (password <> ''),
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES muff (id)
   ON DELETE CASCADE
@@ -95,8 +97,8 @@ CREATE TABLE follows (
 -- handle update can be provided
 CREATE TABLE movie_owner (
   id        SERIAL,
-  handle    VARCHAR(50) NOT NULL,
-  name      VARCHAR(50) NOT NULL,
+  handle    VARCHAR(50) NOT NULL CHECK (handle <> ''),
+  name      VARCHAR(50) NOT NULL CHECK (name <> ''),
   joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (handle)
@@ -105,7 +107,7 @@ CREATE TABLE movie_owner (
 -- password update can be provided
 CREATE TABLE movie_owner_password (
   id       INT,
-  password VARCHAR(50) NOT NULL,
+  password VARCHAR(50) NOT NULL CHECK (password <> ''),
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES movie_owner (id)
   ON DELETE CASCADE
@@ -114,7 +116,7 @@ CREATE TABLE movie_owner_password (
 -- name update can be allowed
 CREATE TABLE movie (
   id       SERIAL,
-  name     VARCHAR(50) NOT NULL,
+  name     VARCHAR(200) NOT NULL,
   owner_id INT         NOT NULL,
   duration INT         NOT NULL,
   PRIMARY KEY (id),
@@ -128,7 +130,7 @@ CREATE TABLE movie (
 -- as of now actors don't have an account
 CREATE TABLE actor (
   id   SERIAL,
-  name VARCHAR(50) NOT NULL,
+  name VARCHAR(50) NOT NULL CHECK (name <> ''),
   PRIMARY KEY (id),
   UNIQUE (name)
 );
@@ -136,7 +138,7 @@ CREATE TABLE actor (
 -- name update can be allowed
 CREATE TABLE character (
   id             SERIAL,
-  name           VARCHAR(50) NOT NULL,
+  name           VARCHAR(50) NOT NULL CHECK (name <> ''),
   movie_id       INT         NOT NULL,
   movie_owner_id INT         NOT NULL,
   actor_id       INT         NOT NULL,
@@ -155,8 +157,8 @@ CREATE TABLE character (
 -- handle update can be provided
 CREATE TABLE cinema_building_owner (
   id        SERIAL,
-  handle    VARCHAR(50) NOT NULL,
-  name      VARCHAR(50) NOT NULL,
+  handle    VARCHAR(50) NOT NULL CHECK (handle <> ''),
+  name      VARCHAR(50) NOT NULL CHECK (name <> ''),
   joined_on TIMESTAMP   NOT NULL DEFAULT CURRENT_TIMESTAMP,
   UNIQUE (handle),
   PRIMARY KEY (id)
@@ -165,7 +167,7 @@ CREATE TABLE cinema_building_owner (
 -- password update can be provided
 CREATE TABLE cinema_building_owner_password (
   id       INT,
-  password VARCHAR(50) NOT NULL,
+  password VARCHAR(50) NOT NULL CHECK (password <> ''),
   PRIMARY KEY (id),
   FOREIGN KEY (id) REFERENCES cinema_building_owner (id)
   ON DELETE CASCADE
@@ -173,9 +175,9 @@ CREATE TABLE cinema_building_owner_password (
 
 CREATE TABLE valid_region (
   id      SERIAL,
-  city    VARCHAR(50) NOT NULL,
-  state   VARCHAR(50) NOT NULL,
-  country VARCHAR(50) NOT NULL,
+  city    VARCHAR(50) NOT NULL CHECK (city <> ''),
+  state   VARCHAR(50) NOT NULL CHECK (state <> ''),
+  country VARCHAR(50) NOT NULL CHECK (country <> ''),
   PRIMARY KEY (id),
   UNIQUE (city, state, country)
 );
@@ -183,13 +185,13 @@ CREATE TABLE valid_region (
 CREATE TABLE cinema_building (
   id          SERIAL,
   owner_id    INT         NOT NULL,
-  name        VARCHAR(50) NOT NULL,
+  name        VARCHAR(50) NOT NULL CHECK (name <> ''),
   --   address fields, format closest to google maps api
-  street_name VARCHAR(50) NOT NULL,
-  city        VARCHAR(50) NOT NULL,
-  state       VARCHAR(50) NOT NULL,
-  country     VARCHAR(50) NOT NULL,
-  zip         VARCHAR(50) NOT NULL,
+  street_name VARCHAR(50) NOT NULL CHECK (street_name <> ''),
+  city        VARCHAR(50) NOT NULL CHECK (city <> ''),
+  state       VARCHAR(50) NOT NULL CHECK (state <> ''),
+  country     VARCHAR(50) NOT NULL CHECK (country <> ''),
+  zip         VARCHAR(50) NOT NULL CHECK (zip <> ''),
   PRIMARY KEY (id),
   --   though even if these fields are unique they may point to same cinema building
   --   this is the least we can do in db space
@@ -288,12 +290,13 @@ CREATE TABLE seek (
 );
 
 CREATE TABLE seek_response (
-  id        SERIAL,
-  muff_id   INT       NOT NULL,
-  seek_id   INT       NOT NULL,
-  movie_id  INT       NOT NULL,
-  text      TEXT      NOT NULL,
-  timestamp TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  id              SERIAL,
+  muff_id         INT       NOT NULL,
+  seek_id         INT       NOT NULL,
+  movie_id        INT       NOT NULL,
+  text            TEXT      NOT NULL,
+  approval_status INT       NOT NULL DEFAULT 0,
+  timestamp       TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (id),
   UNIQUE (muff_id, seek_id),
   FOREIGN KEY (muff_id) REFERENCES muff (id)
@@ -357,7 +360,7 @@ CREATE TABLE booked_show_seats (
 
 CREATE TABLE genre (
   id   SERIAL,
-  name VARCHAR(50) NOT NULL,
+  name VARCHAR(50) NOT NULL CHECK (name <> ''),
   UNIQUE (name),
   PRIMARY KEY (id)
 );
@@ -379,5 +382,27 @@ CREATE TABLE seek_genre_r (
   FOREIGN KEY (seek_id) REFERENCES seek (id)
   ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES genre (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE muff_suggestion(
+  id1 INT,
+  id2 INT,
+  distance FLOAT,
+  PRIMARY KEY (id1,id2),
+  FOREIGN KEY (id1) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (id2) REFERENCES muff (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE movie_suggestion(
+  muff_id INT,
+  movie_id INT,
+  distance FLOAT,
+  PRIMARY KEY (muff_id, movie_id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );
