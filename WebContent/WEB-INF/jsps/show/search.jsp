@@ -73,11 +73,13 @@
                     let ShowItem = React.createClass({
                         render: function () {
                             return (
-                                    <div>
-                                        <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>
-                                            {timeString(this.props.showtime.startTime)} - {timeString(this.props.showtime.endTime)}
-                                        </a>
-                                    </div>
+                                    <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>
+                                        <span className="chip blue-text"
+                                              style={{marginRight: '10px'}}>
+                                            {timeString(this.props.showtime.startTime)}
+                                            - {timeString(this.props.showtime.endTime)}
+                                        </span>
+                                    </a>
                             );
                         }
                     });
