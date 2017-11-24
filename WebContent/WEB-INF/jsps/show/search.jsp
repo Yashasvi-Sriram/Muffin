@@ -41,15 +41,13 @@
                     let dateString = function (localDateTime) {
                         let p = moment();
                         p.year(localDateTime.date.year).month(localDateTime.date.month - 1).date(localDateTime.date.day);
-                        return p.format("DD-MM-YYYY");
-
+                        return p.format("ddd Do MMM YY");
                     };
 
                     let timeString = function (localDateTime) {
                         let p = moment();
                         p.hour(localDateTime.time.hour).minute(localDateTime.time.minute).second(localDateTime.time.second);
                         return p.format("HH:mm");
-
                     };
 
                     let MovieSearchResult = React.createClass({
@@ -65,7 +63,9 @@
                         render: function () {
                             return (
                                     <div className="collection-item"
-                                         onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>{this.props.city}({this.props.state},{this.props.country})</div>
+                                         onClick={e => this.props.onItemClick(this.props.city, this.props.state, this.props.country)}>
+                                        {this.props.city}, {this.props.state}, {this.props.country}
+                                    </div>
                             );
                         }
                     });
@@ -74,9 +74,9 @@
                         render: function () {
                             return (
                                     <div>
-
-                                        <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>{dateString(this.props.showtime.startTime)} {timeString(this.props.showtime.startTime)}
-                                            - {dateString(this.props.showtime.endTime)} {timeString(this.props.showtime.endTime)}</a>
+                                        <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>
+                                            {timeString(this.props.showtime.startTime)} - {timeString(this.props.showtime.endTime)}
+                                        </a>
                                     </div>
                             );
                         }
@@ -84,7 +84,7 @@
 
                     let BuildingItem = React.createClass({
                         render: function () {
-                            let showItem = this.props.showList.map(c => {
+                            let showItems = this.props.showList.map(c => {
                                 return <ShowItem key={c.id}
                                                  id={c.id}
                                                  movie={c.movie}
@@ -92,9 +92,9 @@
                                 />;
                             });
                             return (
-                                    <div>
+                                    <div className="collection-item">
                                         <div><h5>{this.props.name} , {this.props.streetName}</h5></div>
-                                        <div>{showItem}</div>
+                                        <div>{showItems}</div>
                                     </div>
                             );
                         }
@@ -310,17 +310,14 @@
 
 
                         },
-
                         getShows: function (movieName, city, state, country, date_offset) {
                             let url = '${pageContext.request.contextPath}/show/showlist';
                             let self = this;
                             let startTimeStamp = '';
                             if (date_offset === 0) {
-
                                 startTimeStamp = moment().format("YYYY-MM-DDTHH:mm");
                             }
                             else {
-
                                 startTimeStamp = moment().add(date_offset, 'days').startOf('day').format("YYYY-MM-DDTHH:mm");
                             }
                             let endTimeStamp = moment().add(date_offset, 'days').endOf('day').format("YYYY-MM-DDTHH:mm");
@@ -352,8 +349,6 @@
                                             return {shows: data, date_offset: date_offset};
                                         });
                                         $(self.refs.dateSelectDiv).show();
-
-
                                     }
                                 },
                                 error: function (data) {
@@ -361,30 +356,18 @@
                                 }
                             });
                         },
-
                         getNextDateShows: function (movieName, city, state, country) {
-
                             let self = this;
-
                             self.getShows(movieName, city, state, country, self.state.date_offset + 1);
-
-
                         },
-
                         getPrevDateShows: function (movieName, city, state, country) {
-
                             let self = this;
                             if (self.state.date_offset === 0) {
                                 Materialize.toast('You cannot go back', 2000);
                                 return;
                             }
-
                             self.getShows(movieName, city, state, country, self.state.date_offset - 1);
-
-
                         },
-
-
                         render: function () {
                             let movieSearchResults = this.state.movieSearchResults.map(movie => {
                                 return <MovieSearchResult
@@ -416,23 +399,15 @@
                             });
 
 
-                            let dateToDisplay = moment().add(this.state.date_offset, 'days').format("DD-MM-YYYY");
+                            let dateToDisplay = moment().add(this.state.date_offset, 'days').format("ddd Do MMM YY");
 
                             return (
                                     <div>
-                                        <div className="row">
-                                            <div className="col s5">
-                                                <table className="highlight centered striped">
-                                                    <thead>
-                                                    <tr>
-                                                        <td>
-                                                            <input onKeyDown={this.movie_onRegexInputKeyDown}
-                                                                   ref="pattern"
-                                                                   placeholder="Movie" type="text"/>
-                                                        </td>
-                                                    </tr>
-                                                    </thead>
-                                                </table>
+                                        <div className="row" style={{margin: '0px'}}>
+                                            <div className="col s6">
+                                                <input onKeyDown={this.movie_onRegexInputKeyDown}
+                                                       ref="pattern"
+                                                       placeholder="Movie" type="text"/>
                                                 <div className="collection with-header" ref="movieSearchResults">
                                                     <div className="collection-header"><span className="flow-text">Movies</span>
                                                         <span className="right">
@@ -447,18 +422,18 @@
                                                     {movieSearchResults}
                                                 </div>
                                             </div>
-                                            <div className="col s5">
-                                                <table className="highlight centered striped">
-                                                    <thead>
-                                                    <tr>
-                                                        <td>
-                                                            <input onKeyDown={this.region_onRegexInputKeyDown}
-                                                                   ref="region_pattern"
-                                                                   placeholder="Region" type="text"/>
-                                                        </td>
-                                                    </tr>
-                                                    </thead>
-                                                </table>
+                                            <div className="col s6 flow-text">
+                                                <pre>
+                                                    <span ref="city"></span> <span ref="state"></span> <span
+                                                        ref="country"></span>
+                                                </pre>
+                                            </div>
+                                        </div>
+                                        <div className="row" style={{margin: '0px'}}>
+                                            <div className="col s6">
+                                                <input onKeyDown={this.region_onRegexInputKeyDown}
+                                                       ref="region_pattern"
+                                                       placeholder="Region" type="text"/>
                                                 <div className="collection with-header" ref="regionResults">
                                                     <div className="collection-header"><span className="flow-text">Regions</span>
                                                         <span className="right">
@@ -473,41 +448,26 @@
                                                     {regionResults}
                                                 </div>
                                             </div>
-                                            <div className="col s2">
+                                            <div className="col s4">
                                                 <button className="btn btn-flat pink white-text"
                                                         style={{marginTop: '20px'}}
                                                         onClick={e => this.getShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML, 0)}>
-                                                    <i className="material-icons">search</i>
+                                                    Search shows
                                                 </button>
                                             </div>
-                                            <div className="col s4">
-                                                <div ref="city"></div>
-                                            </div>
-                                            <div className="col s4">
-                                                <div ref="state"></div>
-                                            </div>
-                                            <div className="col s4">
-                                                <div ref="country"></div>
-                                            </div>
-
                                         </div>
-
-
-                                        <div ref="dateSelectDiv">
-                                            <button className="btn btn-flat"
-                                                    onClick={e => this.getPrevDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
-                                                <i
-                                                        className="material-icons">keyboard_arrow_left</i></button>
-                                            {dateToDisplay}
-                                            <button className="btn btn-flat"
-                                                    onClick={e => this.getNextDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
-                                                <i
-                                                        className="material-icons">keyboard_arrow_right</i></button>
-
+                                        <div ref="dateSelectDiv" className="collection">
+                                            <div className="right">
+                                                <span className="flow-text blue-text">{dateToDisplay}</span>
+                                                <button className="btn btn-flat"
+                                                        onClick={e => this.getPrevDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
+                                                    <i className="material-icons">keyboard_arrow_left</i></button>
+                                                <button className="btn btn-flat"
+                                                        onClick={e => this.getNextDateShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML)}>
+                                                    <i className="material-icons">keyboard_arrow_right</i></button>
+                                            </div>
                                             <div>{buildingResults}</div>
                                         </div>
-
-
                                     </div>
 
                             );
@@ -523,6 +483,7 @@
                     ReactDOM.render(<ShowApp/>, document.getElementById('app'));
                 </script>
                 <div class="container">
+                    <h2>Book tickets</h2>
                     <div id="app" style="min-height: 100vh"></div>
                 </div>
             </jsp:body>

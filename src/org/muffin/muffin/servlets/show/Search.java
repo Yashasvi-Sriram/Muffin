@@ -20,11 +20,11 @@ import java.util.Optional;
  * doGetWithSession:  renders movieowner home page
  * doPostWithSession: same as get
  */
-@WebServlet("/show/book")
-public class Book extends MuffEnsuredSessionServlet {
+@WebServlet("/show/search")
+public class Search extends MuffEnsuredSessionServlet {
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-        request.getRequestDispatcher("/WEB-INF/jsps/show/book.jsp").include(request, response);
+        request.getRequestDispatcher("/WEB-INF/jsps/show/search.jsp").include(request, response);
     }
 
     @Override
