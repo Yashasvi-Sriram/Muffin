@@ -6,7 +6,70 @@ let fromNow = function (localDateTime) {
 };
 
 let SeekResponse = React.createClass({
+    getInitialState: function () {
+        return {
+            approvalStatus: 0,
+        }
+    },
+    getDefaultProps: function () {
+        return {
+            seekedMuffId: 0,
+            contextPath: '',
+            toggleUrl: '/seek/response/approval/toggle',
+            inSessionMuffId: 0,
+        }
+    },
+    toggleApprovalLock: false,
+    toggleApproval: function () {
+        let self = this;
+        let seekResponseId = this.props.data.id;
+        let url = this.props.toggleUrl;
+        if (this.toggleApprovalLock) {
+            return;
+        }
+        this.toggleApprovalLock = true;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {seekResponseId: seekResponseId},
+            success: function (r) {
+                self.toggleApprovalLock = false;
+                let json = JSON.parse(r);
+                if (json.status === -1) {
+                    Materialize.toast(json.error, 2000);
+                }
+                else {
+                    let data = json.data;
+                    self.setState({approvalStatus: data});
+                }
+            },
+            error: function (data) {
+                self.toggleApprovalLock = false;
+                Materialize.toast('Server Error', 2000);
+            }
+        });
+    },
     render: function () {
+        let muffCanToggle = this.props.inSessionMuffId === this.props.seekedMuffId;
+        let toggleSeekResponseBtn = (
+            <i className="material-icons"
+               onClick={this.toggleApproval}
+               style={{
+                   cursor: 'pointer',
+                   float: 'right',
+                   fontSize: '16px',
+                   lineHeight: '32px',
+                   paddingLeft: '8px',
+               }}
+            >{this.state.approvalStatus === 1 ? 'done' : 'check_box_outline_blank'}</i>
+        );
+        // if muff can toggle use state otherwise props
+        let backgroundColor;
+        if (muffCanToggle) {
+            backgroundColor = this.state.approvalStatus === 1 ? '#66bb6a' : '#e4e4e4'
+        } else {
+            backgroundColor = this.props.data.approvalStatus === 1 ? '#66bb6a' : '#e4e4e4'
+        }
         return (
             <div className="collection-item">
                 <div className="secondary-content">
@@ -17,14 +80,23 @@ let SeekResponse = React.createClass({
                         @{this.props.data.muff.handle}
                     </div>
                 </div>
-                <div className="chip">
+                <div className="chip waves-effect black-text"
+                     style={{backgroundColor: backgroundColor}}>
                     {this.props.data.movieName}
+                    {muffCanToggle ? toggleSeekResponseBtn : ''}
                 </div>
                 <div>
                     {this.props.data.text}
                 </div>
             </div>
         );
+    },
+    componentDidMount: function () {
+        this.setState((ps, pp) => {
+            return {
+                approvalStatus: pp.data.approvalStatus
+            }
+        });
     }
 });
 
@@ -271,7 +343,7 @@ let Seek = React.createClass({
         };
     },
     refreshFromNowTS: function () {
-        this.setState({fromTimestamp: fromNow(this.props.data.timestamp)});
+        $(this.refs.fromNow).html(fromNow(this.props.data.timestamp));
     },
     onCreateSeekResponse: function (seekResponse) {
         this.fetchNextSeekResponseBatch();
@@ -434,6 +506,9 @@ let Seek = React.createClass({
             }
             responses.push(
                 <SeekResponse
+                    inSessionMuffId={this.props.inSessionMuffId}
+                    seekedMuffId={this.props.data.muff.id}
+                    contextPath={this.props.contextPath}
                     key={response.id}
                     data={response}
                 />
@@ -446,7 +521,8 @@ let Seek = React.createClass({
                     <div className="card-content">
                         <div>{this.props.data.muff.name} <span
                             className="pink-text">@{this.props.data.muff.handle}</span></div>
-                        <div className="blue-text">{this.state.fromTimestamp}</div>
+                        <div className="blue-text" ref="fromNow">
+                        </div>
                         <br/>
                         <div ref="genres">{
                             this.props.data.genres.map(genre => {
@@ -507,7 +583,7 @@ let Review = React.createClass({
         }
     },
     refreshFromNowTS: function () {
-        this.setState({fromLastModified: fromNow(this.props.data.lastModified)});
+        $(this.refs.fromNow).html(fromNow(this.props.data.lastModified));
     },
     render: function () {
         return (
@@ -518,7 +594,8 @@ let Review = React.createClass({
                     <div>{this.props.data.muff.name} <span className="pink-text">@{this.props.data.muff.handle}</span>
                     </div>
                     <div>{this.props.data.movieName}</div>
-                    <div className="blue-text">{this.state.fromLastModified}</div>
+                    <div className="blue-text" ref="fromNow">
+                    </div>
                     <br/>
                     <div className="red-text">{this.props.data.rating}</div>
                     <div className="flow-text">{this.props.data.text}</div>
