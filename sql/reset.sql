@@ -26,6 +26,8 @@ DROP TABLE IF EXISTS genre;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 DROP TABLE IF EXISTS valid_region;
+DROP TABLE IF EXISTS moviesuggestion;
+DROP TABLE IF EXISTS muffsuggestion;
 
 /*
   Anything can be done with data as long as the sql constraints are followed
@@ -381,5 +383,27 @@ CREATE TABLE seek_genre_r (
   FOREIGN KEY (seek_id) REFERENCES seek (id)
   ON DELETE CASCADE,
   FOREIGN KEY (genre_id) REFERENCES genre (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE muff_suggestion(
+  id1 INT,
+  id2 INT,
+  distance FLOAT,
+  PRIMARY KEY (id1,id2),
+  FOREIGN KEY (id1) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (id2) REFERENCES muff (id)
+  ON DELETE CASCADE
+);
+
+CREATE TABLE movie_suggestion(
+  muff_id INT,
+  movie_id INT,
+  rating FLOAT,
+  PRIMARY KEY (muff_id, movie_id),
+  FOREIGN KEY (muff_id) REFERENCES muff (id)
+  ON DELETE CASCADE,
+  FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );
