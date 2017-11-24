@@ -26,4 +26,8 @@ public interface MuffDAO {
     public Optional<Boolean> toggleFollows(final int muffId, final int followeeId);
 
     public Optional<Boolean> doesFollows(final int muffId, final int followeeId);
+
+    public boolean incrementNoApprovalsByOne(final int muffId);
+
+    public boolean decrementNoApprovalsByOne(final int muffId);
 }

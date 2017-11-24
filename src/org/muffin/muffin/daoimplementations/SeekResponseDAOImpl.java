@@ -96,6 +96,57 @@ public class SeekResponseDAOImpl implements SeekResponseDAO {
         }
     }
 
+    @Override
+    public Optional<Integer> toggleApproval(int seekResponseId) {
+        // One db connection opens and closes here
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement toggleApproval = conn.prepareStatement("UPDATE seek_response SET approval_status = CASE (SELECT approval_status FROM seek_response WHERE id = ?) WHEN 0 THEN 1 ELSE 0 END, timestamp = CURRENT_TIMESTAMP WHERE id = ? RETURNING approval_status;");) {
+            toggleApproval.setInt(1, seekResponseId);
+            toggleApproval.setInt(2, seekResponseId);
+            ResultSet rs = toggleApproval.executeQuery();
+            if (rs.next()) {
+                return Optional.of(rs.getInt(1));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<SeekResponse> getById(int seekResponseId) {
+        String getSeeksQuery = "SELECT sr.id, muff.id, muff.handle, muff.name, muff.no_approvals, muff.joined_on, sr.seek_id, movie.id, movie.name, sr.text, sr.approval_status, sr.timestamp FROM seek_response AS sr, muff, movie WHERE sr.id = ? AND sr.muff_id = muff.id AND sr.movie_id = movie.id;";
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement getSeeksPS = conn.prepareStatement(getSeeksQuery);
+        ) {
+            getSeeksPS.setInt(1, seekResponseId);
+            ResultSet rs = getSeeksPS.executeQuery();
+            if (rs.next()) {
+                return Optional.of(new SeekResponse(
+                        rs.getInt(1),
+                        new Muff(
+                                rs.getInt(2),
+                                rs.getString(3),
+                                rs.getString(4),
+                                rs.getInt(5),
+                                rs.getTimestamp(6).toLocalDateTime()
+                        ),
+                        rs.getInt(7),
+                        rs.getInt(8),
+                        rs.getString(9),
+                        rs.getString(10),
+                        rs.getInt(11),
+                        rs.getTimestamp(12).toLocalDateTime()
+                ));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
     private List<SeekResponse> get(int id, int offset, int limit, Timestamp lastSeen, String oldTuplesQuery, String newTuplesQuery) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement oldTuplesPS = conn.prepareStatement(oldTuplesQuery);

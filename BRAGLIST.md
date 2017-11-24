@@ -7,6 +7,7 @@
     1. Uses buffered (timestamp based) two partition algorithm
     1. Infinite Scroll with round robin feed selection
     1. Automatic periodic check for new Responses of Seeks
+    1. Distribution of traffic, by starting polling at different times
 1. Seek & Response
     1. Approval and Level increment
 1. Design & Aesthetics

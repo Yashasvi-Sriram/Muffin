@@ -214,4 +214,26 @@ public class MuffDAOImpl implements MuffDAO {
         }
     }
 
+    @Override
+    public boolean incrementNoApprovalsByOne(int muffId) {
+        return changeNoApprovals(muffId, 1);
+    }
+
+    @Override
+    public boolean decrementNoApprovalsByOne(int muffId) {
+        return changeNoApprovals(muffId, -1);
+    }
+
+    private boolean changeNoApprovals(int muffId, int delta) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("UPDATE muff SET no_approvals = no_approvals + ? WHERE id = ?");
+        ) {
+            preparedStmt.setInt(1, delta);
+            preparedStmt.setInt(2, muffId);
+            return preparedStmt.executeUpdate() == 1;
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
 }

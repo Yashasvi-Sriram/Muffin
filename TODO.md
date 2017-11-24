@@ -8,21 +8,23 @@ Done
 1. inf feed app
     1. all in one feed
 1. seek response
+1. DB checks for strings check <> ''
+1. theatre creation
+improve refresh from now
 
 TODO
 =
 1. use returning in dao implementations
-1. DB checks for strings check <> ''
 1. implement approve for seek response & level
-1. add a feed item - movie suggestion
 1. show followers, level etc on home page
+1. add a feed item - movie suggestion
 
 1. report, docs, future todo s, brag list
 
 1. improve db queries, do indexing
 
 1. booking
-    1. theatre creation
+    1. handle theatre creation bad screen no
 1. batch commit for theatre creation
 1. begin commit for booking seats
 
