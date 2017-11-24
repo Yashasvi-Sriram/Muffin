@@ -16,4 +16,6 @@ public interface BookingDAO {
 
     public List<Seat> getBookedSeats(final int showId);
 
+    public List<Booking> getMuffBookingHistory(final int muffId);
+
 }

@@ -292,7 +292,7 @@
                                     }
                                     else {
 
-                                        Materialize.toast('Added Succesfully', 2000);
+                                        Materialize.toast('Added Successfully', 2000);
 
                                         $(self.refs.createMovieForm).find('input').val('');
                                     }

@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+
 public class BookingDAOImpl implements BookingDAO {
     @Override
     public boolean create(int showId, int muffId, List<Seat> bookedShowSeats) {
@@ -71,5 +72,36 @@ public class BookingDAOImpl implements BookingDAO {
 //        }
 //        return seatList;
         return null;
+    }
+
+    @Override
+    public List<Booking> getMuffBookingHistory(int muffId) {
+
+        List<Booking> bookingList = new ArrayList<>();
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,show_id,muff_id,booked_on from booking where muff_id = ? ");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT seat.id,seat.theatre_id,x,y from booked_show_seats.seat WHERE booked_show_seats.seat_id = seat.id AND booked_show_seats.booking_id = ? ")) {
+            preparedStmt.setInt(1, muffId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            while (resultSet.next()) {
+                preparedStmt2.setInt(1,resultSet.getInt(1));
+                ResultSet resultSet2 = preparedStmt2.executeQuery();
+                List<Seat> seatList = new ArrayList<>();
+                while (resultSet.next()) {
+                    Seat seat = new Seat(resultSet2.getInt(1),resultSet2.getInt(2),resultSet2.getInt(3),resultSet2.getInt(4));
+                    seatList.add(seat);
+
+                }
+
+                Booking booking = new Booking(resultSet.getInt(1),resultSet.getInt(2),resultSet.getInt(3),resultSet.getTimestamp(4).toLocalDateTime(),seatList);
+                bookingList.add(booking);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+
+        }
+        return bookingList;
+
+
     }
 }
