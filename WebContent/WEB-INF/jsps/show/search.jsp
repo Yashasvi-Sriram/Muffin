@@ -81,7 +81,7 @@
                     let ShowItem = React.createClass({
                         render: function () {
                             return (
-                                    <a href={"${pageContext.request.contextPath}/booking/create?showId=" + this.props.id}>
+                                    <a href={"${pageContext.request.contextPath}/show/book?showId=" + this.props.data.id + "&theatreId=" + this.props.data.theatreId}>
                                         <span className="chip blue-text"
                                               style={{marginRight: '10px'}}>
                                             {dateString(this.props.showtime.startTime,this.props.dateOffset)} {timeString(this.props.showtime.startTime)}
@@ -464,7 +464,7 @@
                                                 <button className="btn btn-flat pink white-text"
                                                         style={{marginTop: '20px'}}
                                                         onClick={e => this.getShows(this.refs.pattern.value, this.refs.city.innerHTML, this.refs.state.innerHTML, this.refs.country.innerHTML, 0)}>
-                                                    Search shows
+                                                    Search Shows
                                                 </button>
                                             </div>
                                         </div>

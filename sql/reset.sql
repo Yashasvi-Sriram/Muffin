@@ -350,7 +350,7 @@ CREATE TABLE booked_show_seats (
   show_id    INT NOT NULL,
   booking_id INT NOT NULL,
   PRIMARY KEY (id),
-  UNIQUE (booking_id, show_id, seat_id),
+  UNIQUE (show_id, seat_id),
   FOREIGN KEY (seat_id, theatre_id) REFERENCES seat (id, theatre_id)
   ON DELETE CASCADE,
   FOREIGN KEY (show_id, theatre_id) REFERENCES show (id, theatre_id)

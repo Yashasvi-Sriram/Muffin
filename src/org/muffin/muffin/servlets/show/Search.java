@@ -17,7 +17,7 @@ import java.io.IOException;
 import java.util.Optional;
 
 /**
- * doGetWithSession:  renders movieowner home page
+ * doGetWithSession:  renders show search page
  * doPostWithSession: same as get
  */
 @WebServlet("/show/search")

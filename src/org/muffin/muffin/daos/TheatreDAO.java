@@ -21,7 +21,9 @@ public interface TheatreDAO {
 
     public boolean delete(final int theatreId, final int cinemaBuildingOwnerId);
 
-    public List<Seat> getSeatsOfTheatre(final int theatreID);
+    public List<Seat> getSeatsOf(final int theatreID);
 
     public boolean createSeatsOfTheatre(final int theatreID, @NonNull final Set<Pair<Integer, Integer>> seatsXY);
+
+    public Optional<Theatre> getById(final int theatreId);
 }
