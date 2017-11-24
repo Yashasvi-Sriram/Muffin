@@ -18,6 +18,7 @@ TODO
 1. use returning in dao implementations
 1. show followers, level etc on home page
 1. add a feed item - movie suggestion
+1. harsha's suggestion
 
 1. report, docs, future todo s, brag list
 

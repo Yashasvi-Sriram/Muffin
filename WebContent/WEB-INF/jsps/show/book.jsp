@@ -15,6 +15,8 @@
                 <script type="text/babel">
                     ReactDOM.render(<BookingApp
                             theatre={${requestScope.theatre}}
+                            showId={${requestScope.showId}}
+                            alreadyBookedSeats={${requestScope.alreadyBookedSeats}}
                             theatreSeats={${requestScope.theatreSeats}}
                     />, document.getElementById('app'));
                 </script>

@@ -11,9 +11,7 @@ import java.util.Optional;
 import java.util.Set;
 
 public interface BookingDAO {
-
-    public boolean create(final int showId, final int muffId, final List<Seat> bookedShowSeats);
+    public boolean create(final int showId, final int muffId, final List<Seat> seatIdsToBeBooked);
 
     public List<Seat> getBookedSeats(final int showId);
-
 }

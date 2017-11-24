@@ -108,8 +108,7 @@ window.TheatreViewerApp = React.createClass({
                     <Seat x={x}
                           y={y}
                           key={x + '-' + y}
-                          exists={seat}
-                          onSeatClick={this.toggleSeatExistence}/>
+                          exists={seat}/>
                 );
             }
         }
