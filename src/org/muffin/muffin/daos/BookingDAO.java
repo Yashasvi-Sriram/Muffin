@@ -14,4 +14,7 @@ public interface BookingDAO {
     public boolean create(final int showId, final int muffId, final List<Seat> seatIdsToBeBooked);
 
     public List<Seat> getBookedSeats(final int showId);
+
+    public List<Booking> getMuffBookingHistory(final int muffId);
+
 }

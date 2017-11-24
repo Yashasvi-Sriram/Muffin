@@ -46,7 +46,8 @@ public class ShowDAOImpl implements ShowDAO {
     @Override
     public Optional<Show> get(int movieId, int theatreId, Showtime showtime) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE theatre_id = ?  AND movie_id = ? AND during = ?::tsrange")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE theatre_id = ?  AND show.movie_id = ? AND show.movie_id = movie.id AND during = ?::tsrange");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setInt(1, theatreId);
             preparedStmt.setInt(2, movieId);
             preparedStmt.setString(3, toTSRange(showtime));
@@ -60,13 +61,17 @@ public class ShowDAOImpl implements ShowDAO {
                 helper = helper.substring(1, helper.length() - 2);
                 LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
                 Showtime showtime1 = new Showtime(startTime, endTime);
-                MovieDAO movieDAO = new MovieDAOImpl();
-                Optional<Movie> movieOpt = movieDAO.get(resultSet.getInt(3));
-                if (movieOpt.isPresent()) {
-                    Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movieOpt.get(), showtime1);
-                    return Optional.of(show);
+                List<Genre> genres = new ArrayList<>();
+                preparedStmt2.setInt(1, resultSet.getInt(3));
+                ResultSet resultSet2 = preparedStmt2.executeQuery();
+                while (resultSet2.next()) {
+                    Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
+                    genres.add(genre);
                 }
-                return Optional.empty();
+                Movie movie = new Movie(resultSet.getInt(3), resultSet.getInt(6), resultSet.getString(5), resultSet.getInt(7), genres);
+                Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movie, showtime1);
+                return Optional.of(show);
+
             }
             return Optional.empty();
         } catch (SQLException e) {
@@ -76,36 +81,40 @@ public class ShowDAOImpl implements ShowDAO {
 
     }
 
-    @Override
-    public Optional<Show> getShow(int showId) {
-        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE show.id = ?")) {
-            preparedStmt.setInt(1, showId);
 
-            ResultSet resultSet = preparedStmt.executeQuery();
-            if (resultSet.next()) {
+    private Optional<Show> getShow(int showId, Connection conn) throws SQLException {
 
-                StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
-                String initial = tokens.nextToken();
-                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                LocalDateTime startTime = LocalDateTime.parse(initial.substring(2, initial.length() - 1), formatter);
-                String helper = tokens.nextToken();
-                helper = helper.substring(1, helper.length() - 2);
-                LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
-                MovieDAO movieDAO = new MovieDAOImpl();
-                Showtime showtime1 = new Showtime(startTime, endTime);
-                Optional<Movie> movieOpt = movieDAO.get(resultSet.getInt(3));
-                if (movieOpt.isPresent()) {
-                    Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movieOpt.get(), showtime1);
-                    return Optional.of(show);
-                }
-                return Optional.empty();
+        PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE show.id = ? AND show.movie_id = movie.id");
+        PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id");
+        preparedStmt.setInt(1, showId);
+
+        ResultSet resultSet = preparedStmt.executeQuery();
+        if (resultSet.next()) {
+
+            StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
+            String initial = tokens.nextToken();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime startTime = LocalDateTime.parse(initial.substring(2, initial.length() - 1), formatter);
+            String helper = tokens.nextToken();
+            helper = helper.substring(1, helper.length() - 2);
+            LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
+            Showtime showtime1 = new Showtime(startTime, endTime);
+
+            preparedStmt2.setInt(1, resultSet.getInt(3));
+            List<Genre> genres = new ArrayList<>();
+            ResultSet resultSet2 = preparedStmt2.executeQuery();
+            while (resultSet2.next()) {
+                Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
+                genres.add(genre);
             }
-            return Optional.empty();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            return Optional.empty();
+            Movie movie = new Movie(resultSet.getInt(3), resultSet.getInt(6), resultSet.getString(5), resultSet.getInt(7), genres);
+            Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movie, showtime1);
+            return Optional.of(show);
+
+
         }
+        return Optional.empty();
+
 
     }
 
@@ -113,7 +122,8 @@ public class ShowDAOImpl implements ShowDAO {
     public List<Show> get(int theatreId) {
         List<Show> showList = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT id,theatre_id,movie_id,during FROM show WHERE show.theatre_id = ? ORDER BY during")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE show.theatre_id = ?  AND show.movie_id = movie.id ORDER BY during");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setInt(1, theatreId);
             ResultSet result = preparedStmt.executeQuery();
             while (result.next()) {
@@ -125,12 +135,18 @@ public class ShowDAOImpl implements ShowDAO {
                 helper = helper.substring(1, helper.length() - 2);
                 LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
                 Showtime showtime1 = new Showtime(startTime, endTime);
-                MovieDAO movieDAO = new MovieDAOImpl();
-                Optional<Movie> movieOpt = movieDAO.get(result.getInt(3));
-                if (movieOpt.isPresent()) {
-                    Show show = new Show(result.getInt(1), result.getInt(2), movieOpt.get(), showtime1);
-                    showList.add(show);
+
+                preparedStmt2.setInt(1, result.getInt(3));
+                List<Genre> genres = new ArrayList<>();
+                ResultSet resultSet2 = preparedStmt2.executeQuery();
+                while (resultSet2.next()) {
+                    Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
+                    genres.add(genre);
                 }
+                Movie movie = new Movie(result.getInt(3), result.getInt(6), result.getString(5), result.getInt(7), genres);
+                Show show = new Show(result.getInt(1), result.getInt(2), movie, showtime1);
+                showList.add(show);
+
 
             }
             return showList;
@@ -165,7 +181,8 @@ public class ShowDAOImpl implements ShowDAO {
     public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStamp) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie WHERE movie.name ILIKE ? AND movie.id in (SELECT show.movie_id from show WHERE (show.during && ?::tsrange) ) ORDER BY movie.name OFFSET ? LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie WHERE movie.name ILIKE ? AND movie.id in (SELECT show.movie_id from show WHERE (show.during && ?::tsrange) ) ORDER BY movie.name OFFSET ? LIMIT ?");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setString(1, "%" + pattern + "%");
             preparedStmt.setString(2, toTSUpperInfiniteRange(currentTimeStamp));
             preparedStmt.setInt(3, offset);
@@ -173,8 +190,13 @@ public class ShowDAOImpl implements ShowDAO {
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
                 int movieId = rs.getInt(1);
-                GenreDAO genreDAO = new GenreDAOImpl();
-                List<Genre> genres = genreDAO.getByMovie(movieId);
+                preparedStmt2.setInt(1, movieId);
+                List<Genre> genres = new ArrayList<>();
+                ResultSet resultSet2 = preparedStmt2.executeQuery();
+                while (resultSet2.next()) {
+                    Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
+                    genres.add(genre);
+                }
                 Movie movie = new Movie(movieId, rs.getInt(2), rs.getString(3), rs.getInt(4), genres);
                 movies.add(movie);
             }
@@ -190,7 +212,8 @@ public class ShowDAOImpl implements ShowDAO {
         Map<CinemaBuilding, List<Show>> shows = new HashMap<>();
         CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange) ORDER BY during")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange) ORDER BY during");
+             PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT id, owner_id, name, street_name, city, state, country, zip  FROM cinema_building WHERE id = ?")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setString(2, city);
             preparedStmt.setString(3, state);
@@ -198,16 +221,23 @@ public class ShowDAOImpl implements ShowDAO {
             preparedStmt.setString(5, toTSRange(showtime));
             ResultSet resultSet = preparedStmt.executeQuery();
             while (resultSet.next()) {
-                CinemaBuilding cinemaBuilding = cinemaBuildingDAO.get(resultSet.getInt(1)).get();
-                Show show = getShow(resultSet.getInt(2)).get();
 
-                if (shows.containsKey(cinemaBuilding)) {
-                    shows.get(cinemaBuilding).add(show);
+                preparedStmt2.setInt(1, resultSet.getInt(1));
+                ResultSet result = preparedStmt.executeQuery();
 
-                } else {
-                    List<Show> showList = new ArrayList<>();
-                    showList.add(show);
-                    shows.put(cinemaBuilding, showList);
+                if (result.next()) {
+                    CinemaBuilding cinemaBuilding = new CinemaBuilding(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4), result.getString(5), result.getString(6), result.getString(7), result.getString(8));
+                    Show show = getShow(resultSet.getInt(2), conn).get();
+
+                    if (shows.containsKey(cinemaBuilding)) {
+                        shows.get(cinemaBuilding).add(show);
+
+                    } else {
+                        List<Show> showList = new ArrayList<>();
+                        showList.add(show);
+                        shows.put(cinemaBuilding, showList);
+                    }
+
                 }
 
 

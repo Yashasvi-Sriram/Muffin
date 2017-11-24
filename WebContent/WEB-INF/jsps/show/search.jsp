@@ -38,10 +38,18 @@
                         return true;
                     };
 
-                    let dateString = function (localDateTime) {
+                    let dateString = function (localDateTime,dateOffset) {
                         let p = moment();
+                        let q = moment();
                         p.year(localDateTime.date.year).month(localDateTime.date.month - 1).date(localDateTime.date.day);
-                        return p.format("ddd Do MMM YY");
+                        q.add(dateOffset, 'days');
+                        if(p.format("YYYY-MM-DD") === q.format("YYYY-MM-DD")){
+                            return '';
+                        }
+                        else{
+                            return p.format("ddd");
+                        }
+
                     };
 
                     let timeString = function (localDateTime) {
@@ -76,8 +84,8 @@
                                     <a href={"${pageContext.request.contextPath}/show/book?showId=" + this.props.data.id + "&theatreId=" + this.props.data.theatreId}>
                                         <span className="chip blue-text"
                                               style={{marginRight: '10px'}}>
-                                            {timeString(this.props.data.showtime.startTime)}
-                                            - {timeString(this.props.data.showtime.endTime)}
+                                            {dateString(this.props.showtime.startTime,this.props.dateOffset)} {timeString(this.props.showtime.startTime)}
+                                            - {dateString(this.props.showtime.endTime,this.props.dateOffset)} {timeString(this.props.showtime.endTime)}
                                         </span>
                                     </a>
                             );
@@ -86,9 +94,12 @@
 
                     let BuildingItem = React.createClass({
                         render: function () {
-                            let showItems = this.props.showList.map(show => {
-                                return <ShowItem key={show.id}
-                                                 data={show}
+                            let showItems = this.props.showList.map(c => {
+                                return <ShowItem key={c.id}
+                                                 id={c.id}
+                                                 movie={c.movie}
+                                                 showtime={c.showtime}
+                                                 dateOffset={this.props.dateOffset}
                                 />;
                             });
                             return (
@@ -395,6 +406,7 @@
                                         name={building.key.name}
                                         streetName={building.key.streetName}
                                         showList={building.value}
+                                        dateOffset={this.state.date_offset}
                                 />;
                             });
 

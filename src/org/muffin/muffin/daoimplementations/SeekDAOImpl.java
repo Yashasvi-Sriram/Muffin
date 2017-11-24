@@ -1,14 +1,13 @@
 package org.muffin.muffin.daoimplementations;
 
-import org.muffin.muffin.beans.Genre;
-import org.muffin.muffin.beans.Muff;
-import org.muffin.muffin.beans.Review;
-import org.muffin.muffin.beans.Seek;
+import org.muffin.muffin.beans.*;
+import org.muffin.muffin.daos.MovieDAO;
 import org.muffin.muffin.daos.SeekDAO;
 import org.muffin.muffin.db.DBConfig;
 
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Optional;
 
@@ -147,5 +146,84 @@ public class SeekDAOImpl implements SeekDAO {
             ));
         }
         return seeks;
+    }
+
+    @Override
+    public Optional<Movie> getAutomatedSuggestion(List<Genre> genres) {
+        Movie ret = null;
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+        ) {
+            int numMovies = -1,numGenres = -1;
+            Statement st = conn.createStatement();
+            ResultSet rs = st.executeQuery("SELECT count(*) from movie;");
+            while (rs.next()) {
+                numMovies = rs.getInt(1);
+            }
+            st = conn.createStatement();
+            rs = st.executeQuery("SELECT count(*) from genre;");
+            while (rs.next()) {
+                numGenres = rs.getInt(1);
+            }
+            boolean isGenreSet[][] = new boolean[numMovies+1][numGenres+1];
+            st = conn.createStatement();
+            rs = st.executeQuery("SELECT * from movie_genre_r;");
+            while (rs.next()) {
+                isGenreSet[rs.getInt(1)][rs.getInt(2)] = true;
+            }
+            HashMap<Integer,String> genreIDToName = new HashMap<Integer,String>();
+            HashMap<String,Integer> genreNameToID = new HashMap<String,Integer>();
+            st = conn.createStatement();
+            rs = st.executeQuery("SELECT * from genre;");
+            while (rs.next()) {
+                genreNameToID.put(rs.getString(2),rs.getInt(1));
+                genreIDToName.put(rs.getInt(1),rs.getString(2));
+            }
+            int maxMovieID = -1;
+            float maxScore = 0;
+            st = conn.createStatement();
+            rs = st.executeQuery("SELECT movie_id,count(*),sum(rating) from review group by movie_id;");
+            while (rs.next()) {
+                int genreMatchCnt = 0;
+                int movieID = rs.getInt(1);
+                int userCnt = rs.getInt(2);
+                float ratingSum = rs.getInt(3);
+                for(int i=0;i < genres.size();i++) {
+                    int genreID = genreNameToID.get(genres.get(i).getName());
+                    if(isGenreSet[movieID][genreID]) genreMatchCnt++;
+                }
+                if(movieRelevance(userCnt,ratingSum) != -1) {
+                    float score = genreMatchCnt * movieRelevance(userCnt,ratingSum);
+                    if(score > maxScore) {
+                        maxScore = score;
+                        maxMovieID = movieID;
+                    }
+                }
+            }
+            if (maxMovieID != -1) {
+                List<Genre> genresList = new ArrayList<>();
+                PreparedStatement ps = conn.prepareStatement("SELECT * from movie_genre_r where movie_id = ?;");
+                ps.setInt(1,maxMovieID);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    Genre genre = new Genre(rs.getInt(2),genreIDToName.get(rs.getInt(2)));
+                    genresList.add(genre);
+                }
+                ps = conn.prepareStatement("SELECT * from movie where movie.id = ?;");
+                ps.setInt(1,maxMovieID);
+                rs = ps.executeQuery();
+                while (rs.next()) {
+                    ret = new Movie(rs.getInt(1),rs.getInt(3),rs.getString(2),rs.getInt(4),genresList);
+                }
+                return Optional.of(ret);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return Optional.empty();
+    }
+
+    private float movieRelevance(int userCnt, float ratingSum) {
+        if(userCnt < 20) return -1;
+        return ratingSum/(float) userCnt;
     }
 }

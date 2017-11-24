@@ -19,7 +19,7 @@ public class SuggestionDAOImpl implements SuggestionDAO {
     public List<Movie> getMovies(int muffId,int limit) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie,movie_suggestion WHERE  movie_suggestion.muff_id = ? AND movie_suggestion.movie_id = movie.id ORDER BY movie_suggestion.rating LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie,movie_suggestion WHERE  movie_suggestion.muff_id = ? AND movie_suggestion.movie_id = movie.id ORDER BY movie_suggestion.rating LIMIT ? DESC ")) {
             preparedStmt.setInt(1,muffId);
             preparedStmt.setInt(2, limit);
             ResultSet rs = preparedStmt.executeQuery();
