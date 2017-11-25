@@ -377,6 +377,7 @@ let Seek = React.createClass({
             seekResponseOffset: 0,
             seekResponseHashMap: {},
             seekResponses: [],
+            automatedResponse: {},
         }
     },
     getDefaultProps: function () {
@@ -387,6 +388,7 @@ let Seek = React.createClass({
             checkForNewResponseUrl: '/seek/response/check/forNew',
             respondedMuffIdsFetchUrl: '/seek/response/fetch/respondedMuffIdsOfSeek',
             seekResponseFetchUrl: '/seek/response/fetch/seek',
+            automatedSeekResponseFetchUrl: '/seek/fetch/automatedresponse',
             seekResponseFetchParam: 0,
             seekResponseFetchLimit: 0,
             timeIntervalForNewResponseCheck: 10000, // ms
@@ -398,6 +400,29 @@ let Seek = React.createClass({
     onCreateSeekResponse: function (seekResponse) {
         this.fetchNextSeekResponseBatch();
         $(this.refs.createSeekResponseAppDiv).hide();
+    },
+    fetchAutomatedResponse: function () {
+        let self = this;
+        let url = this.props.contextPath + this.props.automatedSeekResponseFetchUrl;
+        let seekId = this.props.data.id;
+        $.ajax({
+            url: url,
+            type: 'GET',
+            data: {
+                seekId: seekId,
+            },
+            success: function (r) {
+                let json = JSON.parse(r);
+                if (json.status === -1) {
+                }
+                else {
+                    let fetchedData = json.data;
+                    self.setState({automatedResponse: fetchedData});
+                }
+            },
+            error: function (data) {
+            }
+        });
     },
     fetchNextSeekResponseBatch: function (shouldToastIfNoMoreFeed) {
         let self = this;
@@ -593,6 +618,19 @@ let Seek = React.createClass({
                         </div>
                     </div>
                     <div className="collection" style={{margin: '0px'}}>
+                        <div className="collection-item">
+                            <div className="secondary-content">
+                                <div className="black-text">
+                                    Muffin
+                                </div>
+                                <div className="pink-text">
+                                    @to-rescue
+                                </div>
+                            </div>
+                            <div className="chip waves-effect brown white-text" title={this.state.automatedResponse.name}>
+                                {this.state.automatedResponse.name}
+                            </div>
+                        </div>
                         {responses}
                     </div>
                     <div>
@@ -607,6 +645,8 @@ let Seek = React.createClass({
     },
     componentDidMount: function () {
         $(this.refs.feedItem).fadeOut(0);
+        // get automated response
+        this.fetchAutomatedResponse();
         // refresh timestamp
         this.refreshFromNowTS();
         // decide whether or not to be able to give response

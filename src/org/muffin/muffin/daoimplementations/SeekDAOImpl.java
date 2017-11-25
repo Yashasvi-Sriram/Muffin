@@ -149,51 +149,57 @@ public class SeekDAOImpl implements SeekDAO {
     }
 
     @Override
-    public Optional<Movie> getAutomatedSuggestion(List<Genre> genres) {
+    public Optional<Movie> getAutomatedSuggestion(int seekId) {
         Movie ret = null;
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
         ) {
-            int numMovies = -1,numGenres = -1;
+            // jugaad
+            Optional<Seek> seekOptional = getById(seekId);
+            if (!seekOptional.isPresent()) {
+                return Optional.empty();
+            }
+            List<Genre> genres = seekOptional.get().getGenres();
+            int numMovies = -1, numGenres = -1;
             Statement st = conn.createStatement();
-            ResultSet rs = st.executeQuery("SELECT count(*) from movie;");
+            ResultSet rs = st.executeQuery("SELECT count(*) FROM movie;");
             while (rs.next()) {
                 numMovies = rs.getInt(1);
             }
             st = conn.createStatement();
-            rs = st.executeQuery("SELECT count(*) from genre;");
+            rs = st.executeQuery("SELECT count(*) FROM genre;");
             while (rs.next()) {
                 numGenres = rs.getInt(1);
             }
-            boolean isGenreSet[][] = new boolean[numMovies+1][numGenres+1];
+            boolean isGenreSet[][] = new boolean[numMovies + 1][numGenres + 1];
             st = conn.createStatement();
-            rs = st.executeQuery("SELECT * from movie_genre_r;");
+            rs = st.executeQuery("SELECT * FROM movie_genre_r;");
             while (rs.next()) {
                 isGenreSet[rs.getInt(1)][rs.getInt(2)] = true;
             }
-            HashMap<Integer,String> genreIDToName = new HashMap<Integer,String>();
-            HashMap<String,Integer> genreNameToID = new HashMap<String,Integer>();
+            HashMap<Integer, String> genreIDToName = new HashMap<Integer, String>();
+            HashMap<String, Integer> genreNameToID = new HashMap<String, Integer>();
             st = conn.createStatement();
-            rs = st.executeQuery("SELECT * from genre;");
+            rs = st.executeQuery("SELECT * FROM genre;");
             while (rs.next()) {
-                genreNameToID.put(rs.getString(2),rs.getInt(1));
-                genreIDToName.put(rs.getInt(1),rs.getString(2));
+                genreNameToID.put(rs.getString(2), rs.getInt(1));
+                genreIDToName.put(rs.getInt(1), rs.getString(2));
             }
             int maxMovieID = -1;
             float maxScore = 0;
             st = conn.createStatement();
-            rs = st.executeQuery("SELECT movie_id,count(*),sum(rating) from review group by movie_id;");
+            rs = st.executeQuery("SELECT movie_id,count(*),sum(rating) FROM review GROUP BY movie_id;");
             while (rs.next()) {
                 int genreMatchCnt = 0;
                 int movieID = rs.getInt(1);
                 int userCnt = rs.getInt(2);
                 float ratingSum = rs.getInt(3);
-                for(int i=0;i < genres.size();i++) {
+                for (int i = 0; i < genres.size(); i++) {
                     int genreID = genreNameToID.get(genres.get(i).getName());
-                    if(isGenreSet[movieID][genreID]) genreMatchCnt++;
+                    if (isGenreSet[movieID][genreID]) genreMatchCnt++;
                 }
-                if(movieRelevance(userCnt,ratingSum) != -1) {
-                    float score = genreMatchCnt * movieRelevance(userCnt,ratingSum);
-                    if(score > maxScore) {
+                if (movieRelevance(userCnt, ratingSum) != -1) {
+                    float score = genreMatchCnt * movieRelevance(userCnt, ratingSum);
+                    if (score > maxScore) {
                         maxScore = score;
                         maxMovieID = movieID;
                     }
@@ -201,18 +207,18 @@ public class SeekDAOImpl implements SeekDAO {
             }
             if (maxMovieID != -1) {
                 List<Genre> genresList = new ArrayList<>();
-                PreparedStatement ps = conn.prepareStatement("SELECT * from movie_genre_r where movie_id = ?;");
-                ps.setInt(1,maxMovieID);
+                PreparedStatement ps = conn.prepareStatement("SELECT * FROM movie_genre_r WHERE movie_id = ?;");
+                ps.setInt(1, maxMovieID);
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    Genre genre = new Genre(rs.getInt(2),genreIDToName.get(rs.getInt(2)));
+                    Genre genre = new Genre(rs.getInt(2), genreIDToName.get(rs.getInt(2)));
                     genresList.add(genre);
                 }
-                ps = conn.prepareStatement("SELECT * from movie where movie.id = ?;");
-                ps.setInt(1,maxMovieID);
+                ps = conn.prepareStatement("SELECT * FROM movie WHERE movie.id = ?;");
+                ps.setInt(1, maxMovieID);
                 rs = ps.executeQuery();
                 while (rs.next()) {
-                    ret = new Movie(rs.getInt(1),rs.getInt(3),rs.getString(2),rs.getInt(4),genresList);
+                    ret = new Movie(rs.getInt(1), rs.getInt(3), rs.getString(2), rs.getInt(4), genresList);
                 }
                 return Optional.of(ret);
             }
@@ -223,7 +229,7 @@ public class SeekDAOImpl implements SeekDAO {
     }
 
     private float movieRelevance(int userCnt, float ratingSum) {
-        if(userCnt < 20) return -1;
-        return ratingSum/(float) userCnt;
+        if (userCnt < 20) return -1;
+        return ratingSum / (float) userCnt;
     }
 }

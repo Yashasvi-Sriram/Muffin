@@ -17,5 +17,5 @@ public interface SeekDAO {
 
     public List<Seek> getByFollowers(final int muffId, final int offset, final int limit, final Timestamp lastSeen);
 
-    public Optional<Movie> getAutomatedSuggestion(List<Genre> genres);
+    public Optional<Movie> getAutomatedSuggestion(final int seekId);
 }
