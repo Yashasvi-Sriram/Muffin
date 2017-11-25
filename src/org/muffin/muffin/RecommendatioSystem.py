@@ -1,7 +1,7 @@
 import psycopg2
 import numpy as np
 try:
-	db = psycopg2.connect("dbname='postgres' user='anirudh' host='localhost' password='' port=5700")
+	db = psycopg2.connect("dbname='postgres' user='pandu' host='localhost' password='' port=5081")
 except:
 	print "Could not form connection"
 cursor = db.cursor()
@@ -89,7 +89,7 @@ clearuser = "DELETE from muff_suggestion"
 clearmovie = "DELETE from movie_suggestion"
 cursor.execute(clearuser)
 cursor.execute(clearmovie)
-cursor.executemany("INSERT INTO muffsuggestion VALUES(%s,%s,%s)", useruserlist)
-cursor.executemany("INSERT INTO moviesuggestion VALUES(%s,%s,%s)", usermovielist)
+cursor.executemany("INSERT INTO muff_suggestion VALUES(%s,%s,%s)", useruserlist)
+cursor.executemany("INSERT INTO movie_suggestion VALUES(%s,%s,%s)", usermovielist)
 db.commit()
 print "Done!"

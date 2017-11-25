@@ -891,6 +891,12 @@ window.InfiniteFeedApp = React.createClass({
                         />
                     );
                     break;
+                case FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION:
+                    console.log(feedItem);
+                    break;
+                case FEED_TYPES.AUTOMATED_MUFF_SUGGESTION:
+                    console.log(feedItem);
+                    break;
                 default:
                     HTMLFeed.push(<div>Unknown Element</div>);
                     break;
