@@ -36,7 +36,8 @@ public class FetchMuffs extends MuffEnsuredSessionServlet {
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
         int limit = Integer.parseInt(request.getParameter("limit"));
-        List<Muff> muffs = suggestionDAO.getMuffs(muffId,limit);
+        int offset = Integer.parseInt(request.getParameter("offset"));
+        List<Muff> muffs = suggestionDAO.getMuffs(muffId, offset, limit);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(muffs, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();

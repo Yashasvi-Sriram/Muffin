@@ -5,6 +5,54 @@ let fromNow = function (localDateTime) {
     return p.fromNow();
 };
 
+let MovieSuggestion = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
+    render: function () {
+        return (
+            <div className="card orange lighten-5 review hoverable" ref="feedItem">
+                <div className="card-content">
+                    <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.data.id}
+                       className="blue-text">{this.props.data.name}</a>
+                    <div className="red-text">{this.props.data.durationInMinutes} min</div>
+                    <div className="flow-text">{this.props.data.genres.map(genre => {
+                        return (
+                            <span key={genre.id} className="chip">{genre.name}</span>
+                        );
+                    })}</div>
+                </div>
+            </div>
+        );
+    }
+});
+
+let MuffSuggestion = React.createClass({
+    getDefaultProps: function () {
+        return {
+            contextPath: '',
+        }
+    },
+    render: function () {
+        return (
+            <div className="card teal lighten-5 review hoverable" ref="feedItem">
+                <div className="card-content">
+                    <a href={this.props.contextPath + '/muff/profile?muffId=' + this.props.data.id}>{this.props.data.name}
+                        <span className="pink-text"> @{this.props.data.handle}</span></a>
+                    <div style={{cursor: 'pointer'}}>
+                        <span title="Number of approvals"><i className="material-icons">done</i>
+                            = {this.props.data.noApprovals}</span>
+                        <span title="Level"><i className="material-icons">flash_on</i>
+                            = {Math.floor(this.props.data.noApprovals / 10)}</span>
+                    </div>
+                </div>
+            </div>
+        );
+    }
+});
+
 let SeekResponse = React.createClass({
     getInitialState: function () {
         return {
@@ -671,17 +719,17 @@ window.InfiniteFeedApp = React.createClass({
         defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.FETCH_URL] = '';
         defaultProps[FEED_TYPES.REVIEW + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         // SEEK
-        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 5;
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_URL] = '';
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         // AMovSug
-        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 2;
         defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_URL] = '/suggestion/fetch/movies';
         defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         // AMuffSug
-        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 2;
         defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_URL] = '/suggestion/fetch/muffs';
         defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
@@ -802,13 +850,6 @@ window.InfiniteFeedApp = React.createClass({
             if (FEED_TYPES.hasOwnProperty(key)) {
                 // if this feed is not fetched in this cycle
                 if (this.RRFeedFetchState.typesFetchedBitmap[FEED_TYPES[key]] !== true) {
-                    // if feed is the automated suggestions then control its probability
-                    if (FEED_TYPES[key] === FEED_TYPES.AUTOMATED_MUFF_SUGGESTION
-                        || FEED_TYPES[key] === FEED_TYPES.AUTOMATED_MUFF_SUGGESTION) {
-                        if (Math.random() > 0.2) {
-                            continue
-                        }
-                    }
                     newType = FEED_TYPES[key];
                     break;
                 }
@@ -892,10 +933,22 @@ window.InfiniteFeedApp = React.createClass({
                     );
                     break;
                 case FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION:
-                    console.log(feedItem);
+                    HTMLFeed.push(
+                        <MovieSuggestion
+                            key={FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + '-' + Math.random()}
+                            data={feedItem.data}
+                            contextPath={this.props.contextPath}
+                        />
+                    );
                     break;
                 case FEED_TYPES.AUTOMATED_MUFF_SUGGESTION:
-                    console.log(feedItem);
+                    HTMLFeed.push(
+                        <MuffSuggestion
+                            key={FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + '-' + Math.random()}
+                            data={feedItem.data}
+                            contextPath={this.props.contextPath}
+                        />
+                    );
                     break;
                 default:
                     HTMLFeed.push(<div>Unknown Element</div>);

@@ -35,8 +35,9 @@ public class FetchMovies extends MuffEnsuredSessionServlet {
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
+        int offset = Integer.parseInt(request.getParameter("offset"));
         int limit = Integer.parseInt(request.getParameter("limit"));
-        List<Movie> movies = suggestionDAO.getMovies(muffId,limit);
+        List<Movie> movies = suggestionDAO.getMovies(muffId, offset, limit);
         PrintWriter out = response.getWriter();
         out.println(new GsonBuilder().create().toJson(ResponseWrapper.get(movies, ResponseWrapper.ARRAY_RESPONSE)));
         out.close();
