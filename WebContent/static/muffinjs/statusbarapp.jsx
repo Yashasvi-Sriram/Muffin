@@ -62,14 +62,14 @@ window.StatusBarApp = React.createClass({
     },
     render: function () {
         return (
-            <div className="card red waves-effect" ref="status" style={{cursor: 'pointer'}}>
+            <div className="card  light-green accent-1 waves-effect" ref="status" style={{cursor: 'pointer'}}>
                 <div className="card-content">
                     <div title="Number of followers" className="flow-text">
                         <i className="material-icons">people</i> = {this.state.noFollowers}</div>
                     <div title="Number of approvals" className="flow-text">
                         <i className="material-icons">done</i> = {this.state.noApprovals}</div>
                     <div title="Level" className="flow-text">
-                        <i className="material-icons">flash_on</i> = {Math.floor(this.state.noApprovals / 10)}</div>
+                        <i className="material-icons">book</i> = {Math.floor(this.state.noApprovals / 10)}</div>
                 </div>
             </div>
         );

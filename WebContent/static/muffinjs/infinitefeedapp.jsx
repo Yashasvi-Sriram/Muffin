@@ -13,8 +13,9 @@ let MovieSuggestion = React.createClass({
     },
     render: function () {
         return (
-            <div className="card orange lighten-5 review hoverable" ref="feedItem">
+            <div className="card red lighten-5 review hoverable" ref="feedItem">
                 <div className="card-content">
+                    <div className="right">@auto-suggest</div>
                     <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.data.id}
                        className="blue-text">{this.props.data.name}</a>
                     <div className="red-text">{this.props.data.durationInMinutes} min</div>
@@ -39,13 +40,14 @@ let MuffSuggestion = React.createClass({
         return (
             <div className="card teal lighten-5 review hoverable" ref="feedItem">
                 <div className="card-content">
+                    <div className="right">@auto-suggest</div>
                     <a href={this.props.contextPath + '/muff/profile?muffId=' + this.props.data.id}>{this.props.data.name}
                         <span className="pink-text"> @{this.props.data.handle}</span></a>
                     <div style={{cursor: 'pointer'}}>
-                        <span title="Number of approvals"><i className="material-icons">done</i>
-                            = {this.props.data.noApprovals}</span>
-                        <span title="Level"><i className="material-icons">flash_on</i>
-                            = {Math.floor(this.props.data.noApprovals / 10)}</span>
+                        <div title="Number of approvals"><i className="material-icons">done</i>
+                            = {this.props.data.noApprovals}</div>
+                        <div title="Level"><i className="material-icons">book</i>
+                            = {Math.floor(this.props.data.noApprovals / 10)}</div>
                     </div>
                 </div>
             </div>
@@ -567,6 +569,7 @@ let Seek = React.createClass({
                 <div className="card seek hoverable yellow lighten-4"
                      onMouseEnter={e => this.refreshFromNowTS()}>
                     <div className="card-content">
+                        <div className="right">@seek</div>
                         <div>{this.props.data.muff.name} <span
                             className="pink-text">@{this.props.data.muff.handle}</span></div>
                         <div className="blue-text" ref="fromNow">
@@ -639,6 +642,7 @@ let Review = React.createClass({
                  style={{backgroundColor: 'whitesmoke'}}
                  onMouseEnter={e => this.refreshFromNowTS()}>
                 <div className="card-content">
+                    <div className="right">@review</div>
                     <div>{this.props.data.muff.name} <span className="pink-text">@{this.props.data.muff.handle}</span>
                     </div>
                     <div>{this.props.data.movieName}</div>
