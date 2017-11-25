@@ -177,7 +177,7 @@ public class ShowDAOImpl implements ShowDAO {
             while (resultSet.next()) {
 
                 preparedStmt2.setInt(1, resultSet.getInt(1));
-                ResultSet result = preparedStmt.executeQuery();
+                ResultSet result = preparedStmt2.executeQuery();
 
                 if (result.next()) {
                     CinemaBuilding cinemaBuilding = new CinemaBuilding(result.getInt(1), result.getInt(2), result.getString(3), result.getString(4), result.getString(5), result.getString(6), result.getString(7), result.getString(8));

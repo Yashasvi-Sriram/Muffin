@@ -80,8 +80,10 @@
 
                     let ShowItem = React.createClass({
                         render: function () {
+                            console.log(this.props.theatreId);
+                            let url = "${pageContext.request.contextPath}/show/book?showId=" + this.props.id + "&theatreId=" + this.props.theatreId;
                             return (
-                                    <a href={"${pageContext.request.contextPath}/show/book?showId=" + this.props.data.id + "&theatreId=" + this.props.data.theatreId}>
+                                    <a href={url}>
                                         <span className="chip blue-text"
                                               style={{marginRight: '10px'}}>
                                             {dateString(this.props.showtime.startTime,this.props.dateOffset)} {timeString(this.props.showtime.startTime)}
@@ -99,6 +101,7 @@
                                                  id={c.id}
                                                  movie={c.movie}
                                                  showtime={c.showtime}
+                                                 theatreId={c.theatreId}
                                                  dateOffset={this.props.dateOffset}
                                 />;
                             });
