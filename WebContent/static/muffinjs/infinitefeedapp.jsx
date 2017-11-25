@@ -132,7 +132,7 @@ let SeekResponse = React.createClass({
                 </div>
                 <div className="chip waves-effect black-text"
                      style={{backgroundColor: backgroundColor}}>
-                    {this.props.data.movieName}
+                    <a href={this.props.contextPath + '/movie/profile?movieId=' + this.props.data.movieId} className="black-text">{this.props.data.movieName}</a>
                     {muffCanToggle ? toggleSeekResponseBtn : ''}
                 </div>
                 <div>
@@ -628,7 +628,7 @@ let Seek = React.createClass({
                                 </div>
                             </div>
                             <div className="chip waves-effect brown white-text" title={this.state.automatedResponse.name}>
-                                {this.state.automatedResponse.name}
+                                <a href={this.props.contextPath + '/movie/profile?movieId=' + this.state.automatedResponse.id} className="white-text">{this.state.automatedResponse.name}</a>
                             </div>
                         </div>
                         {responses}
