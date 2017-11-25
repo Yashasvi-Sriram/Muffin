@@ -12,15 +12,14 @@ import org.muffin.muffin.db.DBConfig;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 
 public class SuggestionDAOImpl implements SuggestionDAO {
     @Override
-    public List<Movie> getMovies(int muffId,int limit) {
+    public List<Movie> getMovies(int muffId, int limit) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie,movie_suggestion WHERE  movie_suggestion.muff_id = ? AND movie_suggestion.movie_id = movie.id ORDER BY movie_suggestion.rating LIMIT ? DESC ")) {
-            preparedStmt.setInt(1,muffId);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie,movie_suggestion WHERE  movie_suggestion.muff_id = ? AND movie_suggestion.movie_id = movie.id ORDER BY movie_suggestion.rating DESC LIMIT ?")) {
+            preparedStmt.setInt(1, muffId);
             preparedStmt.setInt(2, limit);
             ResultSet rs = preparedStmt.executeQuery();
             while (rs.next()) {
@@ -36,16 +35,10 @@ public class SuggestionDAOImpl implements SuggestionDAO {
     }
 
     @Override
-    public List<Actor> getActors(int muffId,int limit) {
-        return new ArrayList<>();
-    }
-
-    @Override
-    public List<Muff> getMuffs(int muffId,int limit) {
-
+    public List<Muff> getMuffs(int muffId, int limit) {
         List<Muff> muffs = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT muff.id, muff.handle, muff.name, muff.level, muff.joined_on FROM muff,muff_suggestion WHERE muff_suggestion.id1 = ? and muff.id = muff_suggestion.id2 ORDER BY muff_suggestion.distance LIMIT ?")) {
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT muff.id, muff.handle, muff.name, muff.level, muff.joined_on FROM muff,muff_suggestion WHERE muff_suggestion.id1 = ? AND muff.id = muff_suggestion.id2 ORDER BY muff_suggestion.distance LIMIT ?")) {
             preparedStmt.setInt(1, muffId);
             preparedStmt.setInt(2, limit);
             ResultSet resultSet = preparedStmt.executeQuery();
@@ -63,6 +56,7 @@ public class SuggestionDAOImpl implements SuggestionDAO {
         }
         return muffs;
     }
+
     private List<Genre> getGenreList(int movieId, Connection conn) {
         List<Genre> genres = new ArrayList<>();
         try (PreparedStatement preparedStmt = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {

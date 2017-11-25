@@ -33,7 +33,6 @@ public class FetchMovies extends MuffEnsuredSessionServlet {
 
     @Override
     protected void doGetWithSession(HttpServletRequest request, HttpServletResponse response, HttpSession session) throws ServletException, IOException {
-
         Muff muff = (Muff) session.getAttribute(SessionKeys.MUFF);
         int muffId = muff.getId();
         int limit = Integer.parseInt(request.getParameter("limit"));

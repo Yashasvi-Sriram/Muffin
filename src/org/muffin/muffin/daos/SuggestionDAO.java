@@ -9,7 +9,5 @@ import java.util.List;
 public interface SuggestionDAO {
     public List<Movie> getMovies(final int muffId,final int limit);
 
-    public List<Actor> getActors(final int muffId,final int limit);
-
     public List<Muff> getMuffs(final int muffId,final int limit);
 }
