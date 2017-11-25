@@ -25,7 +25,10 @@ window.StatusBarApp = React.createClass({
                 }
                 else {
                     let data = json.data;
-                    self.setState({noApprovals: data});
+                    if (self.state.noApprovals !== data) {
+                        $(self.refs.status).fadeOut(0).fadeIn(1000);
+                        self.setState({noApprovals: data});
+                    }
                 }
             },
             error: function (data) {
@@ -46,7 +49,10 @@ window.StatusBarApp = React.createClass({
                 }
                 else {
                     let data = json.data;
-                    self.setState({noFollowers: data});
+                    if (self.state.noFollowers !== data) {
+                        $(self.refs.status).fadeOut(0).fadeIn(1000);
+                        self.setState({noFollowers: data});
+                    }
                 }
             },
             error: function (data) {
@@ -56,14 +62,14 @@ window.StatusBarApp = React.createClass({
     },
     render: function () {
         return (
-            <div className="card pink lighten-5 waves-effect" ref="status" style={{cursor: 'pointer'}}>
+            <div className="card red waves-effect" ref="status" style={{cursor: 'pointer'}}>
                 <div className="card-content">
                     <div title="Number of followers" className="flow-text">
                         <i className="material-icons">people</i> = {this.state.noFollowers}</div>
                     <div title="Number of approvals" className="flow-text">
                         <i className="material-icons">done</i> = {this.state.noApprovals}</div>
                     <div title="Level" className="flow-text">
-                        <i className="material-icons">sort</i> = {Math.floor(this.state.noApprovals / 10)}</div>
+                        <i className="material-icons">flash_on</i> = {Math.floor(this.state.noApprovals / 10)}</div>
                 </div>
             </div>
         );
@@ -74,7 +80,6 @@ window.StatusBarApp = React.createClass({
         setInterval(() => {
             this.fetchNoApprovals();
             this.fetchNoFollowers();
-            $(this.refs.status).fadeOut(0).fadeIn(1000);
         }, 60000); // ms
     },
 });
