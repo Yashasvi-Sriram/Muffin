@@ -30,4 +30,8 @@ public interface MuffDAO {
     public boolean incrementNoApprovalsByOne(final int muffId);
 
     public boolean decrementNoApprovalsByOne(final int muffId);
+
+    public Optional<Integer> getNoFollowers(final int muffId);
+
+    public Optional<Integer> getNoApprovals(final int muffId);
 }

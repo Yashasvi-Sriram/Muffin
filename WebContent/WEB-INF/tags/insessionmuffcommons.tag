@@ -14,6 +14,8 @@
         src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/givereviewapp.jsx"></script>
 <script type="text/babel"
         src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/seekentertainmentapp.jsx"></script>
+<script type="text/babel"
+        src="<jsp:invoke fragment="contextPath"/>/static/muffinjs/statusbarapp.jsx"></script>
 <script type="text/babel">
     ReactDOM.render(<ButterSearchApp limit={5}
                                      contextPath="<jsp:invoke fragment="contextPath"/>"
@@ -26,6 +28,8 @@
             contextPath="<jsp:invoke fragment="contextPath"/>"
             url='/seek/create'
             genreFetchUrl='/genre/fetch/all'/>, document.getElementById('seek-entertainment-app'));
+    ReactDOM.render(<StatusBarApp
+            contextPath="<jsp:invoke fragment="contextPath"/>"/>, document.getElementById('status-bar-app'));
 </script>
 <script type="text/javascript">
     $(document).ready(function () {
@@ -183,6 +187,9 @@
    style="position:fixed;bottom: 20px; right: 20px">
     <i class="material-icons">menu</i>
 </a>
+
+<div id="status-bar-app" style="position: fixed; bottom: 20px; left: 20px;">
+</div>
 
 <div class="parallax-container">
     <div class="parallax"><img src="${pageContext.request.contextPath}/static/images/fireways.jpg"

@@ -206,8 +206,10 @@ public class MuffDAOImpl implements MuffDAO {
             preparedStmt.setInt(1, muffId);
             preparedStmt.setInt(2, followeeId);
             ResultSet resultSet = preparedStmt.executeQuery();
-            resultSet.next();
-            return Optional.of(resultSet.getInt(1) > 0);
+            if (resultSet.next()) {
+                return Optional.of(resultSet.getInt(1) > 0);
+            }
+            return Optional.empty();
         } catch (SQLException e) {
             e.printStackTrace();
             return Optional.empty();
@@ -222,6 +224,38 @@ public class MuffDAOImpl implements MuffDAO {
     @Override
     public boolean decrementNoApprovalsByOne(int muffId) {
         return changeNoApprovals(muffId, -1);
+    }
+
+    @Override
+    public Optional<Integer> getNoFollowers(int muffId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT count(*) FROM follows WHERE follows.id2 = ?")) {
+            preparedStmt.setInt(1, muffId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(resultSet.getInt(1));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
+    }
+
+    @Override
+    public Optional<Integer> getNoApprovals(int muffId) {
+        try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT no_approvals FROM muff WHERE id = ?")) {
+            preparedStmt.setInt(1, muffId);
+            ResultSet resultSet = preparedStmt.executeQuery();
+            if (resultSet.next()) {
+                return Optional.of(resultSet.getInt(1));
+            }
+            return Optional.empty();
+        } catch (SQLException e) {
+            e.printStackTrace();
+            return Optional.empty();
+        }
     }
 
     private boolean changeNoApprovals(int muffId, int delta) {
