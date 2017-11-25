@@ -20,12 +20,10 @@ Done
 1. add data
 1. offset limit for movies in movieowner
 1. suggestions
+1. harsha's suggestion
 
 TODO
 =
-1. use returning in dao implementations
-1. harsha's suggestion
-
 1. report, docs, future todo s, brag list
 
 1. improve db queries, do indexing
