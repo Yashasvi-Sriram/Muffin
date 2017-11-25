@@ -14,19 +14,11 @@ import java.lang.Object;
 import java.time.format.DateTimeFormatter;
 
 public class ShowDAOImpl implements ShowDAO {
-    private String toTSRange(Showtime showtime) {
-        return "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
-    }
-
-    private String toTSUpperInfiniteRange(LocalDateTime currentTimeStamp) {
-        return "[" + currentTimeStamp.toString() + "," + "" + "]";
-    }
-
     @Override
     public boolean create(int movieId, int theatreId, int cinemaBuildingOwnerId, Showtime showtime) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
              PreparedStatement verifyStmt = conn.prepareStatement("SELECT theatre.id FROM theatre,cinema_building WHERE theatre.id = ? AND cinema_building_id = cinema_building.id AND owner_id = ?");
-             PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO show(theatre_id,movie_id,during) VALUES (?,?,?::tsrange);")) {
+             PreparedStatement insertStmt = conn.prepareStatement("INSERT INTO show(theatre_id,movie_id,during) VALUES (?,?,?::TSRANGE);")) {
             verifyStmt.setInt(1, theatreId);
             verifyStmt.setInt(2, cinemaBuildingOwnerId);
             ResultSet resultSet = verifyStmt.executeQuery();
@@ -46,7 +38,7 @@ public class ShowDAOImpl implements ShowDAO {
     @Override
     public Optional<Show> get(int movieId, int theatreId, Showtime showtime) {
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE theatre_id = ?  AND show.movie_id = ? AND show.movie_id = movie.id AND during = ?::tsrange");
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE theatre_id = ?  AND show.movie_id = ? AND show.movie_id = movie.id AND during = ?::TSRANGE");
              PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setInt(1, theatreId);
             preparedStmt.setInt(2, movieId);
@@ -78,43 +70,6 @@ public class ShowDAOImpl implements ShowDAO {
             e.printStackTrace();
             return Optional.empty();
         }
-
-    }
-
-
-    private Optional<Show> getShow(int showId, Connection conn) throws SQLException {
-
-        PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE show.id = ? AND show.movie_id = movie.id");
-        PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id");
-        preparedStmt.setInt(1, showId);
-
-        ResultSet resultSet = preparedStmt.executeQuery();
-        if (resultSet.next()) {
-
-            StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
-            String initial = tokens.nextToken();
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            LocalDateTime startTime = LocalDateTime.parse(initial.substring(2, initial.length() - 1), formatter);
-            String helper = tokens.nextToken();
-            helper = helper.substring(1, helper.length() - 2);
-            LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
-            Showtime showtime1 = new Showtime(startTime, endTime);
-
-            preparedStmt2.setInt(1, resultSet.getInt(3));
-            List<Genre> genres = new ArrayList<>();
-            ResultSet resultSet2 = preparedStmt2.executeQuery();
-            while (resultSet2.next()) {
-                Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
-                genres.add(genre);
-            }
-            Movie movie = new Movie(resultSet.getInt(3), resultSet.getInt(6), resultSet.getString(5), resultSet.getInt(7), genres);
-            Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movie, showtime1);
-            return Optional.of(show);
-
-
-        }
-        return Optional.empty();
-
 
     }
 
@@ -181,7 +136,7 @@ public class ShowDAOImpl implements ShowDAO {
     public List<Movie> getActiveMovies(String pattern, int limit, int offset, LocalDateTime currentTimeStamp) {
         List<Movie> movies = new ArrayList<>();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie WHERE movie.name ILIKE ? AND movie.id in (SELECT show.movie_id from show WHERE (show.during && ?::tsrange) ) ORDER BY movie.name OFFSET ? LIMIT ?");
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT movie.id, movie.owner_id, movie.name, movie.duration FROM movie WHERE movie.name ILIKE ? AND movie.id IN (SELECT show.movie_id FROM show WHERE (show.during && ?::TSRANGE) ) ORDER BY movie.name OFFSET ? LIMIT ?");
              PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id")) {
             preparedStmt.setString(1, "%" + pattern + "%");
             preparedStmt.setString(2, toTSUpperInfiniteRange(currentTimeStamp));
@@ -210,9 +165,8 @@ public class ShowDAOImpl implements ShowDAO {
     public Map<CinemaBuilding, List<Show>> getAllShows(int movieId, String city, String state, String country, Showtime showtime) {
 
         Map<CinemaBuilding, List<Show>> shows = new HashMap<>();
-        CinemaBuildingDAO cinemaBuildingDAO = new CinemaBuildingDAOImpl();
         try (Connection conn = DriverManager.getConnection(DBConfig.URL, DBConfig.USERNAME, DBConfig.PASSWORD);
-             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id from cinema_building,theatre,show where show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::tsrange) ORDER BY during");
+             PreparedStatement preparedStmt = conn.prepareStatement("SELECT cinema_building.id,show.id FROM cinema_building,theatre,show WHERE show.theatre_id = theatre.id AND theatre.cinema_building_id = cinema_building.id AND show.movie_id = ? AND cinema_building.city =  ? AND cinema_building.state = ? AND cinema_building.country = ? AND (show.during && ?::TSRANGE) ORDER BY during");
              PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT id, owner_id, name, street_name, city, state, country, zip  FROM cinema_building WHERE id = ?")) {
             preparedStmt.setInt(1, movieId);
             preparedStmt.setString(2, city);
@@ -237,15 +191,56 @@ public class ShowDAOImpl implements ShowDAO {
                         showList.add(show);
                         shows.put(cinemaBuilding, showList);
                     }
-
                 }
-
-
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return shows;
+
+    }
+
+    private String toTSRange(Showtime showtime) {
+        return "[" + showtime.getStartTime().toString() + "," + showtime.getEndTime().toString() + "]";
+    }
+
+    private String toTSUpperInfiniteRange(LocalDateTime currentTimeStamp) {
+        return "[" + currentTimeStamp.toString() + "," + "" + "]";
+    }
+
+    private Optional<Show> getShow(int showId, Connection conn) throws SQLException {
+
+        PreparedStatement preparedStmt = conn.prepareStatement("SELECT show.id,theatre_id,show.movie_id,during,movie.name,movie.owner_id,movie.duration FROM show,movie WHERE show.id = ? AND show.movie_id = movie.id");
+        PreparedStatement preparedStmt2 = conn.prepareStatement("SELECT genre.id, genre.name FROM genre, movie_genre_r WHERE movie_id = ? AND genre.id = genre_id");
+        preparedStmt.setInt(1, showId);
+
+        ResultSet resultSet = preparedStmt.executeQuery();
+        if (resultSet.next()) {
+
+            StringTokenizer tokens = new StringTokenizer(resultSet.getString(4), ",");
+            String initial = tokens.nextToken();
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime startTime = LocalDateTime.parse(initial.substring(2, initial.length() - 1), formatter);
+            String helper = tokens.nextToken();
+            helper = helper.substring(1, helper.length() - 2);
+            LocalDateTime endTime = LocalDateTime.parse(helper, formatter);
+            Showtime showtime1 = new Showtime(startTime, endTime);
+
+            preparedStmt2.setInt(1, resultSet.getInt(2));
+            List<Genre> genres = new ArrayList<>();
+            ResultSet resultSet2 = preparedStmt2.executeQuery();
+            while (resultSet2.next()) {
+                Genre genre = new Genre(resultSet2.getInt(1), resultSet2.getString(2));
+                genres.add(genre);
+            }
+            Movie movie = new Movie(resultSet.getInt(3), resultSet.getInt(6), resultSet.getString(5), resultSet.getInt(7), genres);
+            Show show = new Show(resultSet.getInt(1), resultSet.getInt(2), movie, showtime1);
+            return Optional.of(show);
+
+
+        }
+        return Optional.empty();
+
 
     }
 }

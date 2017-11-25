@@ -60,7 +60,7 @@ public class Book extends MuffEnsuredSessionServlet {
         }.getType());
         Muff inSessionMuff = (Muff) session.getAttribute(SessionKeys.MUFF);
         if (bookingDAO.create(showId, inSessionMuff.getId(), seatsToBeBooked)) {
-            response.sendRedirect(request.getContextPath() + "/muff/home");
+            response.sendRedirect(request.getContextPath() + "/muff/bookinghistory");
         } else {
             request.setAttribute("message", "The booking could not be done");
             request.getRequestDispatcher("/WEB-INF/jsps/error.jsp").include(request, response);
