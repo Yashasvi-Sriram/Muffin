@@ -1,25 +1,35 @@
+DROP INDEX IF EXISTS index_review;
 DROP TABLE IF EXISTS review;
 DROP TABLE IF EXISTS muff_likes_actor;
+DROP INDEX IF EXISTS index_movie_genre_r;
 DROP TABLE IF EXISTS movie_genre_r;
 -- DROP TABLE IF EXISTS muff_likes_character;
+DROP INDEX IF EXISTS index_character;
 DROP TABLE IF EXISTS character;
 DROP TABLE IF EXISTS actor;
+DROP INDEX IF EXISTS index_booked_show_seats;
 DROP TABLE IF EXISTS booked_show_seats;
+DROP INDEX IF EXISTS index_booking;
 DROP TABLE IF EXISTS booking;
+DROP INDEX IF EXISTS index_show;
 DROP TABLE IF EXISTS show;
 DROP EXTENSION IF EXISTS btree_gist;
 DROP TABLE IF EXISTS follows;
+DROP INDEX IF EXISTS index_seat;
 DROP TABLE IF EXISTS seat;
+DROP INDEX IF EXISTS index_theatre;
 DROP TABLE IF EXISTS theatre;
 DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
+DROP INDEX IF EXISTS index_seek_response;
 DROP TABLE IF EXISTS seek_response;
 DROP TABLE IF EXISTS movie_suggestion;
 DROP TABLE IF EXISTS muff_suggestion;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
+DROP INDEX IF EXISTS index_seek_genre_r;
 DROP TABLE IF EXISTS seek_genre_r;
 DROP TABLE IF EXISTS seek;
 DROP TABLE IF EXISTS genre;
@@ -27,6 +37,7 @@ DROP TABLE IF EXISTS genre;
 -- DROP TABLE IF EXISTS post;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
+DROP INDEX IF EXISTS index_valid_region;
 DROP TABLE IF EXISTS valid_region;
 
 /*
@@ -407,3 +418,25 @@ CREATE TABLE movie_suggestion(
   FOREIGN KEY (movie_id) REFERENCES movie (id)
   ON DELETE CASCADE
 );
+
+CREATE INDEX index_valid_region on valid_region(city, state, country) ;
+
+CREATE INDEX index_theatre on theatre(cinema_building_id);
+
+CREATE INDEX index_seat on seat(theatre_id);
+
+CREATE INDEX index_show on show(theatre_id, movie_id);
+
+CREATE INDEX index_booking on booking(muff_id);
+
+CREATE INDEX index_booked_show_seats on booked_show_seats(show_id,booking_id);
+
+CREATE INDEX index_seek_response on seek_response(seek_id);
+
+CREATE INDEX index_review on review(movie_id);
+
+CREATE INDEX index_character on character(movie_id);
+
+CREATE INDEX index_movie_genre_r on movie_genre_r(movie_id);
+
+CREATE INDEX index_seek_genre_r on seek_genre_r(seek_id);

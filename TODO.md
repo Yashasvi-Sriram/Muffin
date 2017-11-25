@@ -21,9 +21,10 @@ Done
 1. offset limit for movies in movieowner
 1. suggestions
 1. harsha's suggestion
+1. Do indexing
 
 TODO
 =
 1. report, docs, future todo s, brag list
 
-1. improve db queries, do indexing
+1. improve db queries
