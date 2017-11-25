@@ -27,7 +27,7 @@ import java.util.List;
  * doGetWithSession:  returns suggested movies;
  * doPostWithSession: same as get
  */
-@WebServlet("/fetch/movies")
+@WebServlet("/suggestion/fetch/movies")
 public class FetchMovies extends MuffEnsuredSessionServlet {
     private SuggestionDAO suggestionDAO = new SuggestionDAOImpl();
 

@@ -27,7 +27,7 @@ import java.util.List;
  * doGetWithSession:  returns suggested muffs;
  * doPostWithSession: same as get
  */
-@WebServlet("/fetch/muffs")
+@WebServlet("/suggestion/fetch/muffs")
 public class FetchMuffs extends MuffEnsuredSessionServlet {
     private SuggestionDAO suggestionDAO = new SuggestionDAOImpl();
 

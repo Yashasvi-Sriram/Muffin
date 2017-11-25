@@ -15,6 +15,8 @@ DROP TABLE IF EXISTS cinema_building;
 DROP TABLE IF EXISTS cinema_building_owner_password;
 DROP TABLE IF EXISTS cinema_building_owner;
 DROP TABLE IF EXISTS seek_response;
+DROP TABLE IF EXISTS movie_suggestion;
+DROP TABLE IF EXISTS muff_suggestion;
 DROP TABLE IF EXISTS movie;
 DROP TABLE IF EXISTS movie_owner_password;
 DROP TABLE IF EXISTS movie_owner;
@@ -26,8 +28,6 @@ DROP TABLE IF EXISTS genre;
 DROP TABLE IF EXISTS muff_password;
 DROP TABLE IF EXISTS muff;
 DROP TABLE IF EXISTS valid_region;
-DROP TABLE IF EXISTS moviesuggestion;
-DROP TABLE IF EXISTS muffsuggestion;
 
 /*
   Anything can be done with data as long as the sql constraints are followed

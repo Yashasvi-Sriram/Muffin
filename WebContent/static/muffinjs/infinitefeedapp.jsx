@@ -612,6 +612,8 @@ let Review = React.createClass({
 let FEED_TYPES = {
     REVIEW: 'review',
     SEEK: 'seek',
+    AUTOMATED_MOVIE_SUGGESTION: 'automatedMovieSuggestion',
+    AUTOMATED_MUFF_SUGGESTION: 'automatedMuffSuggestion',
 };
 let FEED_POSTFIXES = {
     STATE: {
@@ -648,6 +650,14 @@ window.InfiniteFeedApp = React.createClass({
         initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.LAST_SEEN] = ts;
         initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.OFFSET] = 0;
         initialState[FEED_TYPES.SEEK + FEED_POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        // AMovSug
+        initialState[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.STATE.OFFSET] = 0;
+        initialState[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.STATE.FEED_HASH_MAP] = {};
+        // AMuffSug
+        initialState[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.STATE.LAST_SEEN] = ts;
+        initialState[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.STATE.OFFSET] = 0;
+        initialState[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.STATE.FEED_HASH_MAP] = {};
         return initialState;
     },
     getDefaultProps: function () {
@@ -665,6 +675,16 @@ window.InfiniteFeedApp = React.createClass({
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.FETCH_URL] = '';
         defaultProps[FEED_TYPES.SEEK + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
+        // AMovSug
+        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_URL] = '/suggestion/fetch/movies';
+        defaultProps[FEED_TYPES.AUTOMATED_MOVIE_SUGGESTION + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
+        // AMuffSug
+        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_LIMIT] = 3;
+        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_PARAM] = 0;
+        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.FETCH_URL] = '/suggestion/fetch/muffs';
+        defaultProps[FEED_TYPES.AUTOMATED_MUFF_SUGGESTION + FEED_POSTFIXES.PROPS.IS_ENABLED] = true;
         return defaultProps;
     },
     fetchNextFeedBatch: function (type) {
@@ -782,6 +802,13 @@ window.InfiniteFeedApp = React.createClass({
             if (FEED_TYPES.hasOwnProperty(key)) {
                 // if this feed is not fetched in this cycle
                 if (this.RRFeedFetchState.typesFetchedBitmap[FEED_TYPES[key]] !== true) {
+                    // if feed is the automated suggestions then control its probability
+                    if (FEED_TYPES[key] === FEED_TYPES.AUTOMATED_MUFF_SUGGESTION
+                        || FEED_TYPES[key] === FEED_TYPES.AUTOMATED_MUFF_SUGGESTION) {
+                        if (Math.random() > 0.2) {
+                            continue
+                        }
+                    }
                     newType = FEED_TYPES[key];
                     break;
                 }
